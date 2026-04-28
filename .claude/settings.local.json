@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(node -e \"const tw = require\\('./node_modules/tailwindcss/package.json'\\); console.log\\(tw.version\\)\")",
+      "Bash(npx tailwindcss:*)",
+      "WebFetch(domain:www.linkedin.com)",
+      "WebSearch"
+    ]
+  }
+}

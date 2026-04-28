@@ -1,0 +1,387 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "aos/dist/aos.css";
+
+:root {
+  /* Hex vars — used by glass-card, box-shadows, inline styles */
+  --bg: #0d1f1a;
+  --surface: #1e4a3a;
+  --surface-mid: #286c51;
+  --highlight: #86b59a;
+  --cyber: #ff4c4c;
+  --eng: #4c9eff;
+  --accent: #a8d9b8;
+  --section-tint: rgba(46, 122, 90, 0.02);
+  --background: var(--bg);
+  --foreground: var(--highlight);
+
+  /* Raw RGB vars — used by Tailwind so opacity modifiers work (text-highlight/80 etc.) */
+  --rgb-bg:          13 31 26;
+  --rgb-surface:     30 74 58;
+  --rgb-surface-mid: 40 108 81;
+  --rgb-highlight:   134 181 154;
+  --rgb-accent:      168 217 184;
+  --mi-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --mi-fast: 160ms;
+  --mi-base: 260ms;
+}
+
+html.light {
+  /* Hex overrides */
+  --bg: #f0f7f3;
+  --surface: #d4e8dc;
+  --surface-mid: #2e7a5a;
+  --highlight: #0d1f1a;
+  --accent: #2e7a5a;
+  --foreground: #0d1f1a;
+  --section-tint: rgba(46, 122, 90, 0.04);
+
+  /* Raw RGB overrides */
+  --rgb-bg:          240 247 243;
+  --rgb-surface:     212 232 220;
+  --rgb-highlight:   13 31 26;
+  --rgb-accent:      46 122 90;
+}
+
+html,
+body {
+  min-height: 100%;
+  overscroll-behavior-y: none;
+}
+
+html.mode-neon {
+  --accent: #3be7ff;
+  --highlight: #9fd6ff;
+  --surface: #14233a;
+  --surface-mid: #1b4b88;
+}
+
+html.mode-high-contrast {
+  --highlight: #e7fff0;
+  --foreground: #f2fff8;
+  --accent: #8cf7c7;
+}
+
+html.mode-high-contrast .glass-card {
+  background: rgba(11, 30, 24, 0.84);
+  border-color: rgba(173, 248, 206, 0.35);
+}
+
+html.mode-high-contrast .section-bg::after {
+  opacity: 0.16 !important;
+}
+
+html.mode-large-text {
+  font-size: 17px;
+}
+
+html.mode-reduced-motion *,
+html.mode-reduced-motion *::before,
+html.mode-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.12s !important;
+  scroll-behavior: auto !important;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply font-sans text-highlight antialiased;
+  background: var(--bg);
+  color: var(--foreground);
+}
+
+/* Skip link */
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[9999] focus:rounded focus:bg-surface focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-highlight;
+}
+
+/* Page shell: noise + scanline overlays */
+.page-fx {
+  position: relative;
+  isolation: isolate;
+}
+
+.page-fx::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  opacity: 0.0035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.page-fx::after {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.018) 2px,
+    rgba(0, 0, 0, 0.018) 3px
+  );
+  opacity: 0.035;
+}
+
+html.light .page-fx::before {
+  opacity: 0.0018;
+}
+
+html.light .page-fx::after {
+  opacity: 0.012;
+}
+
+/* Glass card (tinted, never white) */
+@layer components {
+  .glass-card {
+    background: rgba(30, 74, 58, 0.15);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(168, 217, 184, 0.12);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+      rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+      rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    position: relative;
+  }
+
+  html.light .glass-card {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(46, 122, 90, 0.18);
+    box-shadow: rgba(50, 50, 93, 0.2) 0px 40px 80px -24px,
+      rgba(0, 0, 0, 0.16) 0px 24px 44px -28px,
+      rgba(10, 37, 64, 0.2) 0px -2px 6px 0px inset;
+  }
+
+  html.light .glass-card:hover {
+    box-shadow: 0 0 20px rgba(46, 122, 90, 0.15), 0 4px 24px rgba(13, 31, 26, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  .glass-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: rgba(168, 217, 184, 0.06);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .glass-card {
+    transition: box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    box-shadow: rgba(50, 50, 93, 0.28) 0px 56px 110px -20px,
+      rgba(0, 0, 0, 0.34) 0px 34px 66px -30px,
+      rgba(10, 37, 64, 0.38) 0px -2px 7px 0px inset;
+  }
+
+  .glass-nav {
+    background: rgba(30, 74, 58, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(168, 217, 184, 0.08);
+  }
+
+  html.light .glass-nav {
+    background: rgba(255, 255, 255, 0.80);
+    border-bottom: 1px solid rgba(46, 122, 90, 0.14);
+  }
+
+  /* Spec: triple stack — blur 8px / 16px / 32px with readable glass edges */
+  .glass-hero-layer-1 {
+    backdrop-filter: blur(8px) saturate(1.15);
+    -webkit-backdrop-filter: blur(8px) saturate(1.15);
+    border: 1px solid rgba(168, 217, 184, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 20px 50px rgba(0, 0, 0, 0.22);
+  }
+  .glass-hero-layer-2 {
+    backdrop-filter: blur(16px) saturate(1.12);
+    -webkit-backdrop-filter: blur(16px) saturate(1.12);
+    border: 1px solid rgba(168, 217, 184, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 24px 60px rgba(0, 0, 0, 0.28);
+  }
+  .glass-hero-layer-3 {
+    backdrop-filter: blur(32px) saturate(1.08);
+    -webkit-backdrop-filter: blur(32px) saturate(1.08);
+    border: 1px solid rgba(168, 217, 184, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 28px 70px rgba(0, 0, 0, 0.32);
+  }
+
+  .btn-ghost {
+    @apply glass-card rounded-lg px-5 py-2.5 font-mono text-sm text-highlight will-change-transform;
+    transition: transform var(--mi-base) var(--mi-ease),
+      box-shadow var(--mi-base) var(--mi-ease),
+      background-color var(--mi-fast) var(--mi-ease),
+      border-color var(--mi-fast) var(--mi-ease);
+  }
+
+  .btn-ghost:hover {
+    background: color-mix(in srgb, var(--accent) 25%, rgba(30, 74, 58, 0.2));
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .mi-interactive {
+    transition: transform var(--mi-base) var(--mi-ease),
+      box-shadow var(--mi-base) var(--mi-ease),
+      border-color var(--mi-fast) var(--mi-ease),
+      background-color var(--mi-fast) var(--mi-ease);
+  }
+
+  .mi-interactive:active {
+    transform: translateY(0) scale(0.99);
+  }
+
+  .mono-label {
+    font-family: var(--font-jetbrains);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .section-bg {
+    background-color: var(--section-tint);
+    background-image: theme(backgroundImage.hex-grid);
+    background-size: 40px 68px;
+    background-blend-mode: soft-light;
+    opacity: 0.98;
+    position: relative;
+  }
+
+  main > section.section-bg:nth-of-type(odd)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 82% 22%, rgba(76, 158, 255, 0.07), transparent 38%);
+    opacity: 0.55;
+  }
+
+  main > section.section-bg:nth-of-type(even)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 14% 72%, rgba(168, 217, 184, 0.09), transparent 40%);
+    opacity: 0.45;
+  }
+
+  .glitch-hover {
+    transition: text-shadow 0.2s ease;
+  }
+
+  .glitch-hover:hover {
+    text-shadow: 2px 0 var(--accent), -2px 0 var(--cyber);
+    animation: glitch-skew 0.4s ease-in-out;
+  }
+
+  @keyframes glitch-skew {
+    0% {
+      transform: skew(0deg);
+    }
+    25% {
+      transform: skew(-0.6deg);
+    }
+    50% {
+      transform: skew(0.4deg);
+    }
+    100% {
+      transform: skew(0deg);
+    }
+  }
+}
+
+/* Theme wipe (clip-path) */
+.theme-wipe {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth color transitions on theme toggle — color-only, never transform */
+html {
+  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth link and button color shifts */
+a, button, [role="button"] {
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html.light .theme-wipe-toggle {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Skeleton shimmer keyframe */
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Focus visible for a11y */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media print {
+  .page-fx::before,
+  .page-fx::after,
+  nav,
+  .skip-link {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+  .cv-print {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
