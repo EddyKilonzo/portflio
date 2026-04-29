@@ -170,7 +170,7 @@ function ExpCard({
         {ex.tools.map((t) => (
           <span
             key={t}
-            className="rounded-full border border-highlight/15 px-2 py-0.5 font-mono text-[10px]"
+            className="rounded-full border border-white/55 px-2 py-0.5 font-mono text-[10px] text-white"
           >
             {t}
           </span>

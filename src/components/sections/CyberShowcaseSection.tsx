@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 
 const CyberDemo = dynamic(
   () => import("@/components/demos/CyberDemo").then((m) => m.CyberDemo),
@@ -72,12 +73,17 @@ export function CyberShowcaseSection() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <h2 className="glitch-hover mb-10 font-display text-4xl text-highlight md:text-5xl">
-          Cybersecurity showcase
-        </h2>
+        <ParallaxDrift speed={0.1}>
+          <h2 
+            className="glitch-hover mb-10 font-display text-4xl text-highlight md:text-5xl"
+            data-aos="fade-right"
+          >
+            Cybersecurity showcase
+          </h2>
+        </ParallaxDrift>
 
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="glass-card rounded-2xl p-6 lg:col-span-1">
+          <div className="glass-card rounded-2xl p-6 lg:col-span-1" data-aos="fade-up" data-aos-delay="100">
             <p className="font-mono text-xs text-highlight/50">CTF tracker</p>
             <p className="mt-2 font-display text-2xl text-highlight">
               HTB {profile.ctf.htbRank}
@@ -125,7 +131,7 @@ export function CyberShowcaseSection() {
             </div>
           </div>
 
-          <div className="glass-card rounded-2xl p-6">
+          <div className="glass-card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="200">
             <p className="font-mono text-xs text-highlight/50">Bug bounty</p>
             <p className="mt-2 text-3xl font-bold text-highlight">
               {profile.bugBounty.totalFindings}
@@ -161,7 +167,7 @@ export function CyberShowcaseSection() {
             </p>
           </div>
 
-          <div className="glass-card rounded-2xl p-6">
+          <div className="glass-card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="300">
             <p className="font-mono text-xs text-highlight/50">
               Threat level (easter egg)
             </p>
@@ -175,7 +181,7 @@ export function CyberShowcaseSection() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <div className="glass-card max-h-80 overflow-y-auto rounded-2xl p-6">
+          <div className="glass-card max-h-80 overflow-y-auto rounded-2xl p-6" data-aos="fade-right" data-aos-delay="400">
             <p className="mb-4 font-mono text-xs text-highlight/50">
               CVE & disclosure log
             </p>
@@ -194,7 +200,7 @@ export function CyberShowcaseSection() {
             </ul>
           </div>
 
-          <div className="glass-card rounded-2xl p-6">
+          <div className="glass-card rounded-2xl p-6" data-aos="fade-left" data-aos-delay="500">
             <p className="font-mono text-xs text-highlight/50">Home lab</p>
             <p className="mt-2 font-sans text-sm text-highlight/80">
               {profile.homelab}
@@ -237,8 +243,8 @@ export function CyberShowcaseSection() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          {["Pen test walkthrough", "CTF solve", "Tooling demo"].map((t) => (
-            <div key={t} className="glass-card rounded-2xl p-6">
+          {["Pen test walkthrough", "CTF solve", "Tooling demo"].map((t, idx) => (
+            <div key={t} className="glass-card rounded-2xl p-6" data-aos="zoom-in" data-aos-delay={600 + idx * 100}>
               <p className="font-mono text-xs text-highlight/50">Video</p>
               <p className="mt-2 font-display text-xl text-highlight">{t}</p>
               <MagneticButton className="btn-ghost mt-4 w-full text-xs">

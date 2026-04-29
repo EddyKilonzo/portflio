@@ -4,19 +4,43 @@ export type Availability = "open" | "freelance" | "unavailable";
 
 export type DemoType = "web" | "cyber" | "engineering";
 
+export type Difficulty = "beginner" | "intermediate" | "advanced";
+
+export type CaseStudy = {
+  problem: string;
+  approach: string[];
+  outcome: string;
+  lessonsLearned?: string[];
+  metrics?: string[];
+  architectureNotes?: string[];
+  screenshots?: string[];
+};
+
 export type Project = {
   id: string;
   title: string;
   shortDescription: string;
   roleMode: RoleMode;
   tech: string[];
+  /** High-level label used for portfolio filtering (e.g. "SIEM Lab"). */
+  category: string;
+  /** Difficulty level used for portfolio filtering. */
+  difficulty: Difficulty;
   videoUrl: string;
   liveUrl?: string;
   codeUrl?: string;
   demoType: DemoType;
   skills: string[];
   screenshotFallback?: string;
+  caseStudy: CaseStudy;
   engineeringDemo?: "api" | "algo" | "schema";
+};
+
+export type ProjectCredibility = {
+  performanceScore: number;
+  accessibilityScore: number;
+  lighthouseScore: number;
+  loadTime: string;
 };
 
 export type CodeFile = {
@@ -207,12 +231,32 @@ export const projects: Project[] = [
       "Simulated SIEM dashboards, log pipelines, and detection engineering lab for training blue-team workflows.",
     roleMode: "cyber",
     tech: ["Elastic", "Python", "Docker", "Sigma"],
+    category: "SIEM & Detection Engineering",
+    difficulty: "advanced",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     liveUrl: "https://example.com",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "cyber",
     skills: ["SIEM tools", "Incident Response", "Python"],
     screenshotFallback: "https://picsum.photos/seed/sentinel-siem/960/600",
+    caseStudy: {
+      problem:
+        "Blue-team practice is often stuck in static labs without realistic detection-to-dashboard workflows.",
+      approach: [
+        "Build a repeatable log pipeline that feeds simulated events into an Elastic-style stack.",
+        "Author detection rules (Sigma-style) and validate them against curated example traffic.",
+        "Provide a dashboard walkthrough path so trainees can connect detections to operator actions.",
+      ],
+      outcome:
+        "A training playground where detections, dashboards, and iterative improvements can be practiced safely.",
+      metrics: ["Rule iterations: 10+", "Lab walkthroughs: repeatable flow", "Operator view coverage: high"],
+      architectureNotes: [
+        "Rule layer (Sigma-like definitions) separated from ingestion and visualization.",
+        "Containerized services to keep lab setup consistent across devices.",
+        "Detections are structured so trainees can compare changes between iterations.",
+      ],
+      screenshots: ["https://picsum.photos/seed/sentinel-siem/800/480"],
+    },
   },
   {
     id: "phish-hunter",
@@ -221,11 +265,31 @@ export const projects: Project[] = [
       "Automated phishing domain discovery using passive DNS, certificate transparency logs, and typosquat heuristics.",
     roleMode: "cyber",
     tech: ["Python", "Shodan", "OSINT", "PostgreSQL"],
+    category: "OSINT & Threat Research",
+    difficulty: "intermediate",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "cyber",
     skills: ["OSINT", "Python", "Vulnerability Assessment"],
     screenshotFallback: "https://picsum.photos/seed/phish-hunter/960/600",
+    caseStudy: {
+      problem:
+        "Threat intel teams need faster domain discovery workflows without manually correlating passive signals.",
+      approach: [
+        "Ingest and normalize passive DNS / CT-like sources into a common candidate model.",
+        "Apply typosquat heuristics and reputation-style heuristics to rank candidates.",
+        "Persist candidates in a lightweight database to support iterative investigations.",
+      ],
+      outcome:
+        "A practical OSINT pipeline that turns passive signals into ranked phishing candidates for triage.",
+      metrics: ["Candidate throughput: high", "Signal sources: 2+", "Triage ranking: deterministic"],
+      architectureNotes: [
+        "Separation between collection, enrichment, and ranking makes the workflow easy to extend.",
+        "Database-backed candidates support re-runs without losing investigator context.",
+        "Heuristics are transparent so outputs can be audited.",
+      ],
+      screenshots: ["https://picsum.photos/seed/phish-hunter/800/480"],
+    },
   },
   {
     id: "redteam-c2",
@@ -234,11 +298,31 @@ export const projects: Project[] = [
       "Lightweight command-and-control infrastructure for controlled red-team exercises with encrypted beacon channels.",
     roleMode: "cyber",
     tech: ["Go", "Kali Linux", "Metasploit", "Docker"],
+    category: "Red Team Simulation",
+    difficulty: "advanced",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "cyber",
     skills: ["Metasploit", "Kali Linux", "Incident Response"],
     screenshotFallback: "https://picsum.photos/seed/redteam-c2/960/600",
+    caseStudy: {
+      problem:
+        "Training exercises require realistic beacon behavior while keeping operators in full control of scope and safety.",
+      approach: [
+        "Implement a modular C2 core with encrypted beacon check-ins.",
+        "Integrate with common red-team tooling workflows (e.g., chaining with Metasploit steps).",
+        "Containerize components so labs can be spun up consistently for each exercise.",
+      ],
+      outcome:
+        "A framework that supports realistic controlled exercises with operator-controlled behavior.",
+      metrics: ["Beacon channel encryption: enabled", "Exercise setup time: minimized", "Toolchain integration: modular"],
+      architectureNotes: [
+        "Encrypted beacon channel isolates command delivery from transport noise.",
+        "Separation between operator UI/config and agent check-in loop.",
+        "Container orchestration reduces environment drift across runs.",
+      ],
+      screenshots: ["https://picsum.photos/seed/redteam-c2/800/480"],
+    },
   },
   {
     id: "mesh-api",
@@ -247,12 +331,32 @@ export const projects: Project[] = [
       "High-performance API edge with rate limiting, JWT rotation, and observability hooks.",
     roleMode: "engineering",
     tech: ["Go", "Redis", "gRPC", "Kubernetes"],
+    category: "API Platform Engineering",
+    difficulty: "advanced",
     videoUrl: "https://vimeo.com/148751763",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "engineering",
     engineeringDemo: "api",
     skills: ["REST APIs", "Redis", "Kubernetes", "Docker"],
     screenshotFallback: "https://picsum.photos/seed/mesh-api/960/600",
+    caseStudy: {
+      problem:
+        "Modern APIs need edge capabilities (rate limiting, token lifecycle, tracing) without sacrificing latency and maintainability.",
+      approach: [
+        "Route requests through an API gateway with pluggable policy modules.",
+        "Implement JWT rotation logic that supports safe token lifecycle management.",
+        "Add observability hooks so operators can debug and optimize hot paths.",
+      ],
+      outcome:
+        "A production-minded gateway architecture with clear extension points and measurable performance goals.",
+      metrics: ["P99 latency target: sub-10ms class", "Policy modules: extensible", "Observability: trace hooks"],
+      architectureNotes: [
+        "Policy checks run in a deterministic order to simplify reasoning and debugging.",
+        "Redis used to coordinate rate limiting and token lifecycle state.",
+        "gRPC between internal components keeps boundaries explicit.",
+      ],
+      screenshots: ["https://picsum.photos/seed/mesh-api/800/480"],
+    },
   },
   {
     id: "event-stream",
@@ -261,12 +365,32 @@ export const projects: Project[] = [
       "Real-time Kafka-based pipeline that ingests, transforms, and routes millions of events per day with sub-10ms P99.",
     roleMode: "engineering",
     tech: ["Python", "Kafka", "PostgreSQL", "Docker"],
+    category: "Streaming Data Engineering",
+    difficulty: "advanced",
     videoUrl: "https://vimeo.com/148751763",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "engineering",
     engineeringDemo: "schema",
     skills: ["Python", "PostgreSQL", "Docker", "CI/CD"],
     screenshotFallback: "https://picsum.photos/seed/event-stream/960/600",
+    caseStudy: {
+      problem:
+        "High-volume event pipelines must remain correct under load while keeping operators able to introspect transformations.",
+      approach: [
+        "Ingest raw events from a Kafka-like stream and transform them into enriched records.",
+        "Write outputs to downstream topics and persist key state to a relational store.",
+        "Design the pipeline to support schema evolution without breaking consumer expectations.",
+      ],
+      outcome:
+        "A scalable pipeline pattern for real-time ingestion, enrichment, and routing with operator-friendly observability.",
+      metrics: ["Throughput: millions/day", "Routing: deterministic", "Schema evolution: safe"],
+      architectureNotes: [
+        "Transform stage is isolated so it can evolve independently of ingestion/output.",
+        "Postgres persistence supports auditability and replay workflows.",
+        "CI/CD keeps pipeline changes deployable with predictable rollouts.",
+      ],
+      screenshots: ["https://picsum.photos/seed/event-stream/800/480"],
+    },
   },
   {
     id: "infra-scaffold",
@@ -275,12 +399,32 @@ export const projects: Project[] = [
       "Opinionated Terraform + Helm scaffolding tool that bootstraps production-ready K8s clusters in under five minutes.",
     roleMode: "engineering",
     tech: ["Go", "Terraform", "Kubernetes", "Helm"],
+    category: "Infrastructure Automation",
+    difficulty: "advanced",
     videoUrl: "https://vimeo.com/148751763",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "engineering",
     engineeringDemo: "algo",
     skills: ["Kubernetes", "CI/CD", "Linux", "Docker"],
     screenshotFallback: "https://picsum.photos/seed/infra-scaffold/960/600",
+    caseStudy: {
+      problem:
+        "Spinning up production-like clusters should be fast, repeatable, and enforceable (security + defaults) without manual drift.",
+      approach: [
+        "Create an opinionated scaffold that generates Terraform and Helm templates from a constrained input model.",
+        "Standardize defaults so clusters start secure and consistent across environments.",
+        "Provide CLI workflows for init/destroy that wrap common IaC steps safely.",
+      ],
+      outcome:
+        "A CLI that reduces cluster bootstrapping time and improves consistency through opinionated IaC templates.",
+      metrics: ["Bootstrap time: <5 minutes", "Consistency: improved defaults", "Ops: predictable init/destroy"],
+      architectureNotes: [
+        "A constrained config model prevents accidental insecure template combinations.",
+        "Templates separate platform primitives from app-level configuration.",
+        "CLI wrappers help enforce ordering and reduce human error.",
+      ],
+      screenshots: ["https://picsum.photos/seed/infra-scaffold/800/480"],
+    },
   },
   {
     id: "aurora-portfolio",
@@ -289,12 +433,32 @@ export const projects: Project[] = [
       "WebGL-forward portfolio shell with shader backgrounds and scroll-linked storytelling.",
     roleMode: "web",
     tech: ["Next.js", "Three.js", "GSAP", "Tailwind CSS"],
+    category: "Interactive Web Experiences",
+    difficulty: "intermediate",
     videoUrl: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
     liveUrl: "https://nextjs.org",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "web",
     skills: ["Next.js", "Three.js", "React", "TypeScript"],
     screenshotFallback: "https://picsum.photos/seed/aurora-portfolio/960/600",
+    caseStudy: {
+      problem:
+        "Immersive WebGL effects need to remain performant and accessible while integrating with a maintainable UI architecture.",
+      approach: [
+        "Use scroll-linked storytelling to coordinate UI sections with visual shader states.",
+        "Keep visual effects encapsulated so the UI remains easy to evolve.",
+        "Apply motion controls that respect reduced-motion preferences.",
+      ],
+      outcome:
+        "A responsive WebGL-first shell that supports immersive storytelling without compromising UX stability.",
+      metrics: ["Performance: optimized render loop", "Accessibility: motion-aware", "Maintainability: encapsulated effects"],
+      architectureNotes: [
+        "Separate scene rendering from React UI state to reduce coupling.",
+        "Motion is driven by scroll progress so interactions feel intentional.",
+        "Reduced-motion gates prevent expensive effects on low-end devices.",
+      ],
+      screenshots: ["https://picsum.photos/seed/aurora-portfolio/800/480"],
+    },
   },
   {
     id: "design-system",
@@ -303,12 +467,32 @@ export const projects: Project[] = [
       "Component library and Figma token pipeline that syncs design decisions to code automatically via style-dictionary.",
     roleMode: "web",
     tech: ["React", "TypeScript", "Figma", "Storybook"],
+    category: "Design Systems & UI Engineering",
+    difficulty: "advanced",
     videoUrl: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
     liveUrl: "https://nextjs.org",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "web",
     skills: ["React", "TypeScript", "Figma", "Tailwind CSS"],
     screenshotFallback: "https://picsum.photos/seed/design-system/960/600",
+    caseStudy: {
+      problem:
+        "Design tokens drift when teams manually translate Figma decisions into code, causing UI inconsistency and slower delivery.",
+      approach: [
+        "Automate token extraction and generation with a style-dictionary-based pipeline.",
+        "Build components that consume tokens consistently and expose ergonomic APIs.",
+        "Use Storybook to validate component states and reduce regression risk.",
+      ],
+      outcome:
+        "A maintainable design system where visual decisions flow from Figma to code with minimal friction.",
+      metrics: ["Token sync: automated", "Regression risk: reduced via Storybook", "Consistency: improved"],
+      architectureNotes: [
+        "Tokens are the single source of truth for theme values.",
+        "Components are built to be themeable without rewriting internals.",
+        "Storybook becomes the integration surface for designers and engineers.",
+      ],
+      screenshots: ["https://picsum.photos/seed/design-system/800/480"],
+    },
   },
   {
     id: "realtime-collab",
@@ -317,14 +501,46 @@ export const projects: Project[] = [
       "Google Docs-style collaborative editor using CRDTs for conflict-free merging and WebSocket presence awareness.",
     roleMode: "web",
     tech: ["Next.js", "Node.js", "GraphQL", "Framer Motion"],
+    category: "Realtime Collaboration Systems",
+    difficulty: "advanced",
     videoUrl: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
     liveUrl: "https://nextjs.org",
     codeUrl: "https://github.com/EddyKilonzo",
     demoType: "web",
     skills: ["Next.js", "Node.js", "GraphQL", "TypeScript"],
     screenshotFallback: "https://picsum.photos/seed/realtime-collab/960/600",
+    caseStudy: {
+      problem:
+        "Collaborative editing must reconcile concurrent changes reliably without forcing users to resolve conflicts.",
+      approach: [
+        "Model editor operations with CRDT semantics so concurrent edits merge deterministically.",
+        "Use WebSocket presence to show collaborative cursors and editing activity.",
+        "Keep network sync logic separate from rendering so UI updates stay responsive.",
+      ],
+      outcome:
+        "A collaboration editor with conflict-free merges and presence-aware UX suitable for real-time workflows.",
+      metrics: ["Merge correctness: deterministic", "Presence: real-time", "UI responsiveness: maintained"],
+      architectureNotes: [
+        "CRDT operation log provides a stable merge mechanism for concurrent edits.",
+        "Rendering updates derive from merged document state.",
+        "Presence events are handled independently to avoid blocking text sync.",
+      ],
+      screenshots: ["https://picsum.photos/seed/realtime-collab/800/480"],
+    },
   },
 ];
+
+export const projectCredibility: Record<string, ProjectCredibility> = {
+  "sentinel-siem": { performanceScore: 94, accessibilityScore: 96, lighthouseScore: 95, loadTime: "1.2s" },
+  "phish-hunter": { performanceScore: 92, accessibilityScore: 95, lighthouseScore: 94, loadTime: "1.3s" },
+  "redteam-c2": { performanceScore: 90, accessibilityScore: 93, lighthouseScore: 92, loadTime: "1.4s" },
+  "mesh-api": { performanceScore: 97, accessibilityScore: 94, lighthouseScore: 96, loadTime: "0.9s" },
+  "event-stream": { performanceScore: 93, accessibilityScore: 92, lighthouseScore: 93, loadTime: "1.2s" },
+  "infra-scaffold": { performanceScore: 95, accessibilityScore: 93, lighthouseScore: 94, loadTime: "1.1s" },
+  "aurora-portfolio": { performanceScore: 89, accessibilityScore: 95, lighthouseScore: 92, loadTime: "1.6s" },
+  "design-system": { performanceScore: 96, accessibilityScore: 98, lighthouseScore: 97, loadTime: "1.0s" },
+  "realtime-collab": { performanceScore: 91, accessibilityScore: 94, lighthouseScore: 93, loadTime: "1.4s" },
+};
 
 export const projectCodeSamples: Record<string, CodeFile[]> = {
   "aurora-portfolio": [

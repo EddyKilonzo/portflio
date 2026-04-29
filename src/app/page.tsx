@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { StateCard } from "@/components/ui/StateCard";
 
 const PortfolioPage = dynamic(
   () =>
@@ -6,8 +7,14 @@ const PortfolioPage = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex min-h-screen items-center justify-center bg-bg font-mono text-sm text-highlight/60">
-        Loading...
+      <div className="section-bg flex min-h-screen items-center justify-center px-6 py-20">
+        <div className="w-full max-w-2xl">
+          <StateCard
+            compact
+            title="Loading portfolio"
+            message="Warming up interactive modules and preparing project sections."
+          />
+        </div>
       </div>
     ),
   },

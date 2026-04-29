@@ -25,11 +25,13 @@ export function getDeviceProfile(): DeviceProfile {
   };
 }
 
-/** Lenis off for low core count, reduced motion, or narrow mobile layout (per spec). */
+/**
+ * Allow smooth scrolling on capable mobile devices too.
+ * Guardrails remain for reduced-motion users and low-core devices.
+ */
 export function shouldUseLenis(profile: DeviceProfile): boolean {
-  return (
-    !profile.lowEnd &&
-    !profile.prefersReducedMotion &&
-    !profile.isMobileWidth
-  );
+  if (profile.prefersReducedMotion) return false;
+  if (profile.lowEnd) return false;
+  if (profile.isMobileWidth && profile.cores < 6) return false;
+  return true;
 }

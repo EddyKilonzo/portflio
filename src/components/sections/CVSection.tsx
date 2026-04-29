@@ -6,6 +6,7 @@ import { animate } from "animejs";
 import { useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
+import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 
 type Variant = keyof typeof cvVariants;
 
@@ -40,11 +41,20 @@ export function CVSection() {
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-4xl px-6 print:max-w-none">
-        <h2 className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl print:text-black">
-          CV dashboard
-        </h2>
+        <ParallaxDrift speed={0.1}>
+          <h2 
+            className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl print:text-black"
+            data-aos="fade-right"
+          >
+            CV dashboard
+          </h2>
+        </ParallaxDrift>
 
-        <div className="mb-6 flex flex-wrap gap-2 print:hidden">
+        <div 
+          className="mb-6 flex flex-wrap gap-2 print:hidden"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
           {(Object.keys(cvVariants) as Variant[]).map((k) => (
             <button
               key={k}
@@ -62,7 +72,11 @@ export function CVSection() {
           </button>
         </div>
 
-        <div className="glass-card cv-print rounded-2xl p-8 print:border print:shadow-none">
+        <div 
+          className="glass-card cv-print rounded-2xl p-8 print:border print:shadow-none"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
           <pre className="whitespace-pre-wrap font-mono text-sm text-highlight/90 print:text-black">
             {cvVariants[v]}
           </pre>

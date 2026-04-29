@@ -162,21 +162,23 @@ export function CyberDemo() {
       term.writeln("Portfolio shell — recruiter quick view");
       term.writeln("Type: help");
       term.write("\r\n$ ");
+      const interactiveTerm = term;
+      if (!interactiveTerm) return;
 
       let buf = "";
-      term.onData((d: string) => {
+      interactiveTerm.onData((d: string) => {
         if (d === "\r") {
-          term.write("\r\n");
+          interactiveTerm.write("\r\n");
           void runCmd(buf);
           buf = "";
         } else if (d === "\u007f") {
           if (buf.length) {
             buf = buf.slice(0, -1);
-            term.write("\b \b");
+            interactiveTerm.write("\b \b");
           }
         } else {
           buf += d;
-          term.write(d);
+          interactiveTerm.write(d);
         }
       });
 

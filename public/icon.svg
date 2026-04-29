@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="32" fill="#0d1f1a" />
+  <path d="M52 74h152v108H52z" fill="#1e4a3a" stroke="#a8d9b8" stroke-width="6"/>
+  <text x="128" y="146" text-anchor="middle" font-family="monospace" font-size="44" fill="#a8d9b8">EMK</text>
+</svg>

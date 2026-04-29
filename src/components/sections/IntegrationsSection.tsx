@@ -154,7 +154,7 @@ export function IntegrationsSection() {
 
   return (
     <section
-      ref={sectionRef as React.RefObject<HTMLElement>}
+      ref={sectionRef}
       id="integrations"
       data-section="integrations"
       className="relative overflow-hidden py-20 section-bg"
@@ -205,7 +205,7 @@ export function IntegrationsSection() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <AnimeHoverBloom className="rounded-2xl">
+          <AnimeHoverBloom className="rounded-2xl" data-aos="fade-right">
             <div className="glass-card h-full rounded-2xl p-6">
             <p className="font-mono text-xs text-highlight/50">
               GitHub {gh?.source ? `(${gh.source})` : ""}{" "}
@@ -290,7 +290,7 @@ export function IntegrationsSection() {
             </div>
           </AnimeHoverBloom>
 
-          <AnimeHoverBloom className="rounded-2xl">
+          <AnimeHoverBloom className="rounded-2xl" data-aos="fade-left">
             <div className="glass-card h-full rounded-2xl p-6">
             <p className="font-mono text-xs text-highlight/50">Blog / writeups</p>
             <ul className="mt-4 space-y-3">
@@ -306,7 +306,7 @@ export function IntegrationsSection() {
                 {coreStack.map((stack) => (
                   <span
                     key={stack}
-                    className="rounded-full border border-highlight/15 px-2.5 py-1 font-mono text-[10px] text-highlight/80"
+                    className="rounded-full border border-white/55 px-2.5 py-1 font-mono text-[10px] text-white"
                   >
                     {stack}
                   </span>

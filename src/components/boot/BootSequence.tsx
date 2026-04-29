@@ -12,10 +12,10 @@ const LINES = [
   "Establishing session...",
   "Access granted. Welcome.",
 ];
-const TYPE_DELAY_MS = 9;
-const LINE_PAUSE_MS = 55;
-const POST_COMPLETE_PAUSE_MS = 180;
-const EXIT_DURATION_MS = 520;
+const TYPE_DELAY_MS = 8;
+const LINE_PAUSE_MS = 48;
+const POST_COMPLETE_PAUSE_MS = 120;
+const EXIT_DURATION_MS = 380;
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -103,20 +103,25 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
       aria-live="polite"
       aria-busy="true"
     >
-      <div className="w-full max-w-5xl rounded-xl border border-[#7aa096] bg-[#d5ddd9] p-4 shadow-[0_20px_60px_rgba(18,48,42,0.22)] sm:p-6">
-        <div className="mb-4 flex items-center justify-between border-b border-[#9fb9b1] pb-3 text-[11px] text-[#365d55]">
+      <div className="glass-card w-full max-w-5xl rounded-xl border border-highlight/25 bg-bg/90 p-4 text-highlight shadow-[0_20px_60px_rgba(18,48,42,0.22)] sm:p-6">
+        <div className="mb-4 flex items-center justify-between border-b border-highlight/20 pb-3 text-[11px] text-highlight/75">
           <p>{profile.initials.toLowerCase()}@secure-shell: ~</p>
-          <p>session: bootloader</p>
+          <div className="flex items-center gap-3">
+            <p>session: bootloader</p>
+            <button type="button" onClick={onDone} className="mi-interactive rounded border border-highlight/25 px-2 py-0.5 text-[10px]">
+              Skip
+            </button>
+          </div>
         </div>
 
-        <pre className="mb-6 max-w-full overflow-x-auto text-[28px] font-bold leading-[0.9] tracking-tight text-[#2d7f66] sm:text-[54px]">
+        <pre className="mb-6 max-w-full overflow-x-auto text-[28px] font-bold leading-[0.9] tracking-tight text-accent sm:text-[54px]">
           {profile.initials}
         </pre>
 
         <div className="max-h-[42vh] space-y-2 overflow-y-auto text-xs sm:text-sm">
           {LINES.map((line, i) => (
-            <div key={line} className="min-h-[1.25rem] text-[#1f443d]">
-              <span className="mr-2 text-[#4f756d]">&gt;</span>
+            <div key={line} className="min-h-[1.25rem] text-highlight/90">
+              <span className="mr-2 text-highlight/55">&gt;</span>
               {linesShown[i] ?? ""}
               {linesShown[i] !== line && linesShown[i] !== undefined ? (
                 <span className="animate-pulse">_</span>
@@ -126,13 +131,13 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
         </div>
 
         <div className="mt-9">
-          <div className="h-2.5 w-full rounded-full bg-[#c4d1cc]">
+          <div className="h-2.5 w-full rounded-full bg-surface/45">
             <div
-              className="h-full rounded-full bg-[#2b8c73] transition-[width] duration-200 ease-linear"
+              className="h-full rounded-full bg-accent transition-[width] duration-200 ease-linear"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-[#355f56]">
+          <div className="mt-2 flex items-center justify-between text-[11px] text-highlight/70">
             <span>{statusText}</span>
             <span>{progress}%</span>
           </div>

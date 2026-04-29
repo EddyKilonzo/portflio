@@ -5,6 +5,14 @@ import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { useEffect, useMemo, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
+import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motionTokens } from "@/lib/motion-tokens";
+import { useMotionProfile } from "@/hooks/useMotionProfile";
+import { StateCard } from "@/components/ui/StateCard";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function sevClass(s: Severity) {
   if (s === "critical") return "border-l-red-500 text-red-300";
@@ -23,6 +31,7 @@ export function ReportViewerSection() {
   const [q, setQ] = useState("");
   const [sev, setSev] = useState<Severity | "all">("all");
   const [activeFindingId, setActiveFindingId] = useState<string | null>(null);
+  const { shouldReduce } = useMotionProfile();
 
   const report = securityReports[reportIdx]!;
   const findings = useMemo(() => {
@@ -75,6 +84,48 @@ export function ReportViewerSection() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  useEffect(() => {
+    const sectionEl = document.getElementById("reports");
+    if (!sectionEl) return;
+    const heading = sectionEl.querySelectorAll<HTMLElement>("[data-rpt-step='heading']");
+    const controls = sectionEl.querySelectorAll<HTMLElement>("[data-rpt-step='controls']");
+    const body = sectionEl.querySelectorAll<HTMLElement>("[data-rpt-step='body']");
+    const all = Array.from(heading).concat(Array.from(controls), Array.from(body));
+    const st = ScrollTrigger.create({
+      trigger: sectionEl,
+      start: "top 76%",
+      once: true,
+      onEnter: () => {
+        all.forEach((el) => (el.style.willChange = "transform, opacity"));
+        const tl = gsap.timeline({
+          onComplete: () => all.forEach((el) => (el.style.willChange = "auto")),
+        });
+        tl.fromTo(
+          heading,
+          { y: shouldReduce ? 0 : 14, opacity: 0 },
+          { y: 0, opacity: 1, duration: motionTokens.duration.base, ease: motionTokens.ease.standard },
+        ).fromTo(
+          controls,
+          { y: shouldReduce ? 0 : 12, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: motionTokens.duration.base,
+            ease: motionTokens.ease.standard,
+            stagger: shouldReduce ? 0 : motionTokens.stagger.section,
+          },
+          "-=0.1",
+        ).fromTo(
+          body,
+          { y: shouldReduce ? 0 : 10, opacity: 0 },
+          { y: 0, opacity: 1, duration: motionTokens.duration.base, ease: motionTokens.ease.standard },
+          "-=0.08",
+        );
+      },
+    });
+    return () => st.kill();
+  }, [shouldReduce, reportIdx, sev, q]);
+
   return (
     <section
       ref={sectionRef as React.RefObject<HTMLElement>}
@@ -86,18 +137,42 @@ export function ReportViewerSection() {
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <h2 className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl">
-          Report viewer
-        </h2>
+        <ParallaxDrift speed={0.1}>
+          <h2 
+            className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl"
+            data-rpt-step="heading"
+          >
+            Report viewer
+          </h2>
+        </ParallaxDrift>
+        <div className="mb-4 flex flex-wrap gap-2" data-rpt-step="controls">
+          <span className="rounded-full border border-highlight/20 px-2 py-0.5 font-mono text-[10px] text-highlight/65">
+            Last updated: Apr 2026
+          </span>
+          <span className="rounded-full border border-highlight/20 px-2 py-0.5 font-mono text-[10px] text-highlight/65">
+            Verified links
+          </span>
+          <span className="rounded-full border border-highlight/20 px-2 py-0.5 font-mono text-[10px] text-highlight/65">
+            Live data source
+          </span>
+        </div>
 
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3" data-rpt-step="controls">
+          <label htmlFor="report-search" className="sr-only">
+            Search findings
+          </label>
           <input
+            id="report-search"
             placeholder="Search findings…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             className="flex-1 rounded-lg border border-highlight/15 bg-surface/20 px-3 py-2 font-mono text-sm text-highlight min-w-[200px]"
           />
+          <label htmlFor="report-severity" className="sr-only">
+            Filter by severity
+          </label>
           <select
+            id="report-severity"
             value={sev}
             onChange={(e) => setSev(e.target.value as Severity | "all")}
             className="rounded-lg border border-highlight/15 bg-surface/20 px-3 py-2 font-mono text-sm text-highlight"
@@ -129,6 +204,7 @@ export function ReportViewerSection() {
 
         <div
           id="report-body"
+          data-rpt-step="body"
           className="mt-8 grid gap-6 lg:grid-cols-[220px_1fr] print:block"
         >
           <aside className="glass-card h-fit max-h-[min(80vh,520px)] overflow-y-auto rounded-2xl p-4 print:hidden lg:sticky lg:top-24">
@@ -194,18 +270,26 @@ export function ReportViewerSection() {
               {report.type}
             </p>
             <div className="mt-6 space-y-6">
-              {findings.map((f) => (
-                <article
-                  key={f.id}
-                  id={findingDomId(report.id, f.id)}
-                  className={`scroll-mt-28 border-l-4 bg-surface/10 py-3 pl-4 ${sevClass(f.severity)}`}
-                >
-                  <h4 className="font-display text-lg">{f.title}</h4>
-                  <p className="mt-2 font-sans text-sm text-highlight/80">
-                    {f.body}
-                  </p>
-                </article>
-              ))}
+              {findings.length ? (
+                findings.map((f) => (
+                  <article
+                    key={f.id}
+                    id={findingDomId(report.id, f.id)}
+                    className={`scroll-mt-28 border-l-4 bg-surface/10 py-3 pl-4 ${sevClass(f.severity)}`}
+                  >
+                    <h4 className="font-display text-lg">{f.title}</h4>
+                    <p className="mt-2 font-sans text-sm text-highlight/80">
+                      {f.body}
+                    </p>
+                  </article>
+                ))
+              ) : (
+                <StateCard
+                  compact
+                  title="No matching findings"
+                  message="Try a different keyword or reset the severity filter to view the full report set."
+                />
+              )}
             </div>
           </div>
         </div>

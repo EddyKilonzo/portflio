@@ -1,8 +1,8 @@
 "use client";
 
-import { animate } from "animejs";
 import { FocusTrap } from "focus-trap-react";
 import { useEffect, useRef } from "react";
+import { playSurfaceEnter } from "@/lib/surface-choreography";
 
 type Props = {
   open: boolean;
@@ -30,18 +30,7 @@ export function AppModal({
     if (!open) return;
     const panel = panelRef.current;
     const backdrop = backdropRef.current;
-    if (backdrop) {
-      animate(backdrop, { opacity: [0, 1], duration: 220, ease: "linear" });
-    }
-    if (panel) {
-      animate(panel, {
-        opacity: [0, 1],
-        y: [16, 0],
-        scale: [0.96, 1],
-        duration: 320,
-        ease: "out(4)",
-      });
-    }
+    playSurfaceEnter(panel, backdrop);
   }, [open]);
 
   useEffect(() => {
@@ -81,14 +70,14 @@ export function AppModal({
             size === "lg" ? "max-w-2xl" : "max-w-lg"
           }`}
         >
-          <div className="border-b border-highlight/10 px-5 py-4">
+          <div data-surface-item className="border-b border-highlight/10 px-5 py-4">
             <h3 className="font-display text-2xl text-highlight">{title}</h3>
             {subtitle ? (
               <p className="mt-1 font-sans text-sm text-highlight/70">{subtitle}</p>
             ) : null}
           </div>
-          <div className="px-5 py-5">{children}</div>
-          <div className="flex flex-wrap items-center justify-end gap-2 border-t border-highlight/10 px-5 py-4">
+          <div data-surface-item className="px-5 py-5">{children}</div>
+          <div data-surface-item className="flex flex-wrap items-center justify-end gap-2 border-t border-highlight/10 px-5 py-4">
             {footer}
           </div>
         </div>

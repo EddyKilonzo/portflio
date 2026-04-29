@@ -1,6 +1,6 @@
 "use client";
 
-import type { Project } from "@/content/portfolio";
+import { projectCredibility, type Project } from "@/content/portfolio";
 import { useRole } from "@/context/RoleContext";
 import { getDeviceProfile } from "@/lib/device-profile";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -18,6 +18,8 @@ type Props = {
   onLive: () => void;
   onCode: () => void;
   onCaseStudy?: () => void;
+  onToggleCompare?: () => void;
+  isCompared?: boolean;
 };
 
 export function ProjectCard({
@@ -26,14 +28,56 @@ export function ProjectCard({
   onLive,
   onCode,
   onCaseStudy,
+  onToggleCompare,
+  isCompared = false,
 }: Props) {
   const { mode } = useRole();
   const cardRef = useRef<HTMLDivElement>(null);
   const [tiltOn, setTiltOn] = useState(false);
+  const [peekOpen, setPeekOpen] = useState(false);
+  const [peekMaxHeight, setPeekMaxHeight] = useState(96);
+  const [peekClampClass, setPeekClampClass] = useState("line-clamp-2");
+  const cred = projectCredibility[project.id];
 
   useEffect(() => {
     const p = getDeviceProfile();
     setTiltOn(!p.prefersReducedMotion && !p.lowEnd);
+  }, []);
+
+  useEffect(() => {
+    const updatePeekTuning = () => {
+      const w = window.innerWidth;
+      if (w <= 360) {
+        setPeekMaxHeight(76);
+        setPeekClampClass("line-clamp-1");
+        return;
+      }
+      if (w <= 390) {
+        setPeekMaxHeight(84);
+        setPeekClampClass("line-clamp-2");
+        return;
+      }
+      if (w <= 430) {
+        setPeekMaxHeight(88);
+        setPeekClampClass("line-clamp-2");
+        return;
+      }
+      if (w <= 768) {
+        setPeekMaxHeight(94);
+        setPeekClampClass("line-clamp-2");
+        return;
+      }
+      if (w <= 1024) {
+        setPeekMaxHeight(98);
+        setPeekClampClass("line-clamp-2");
+        return;
+      }
+      setPeekMaxHeight(108);
+      setPeekClampClass("line-clamp-3");
+    };
+    updatePeekTuning();
+    window.addEventListener("resize", updatePeekTuning);
+    return () => window.removeEventListener("resize", updatePeekTuning);
   }, []);
 
   const onMove = useCallback((e: React.PointerEvent) => {
@@ -51,6 +95,7 @@ export function ProjectCard({
     if (!el) return;
     el.style.transform =
       "perspective(900px) rotateY(0deg) rotateX(0deg) translateY(0)";
+    setPeekOpen(false);
   }, []);
 
   return (
@@ -62,7 +107,9 @@ export function ProjectCard({
           "0 12px 40px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.35), 0 1px 0 rgba(168,217,184,0.1)",
       }}
       onPointerMove={tiltOn ? onMove : undefined}
-      onPointerLeave={tiltOn ? onLeave : undefined}
+      onPointerEnter={() => setPeekOpen(true)}
+      onPointerLeave={onLeave}
+      onTouchStart={() => setPeekOpen((v) => !v)}
     >
       <div
         className={`mb-3 inline-block rounded-full border px-2 py-0.5 font-mono text-[10px] ${roleBadge[project.roleMode]}`}
@@ -77,15 +124,47 @@ export function ProjectCard({
         {project.tech.map((t) => (
           <span
             key={t}
-            className="rounded-full border border-highlight/15 bg-surface/20 px-2 py-0.5 font-mono text-[10px] text-highlight/80"
+            className="rounded-full border border-white/55 bg-surface/20 px-2 py-0.5 font-mono text-[10px] text-white"
           >
             {t}
           </span>
         ))}
       </div>
+      {cred ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="glass-pill">Perf {cred.performanceScore}</span>
+          <span className="glass-pill">A11y {cred.accessibilityScore}</span>
+          <span className="glass-pill">LH {cred.lighthouseScore}</span>
+          <span className="glass-pill">{cred.loadTime}</span>
+        </div>
+      ) : null}
+      <div
+        className={`mt-4 overflow-hidden rounded-xl border border-highlight/15 bg-surface/10 transition-[max-height,opacity,padding] ${
+          peekOpen
+            ? "duration-220 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            : "duration-170 ease-[cubic-bezier(0.4,0,1,1)]"
+        } ${
+          peekOpen ? "p-3 opacity-100" : "max-h-0 p-0 opacity-0"
+        }`}
+        style={peekOpen ? { maxHeight: `${peekMaxHeight}px` } : undefined}
+      >
+        <div className="flex items-center justify-between font-mono text-[10px] text-highlight/65">
+          <span>Outcome</span>
+          <span>{project.difficulty}</span>
+        </div>
+        <p className={`mt-1 text-xs text-highlight/75 ${peekClampClass}`}>{project.caseStudy.outcome}</p>
+      </div>
       <div className="mt-6 flex flex-wrap gap-2">
+        {onToggleCompare ? (
+          <MagneticButton
+            className={`btn-ghost hotspot-magnetic flex-1 text-xs ${isCompared ? "border-accent/60 text-accent" : ""}`}
+            onClick={onToggleCompare}
+          >
+            {isCompared ? "Compared" : "Compare"}
+          </MagneticButton>
+        ) : null}
         {onCaseStudy ? (
-          <MagneticButton className="btn-ghost flex-1 text-xs" onClick={onCaseStudy}>
+          <MagneticButton className="btn-ghost hotspot-magnetic flex-1 text-xs" onClick={onCaseStudy}>
             Case Study
           </MagneticButton>
         ) : null}

@@ -12,12 +12,74 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ScrambleTitle } from "@/components/ui/ScrambleTitle";
 import { AppModal } from "@/components/ui/AppModal";
+import { LogoLoop } from "@/components/ui/LogoLoop";
+import { motionTokens } from "@/lib/motion-tokens";
+import { useMotionProfile } from "@/hooks/useMotionProfile";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function labelForSkill(name: string) {
   if (name === "Express") return "Express.js";
   return name;
+}
+
+const SKILL_ICON_MAP: Record<string, string> = {
+  HTML5: "html",
+  CSS3: "css",
+  JavaScript: "js",
+  TypeScript: "ts",
+  Angular: "angular",
+  NestJS: "nestjs",
+  "Node.js": "nodejs",
+  Express: "express",
+  PostgreSQL: "postgres",
+  Prisma: "prisma",
+  WordPress: "wordpress",
+  WooCommerce: "woocommerce",
+  Elementor: "wordpress",
+  Git: "git",
+  GitHub: "github",
+  Figma: "figma",
+  Docker: "docker",
+  "VS Code": "vscode",
+  React: "react",
+  "Next.js": "nextjs",
+  Python: "python",
+  Linux: "linux",
+  Redis: "redis",
+  GraphQL: "graphql",
+  "Three.js": "threejs",
+  "Tailwind CSS": "tailwind",
+  Kubernetes: "kubernetes",
+  Metasploit: "linux",
+  "Burp Suite": "linux",
+  Wireshark: "linux",
+  Nmap: "linux",
+  "Kali Linux": "linux",
+  OSINT: "linux",
+  "SIEM tools": "linux",
+};
+
+function SkillLogo({ name }: { name: string }) {
+  const icon = SKILL_ICON_MAP[name];
+  if (!icon) {
+    return (
+      <span className="grid h-5 w-5 place-items-center rounded border border-highlight/20 bg-surface/20 font-mono text-[9px] text-highlight/80">
+        {name.slice(0, 1)}
+      </span>
+    );
+  }
+  return (
+    <Image
+      src={`https://skillicons.dev/icons?i=${icon}`}
+      alt={`${labelForSkill(name)} logo`}
+      width={20}
+      height={20}
+      className="h-5 w-5 rounded"
+      unoptimized
+    />
+  );
 }
 
 function SkillGraph({
@@ -51,6 +113,12 @@ function SkillGraph({
   });
 
   const pos = (n: string) => nodes.find((x) => x.name === n)!;
+  const activeSkill = active ?? null;
+  const relatedSet = new Set(
+    activeSkill
+      ? (skills.find((s) => s.name === activeSkill)?.related ?? [])
+      : [],
+  );
 
   return (
     <svg
@@ -69,6 +137,11 @@ function SkillGraph({
         const A = pos(l.a);
         const B = pos(l.b);
         if (!A || !B) return null;
+        const isConnected =
+          !activeSkill ||
+          l.a === activeSkill ||
+          l.b === activeSkill ||
+          (relatedSet.has(l.a) && relatedSet.has(l.b));
         return (
           <line
             key={i}
@@ -77,8 +150,9 @@ function SkillGraph({
             x2={B.x}
             y2={B.y}
             stroke="url(#sk)"
-            strokeWidth="1"
-            opacity="0.35"
+            strokeWidth={isConnected ? "1.6" : "1"}
+            opacity={isConnected ? "0.7" : "0.18"}
+            className="transition-all duration-200"
           />
         );
       })}
@@ -93,23 +167,53 @@ function SkillGraph({
       </text>
       {nodes.map((n) => (
         <g key={n.name}>
+          {activeSkill === n.name ? (
+            <circle
+              cx={n.x}
+              cy={n.y}
+              r="18"
+              fill="none"
+              stroke="#A8D9B8"
+              strokeOpacity="0.45"
+              className="animate-pulse"
+            />
+          ) : null}
           <circle
             cx={n.x}
             cy={n.y}
-            r={active === n.name ? 14 : 10}
-            fill={active === n.name ? "#2E7A5A" : "#1E4A3A"}
+            r={activeSkill === n.name ? 14 : relatedSet.has(n.name) ? 12 : 10}
+            fill={
+              activeSkill === n.name
+                ? "#2E7A5A"
+                : relatedSet.has(n.name)
+                  ? "#245c47"
+                  : "#1E4A3A"
+            }
             stroke="#A8D9B8"
-            strokeOpacity="0.35"
-            className="cursor-pointer transition-all"
+            strokeOpacity={activeSkill === n.name || relatedSet.has(n.name) ? "0.65" : "0.35"}
+            className="cursor-pointer transition-all duration-200"
             onMouseEnter={() => onHover(n.name)}
             onMouseLeave={() => onHover(null)}
             onClick={() => onPick(n.name)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onPick(n.name);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label={`Select ${n.name} skill`}
           />
           <text
             x={n.x}
             y={n.y + 28}
             textAnchor="middle"
-            className="pointer-events-none fill-highlight/70 font-mono text-[9px]"
+            className={`pointer-events-none font-mono text-[9px] ${
+              activeSkill === n.name || relatedSet.has(n.name)
+                ? "fill-accent"
+                : "fill-highlight/70"
+            }`}
           >
             {n.name.length > 10 ? n.name.slice(0, 9) + "…" : n.name}
           </text>
@@ -127,13 +231,15 @@ export function SkillsSection() {
   const detailSoftwareRef = useRef<HTMLDivElement>(null);
   const detailCyberRef = useRef<HTMLDivElement>(null);
   const barsRef = useRef<HTMLDivElement>(null);
-  const [tab, setTab] = useState<"all" | "software" | "cyber">("all");
+  const [tab, setTab] = useState<"all" | "developer" | "cyber">("all");
   const [modalSkill, setModalSkill] = useState<{
     name: string;
     level: number;
     related: string[];
     group: "software" | "cyber";
   } | null>(null);
+  const sectionAnimRef = useRef<HTMLElement | null>(null);
+  const { shouldReduce } = useMotionProfile();
 
   const webSkills = skillsByRole.web;
   const engineeringSkills = skillsByRole.engineering;
@@ -161,7 +267,7 @@ export function SkillsSection() {
     ],
     [],
   );
-  const softwareSkills = useMemo(() => {
+  const developerSkills = useMemo(() => {
     const byName = new Map<string, { name: string; level: number; related: string[] }>();
     [...webSkills, ...engineeringSkills].forEach((s) => {
       byName.set(s.name, s);
@@ -170,13 +276,23 @@ export function SkillsSection() {
       .map((name) => byName.get(name))
       .filter(Boolean) as { name: string; level: number; related: string[] }[];
   }, [webSkills, engineeringSkills, imageSkillOrder]);
-  const softwareGraphSkills = useMemo(() => softwareSkills.slice(0, 12), [softwareSkills]);
+  const developerGraphSkills = useMemo(() => developerSkills.slice(0, 12), [developerSkills]);
+  const logoLoopItems = useMemo(
+    () =>
+      developerSkills
+        .map((skill) => ({
+          label: labelForSkill(skill.name),
+          icon: SKILL_ICON_MAP[skill.name],
+        }))
+        .filter((item): item is { label: string; icon: string } => Boolean(item.icon)),
+    [developerSkills],
+  );
 
-  const softwareDetail = useMemo(() => {
+  const developerDetail = useMemo(() => {
     const name = hoverSoftware ?? activeSkill;
     if (!name) return null;
-    return softwareSkills.find((s) => s.name === name) ?? null;
-  }, [hoverSoftware, activeSkill, softwareSkills]);
+    return developerSkills.find((s) => s.name === name) ?? null;
+  }, [hoverSoftware, activeSkill, developerSkills]);
 
   const cyberDetail = useMemo(() => {
     const name = hoverCyber ?? activeSkill;
@@ -196,7 +312,49 @@ export function SkillsSection() {
       ease: "out(3)",
       delay: (_el, i) => i * 40,
     });
-  }, [softwareDetail, cyberDetail]);
+  }, [developerDetail, cyberDetail]);
+
+  useEffect(() => {
+    sectionAnimRef.current = document.getElementById("skills");
+  }, []);
+
+  useEffect(() => {
+    const sectionEl = sectionAnimRef.current;
+    if (!sectionEl) return;
+    const heading = sectionEl.querySelectorAll<HTMLElement>("[data-sk-step='heading']");
+    const graphs = sectionEl.querySelectorAll<HTMLElement>("[data-sk-step='graph']");
+    const bars = sectionEl.querySelectorAll<HTMLElement>("[data-sk-step='bar']");
+    const all = Array.from(heading).concat(Array.from(graphs), Array.from(bars));
+    const st = ScrollTrigger.create({
+      trigger: sectionEl,
+      start: "top 76%",
+      once: true,
+      onEnter: () => {
+        all.forEach((el) => (el.style.willChange = "transform, opacity"));
+        const tl = gsap.timeline({
+          onComplete: () => all.forEach((el) => (el.style.willChange = "auto")),
+        });
+        const base = {
+          duration: motionTokens.duration.base,
+          ease: motionTokens.ease.standard,
+        };
+        tl.fromTo(heading, { y: shouldReduce ? 0 : 14, opacity: 0 }, { y: 0, opacity: 1, ...base })
+          .fromTo(
+            graphs,
+            { y: shouldReduce ? 0 : 12, opacity: 0 },
+            { y: 0, opacity: 1, ...base, stagger: shouldReduce ? 0 : motionTokens.stagger.section },
+            "-=0.12",
+          )
+          .fromTo(
+            bars,
+            { y: shouldReduce ? 0 : 10, opacity: 0 },
+            { y: 0, opacity: 1, ...base, stagger: shouldReduce ? 0 : 0.04 },
+            "-=0.08",
+          );
+      },
+    });
+    return () => st.kill();
+  }, [shouldReduce]);
 
   useEffect(() => {
     const root = barsRef.current;
@@ -256,30 +414,57 @@ export function SkillsSection() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <ParallaxDrift speed={0.35} pointerNudge={0.12} className="relative inline-block">
-        <ScrambleTitle
-          as="h2"
-          text="Software Engineering & Cyber Skills"
-          className="glitch-hover mb-4 font-display text-4xl text-highlight md:text-5xl"
-        />
-        <p className="mb-10 max-w-3xl font-sans text-highlight/70">
-          Interactive skill explorer with graph nodes, category cards, and modal details.
-          Pick a skill to filter projects, or use tabs to view all/software/cyber groups.
+        <div data-sk-step="heading">
+          <ScrambleTitle
+            as="h2"
+            text="Developer & Cyber Skills"
+            className="glitch-hover mb-4 font-display text-4xl text-highlight md:text-5xl"
+          />
+        </div>
+        <p data-sk-step="heading" className="mb-10 max-w-3xl font-sans text-highlight/70">
+          Explore skill clusters with clearer tracks and quick filtering. Pick any skill
+          to instantly filter projects, then switch between Developer and Cyber views.
         </p>
         </ParallaxDrift>
 
+        <div className="mb-8 flex flex-wrap items-center gap-2">
+          <span className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/70">
+            Developer: {developerSkills.length}
+          </span>
+          <span className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/70">
+            Cyber: {cyberSkills.length}
+          </span>
+          {activeSkill ? (
+            <button
+              type="button"
+              className="rounded-full border border-accent/50 px-3 py-1 font-mono text-[10px] text-accent"
+              onClick={() => setActiveSkill(null)}
+            >
+              Clear active skill: {activeSkill}
+            </button>
+          ) : null}
+        </div>
+
+        <div className="mb-8 rounded-2xl border border-highlight/15 bg-surface/15 p-4">
+          <p className="mb-3 font-mono text-xs text-highlight/55">
+            Daily toolkit
+          </p>
+          <LogoLoop items={logoLoopItems} speedSeconds={28} />
+        </div>
+
         <div className="grid gap-8 lg:grid-cols-2">
-          <div data-aos="fade-right">
+          <div data-sk-step="graph">
             <SkillPanel
-              title="Software Engineering Graph"
-              skills={softwareGraphSkills}
+              title="Developer Graph"
+              skills={developerGraphSkills}
               active={hoverSoftware ?? activeSkill}
-              detail={softwareDetail}
+              detail={developerDetail}
               detailRef={detailSoftwareRef}
               onHover={setHoverSoftware}
               onPick={(s) => setActiveSkill(activeSkill === s ? null : s)}
             />
           </div>
-          <div data-aos="fade-left">
+          <div data-sk-step="graph">
             <SkillPanel
               title="Cyber Graph"
               skills={cyberSkills}
@@ -312,13 +497,13 @@ export function SkillsSection() {
             <div className="mb-4 flex flex-wrap gap-2">
               {[
                 ["all", "All Skills"],
-                ["software", "Software Eng"],
+                ["developer", "Developer"],
                 ["cyber", "Cyber"],
               ].map(([id, label]) => (
                 <button
                   key={id}
                   type="button"
-                  onClick={() => setTab(id as "all" | "software" | "cyber")}
+                  onClick={() => setTab(id as "all" | "developer" | "cyber")}
                   className={`rounded-full border px-3 py-1 font-mono text-xs ${
                     tab === id
                       ? "border-accent bg-surface/30 text-accent"
@@ -332,27 +517,29 @@ export function SkillsSection() {
           </div>
           {(tab === "all"
             ? [
-                ...softwareSkills.map((s) => ({ ...s, group: "software" as const })),
+                ...developerSkills.map((s) => ({ ...s, group: "software" as const })),
                 ...cyberSkills.map((s) => ({ ...s, group: "cyber" as const })),
               ]
-            : (tab === "software" ? softwareSkills : cyberSkills).map((s) => ({
+            : (tab === "developer" ? developerSkills : cyberSkills).map((s) => ({
                 ...s,
-                group: tab === "software" ? ("software" as const) : ("cyber" as const),
+                group: tab === "developer" ? ("software" as const) : ("cyber" as const),
               }))).map((s, i) => (
             <div
               key={`${s.group}-${s.name}`}
-              data-aos="zoom-in"
-              data-aos-delay={(i % 8) * 50}
+              data-sk-step="bar"
               className={`glass-card cursor-pointer rounded-xl p-4 transition-transform hover:-translate-y-1 ${bentoSpans[i % bentoSpans.length]}`}
               onClick={() => setModalSkill(s)}
             >
               <div className="mb-2 flex items-center justify-between gap-2">
-                <ScrambleTitle
-                  text={labelForSkill(s.name)}
-                  className="font-mono text-sm text-highlight"
-                />
-                <span className="rounded-full border border-highlight/15 px-2 py-0.5 font-mono text-[10px] text-highlight/70">
-                  {s.group === "software" ? "Software" : "Cyber"}
+                <div className="flex items-center gap-2">
+                  <SkillLogo name={s.name} />
+                  <ScrambleTitle
+                    text={labelForSkill(s.name)}
+                    className="font-mono text-sm text-highlight"
+                  />
+                </div>
+                <span className="rounded-full border border-white/55 px-2 py-0.5 font-mono text-[10px] text-white">
+                  {s.group === "software" ? "Developer" : "Cyber"}
                 </span>
               </div>
               <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface/40">
@@ -373,7 +560,7 @@ export function SkillsSection() {
         title={modalSkill?.name ?? "Skill"}
         subtitle={
           modalSkill
-            ? `${modalSkill.group === "software" ? "Software Engineering" : "Cybersecurity"} skill`
+            ? `${modalSkill.group === "software" ? "Developer" : "Cybersecurity"} skill`
             : undefined
         }
         footer={
@@ -402,14 +589,20 @@ export function SkillsSection() {
       >
         {modalSkill ? (
           <div className="space-y-3">
-            <p className="font-display text-2xl text-highlight">
-              {labelForSkill(modalSkill.name)}
-            </p>
+            <div className="flex items-center gap-2">
+              <SkillLogo name={modalSkill.name} />
+              <p className="font-display text-2xl text-highlight">
+                {labelForSkill(modalSkill.name)}
+              </p>
+            </div>
             <p className="font-mono text-sm text-accent">Level {modalSkill.level}%</p>
             <p className="font-mono text-xs text-highlight/50">Related skills</p>
             <ul className="list-inside list-disc space-y-1 text-sm text-highlight/80">
               {modalSkill.related.map((r) => (
-                <li key={r}>{r}</li>
+                <li key={r} className="flex items-center gap-2">
+                  <SkillLogo name={r} />
+                  <span>{r}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -439,6 +632,9 @@ function SkillPanel({
   return (
     <div className="space-y-4">
       <h3 className="font-display text-2xl text-highlight">{title}</h3>
+      <p className="font-mono text-xs text-highlight/55">
+        Click any node to reveal its details below.
+      </p>
       <div className="glass-card rounded-2xl p-4">
         <SkillGraph skills={skills} active={active} onHover={onHover} onPick={onPick} />
       </div>
@@ -450,7 +646,10 @@ function SkillPanel({
             className="glass-card absolute inset-0 rounded-2xl p-4 will-change-transform"
           >
             <p className="font-mono text-xs text-highlight/50">Skill</p>
-            <p className="font-display text-2xl text-highlight">{labelForSkill(detail.name)}</p>
+            <div className="mt-1 flex items-center gap-2">
+              <SkillLogo name={detail.name} />
+              <p className="font-display text-2xl text-highlight">{labelForSkill(detail.name)}</p>
+            </div>
             <p className="mt-2 font-mono text-sm text-accent">
               Level {detail.level}%
             </p>
@@ -459,7 +658,10 @@ function SkillPanel({
             </p>
             <ul className="mt-1 list-inside list-disc text-sm text-highlight/80">
               {detail.related.map((r) => (
-                <li key={r}>{r}</li>
+                <li key={r} className="flex items-center gap-2">
+                  <SkillLogo name={r} />
+                  <span>{r}</span>
+                </li>
               ))}
             </ul>
           </div>

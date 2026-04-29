@@ -6,6 +6,7 @@
  */
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import { StateCard } from "@/components/ui/StateCard";
 
 const frames = {
   desktop: "100%",
@@ -77,14 +78,17 @@ export function WebDemo({
           style={{ width: frames[size], maxWidth: "100%" }}
         >
           {showBlocked ? (
-            <div className="flex h-64 flex-col items-center justify-center gap-2 px-4 text-center font-mono text-sm text-highlight/50">
-              <p>Embed blocked or timed out.</p>
-              <a href={url} className="text-accent underline" target="_blank" rel="noreferrer">
-                Open site directly
-              </a>
+            <div className="p-4">
+              <StateCard
+                compact
+                title="Embed unavailable"
+                message="This preview could not be embedded due to provider restrictions or a timeout."
+                ctaLabel="Open site directly"
+                ctaHref={url}
+              />
             </div>
           ) : showFallback && fallbackImage ? (
-            <div className="relative h-[480px] w-full">
+            <div className="relative h-[380px] sm:h-[480px] w-full">
               <Image
                 src={fallbackImage}
                 alt="Project preview"
@@ -105,7 +109,7 @@ export function WebDemo({
             <iframe
               title="demo"
               src={url}
-              className="h-[480px] w-full border-0"
+              className="h-[380px] sm:h-[480px] w-full border-0"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
               onLoad={() => setIframeLoaded(true)}
               onError={onIframeError}

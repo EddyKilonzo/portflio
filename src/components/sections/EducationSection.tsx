@@ -2,12 +2,12 @@
 
 import { education } from "@/content/portfolio";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { StaggerReveal } from "@/components/motion/StaggerReveal";
 import { animate, stagger } from "animejs";
 import { useEffect, useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
+import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 
 export function EducationSection() {
   const sectionRef = useSectionReveal(5);
@@ -48,11 +48,14 @@ export function EducationSection() {
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <ScrollReveal from="up">
-          <h2 className="glitch-hover mb-8 font-display text-4xl text-highlight md:text-5xl">
+        <ParallaxDrift speed={0.1}>
+          <h2 
+            className="glitch-hover mb-8 font-display text-4xl text-highlight md:text-5xl"
+            data-aos="fade-right"
+          >
             Education
           </h2>
-        </ScrollReveal>
+        </ParallaxDrift>
 
         {/* Pointer capture keeps drag smooth when the cursor leaves the strip mid-gesture. */}
         <div
@@ -129,6 +132,7 @@ export function EducationSection() {
           <div
             key={item.id}
             ref={detailRef}
+            data-aos="fade-up"
             className="glass-card mt-8 rounded-2xl border-t-2 border-accent p-6"
           >
             <h3 className="font-display text-3xl text-highlight will-change-transform">
@@ -165,7 +169,7 @@ export function EducationSection() {
                 {technologies.map((t) => (
                   <span
                     key={t}
-                    className="rounded-full border border-highlight/15 px-2 py-0.5 font-mono text-[10px]"
+                    className="rounded-full border border-white/55 px-2 py-0.5 font-mono text-[10px] text-white"
                   >
                     {t}
                   </span>

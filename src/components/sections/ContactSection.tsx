@@ -8,6 +8,9 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { AppModal } from "@/components/ui/AppModal";
+import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
+import { trackEvent } from "@/lib/analytics";
+import { emitToast } from "@/lib/toast";
 
 const steps = ["name", "email", "message", "done"] as const;
 
@@ -71,6 +74,9 @@ export function ContactSection() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [projectType, setProjectType] = useState("web-platform");
+  const [budget, setBudget] = useState("1k-3k");
+  const [timeline, setTimeline] = useState("2-4-weeks");
   const [sent, setSent] = useState(false);
   const [sentModalOpen, setSentModalOpen] = useState(false);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
@@ -96,6 +102,14 @@ export function ContactSection() {
     }
     setSent(true);
     setSentModalOpen(true);
+    trackEvent("contact_submit", {
+      hasName: Boolean(name),
+      hasEmail: Boolean(email),
+      messageLength: message.length,
+      projectType,
+      budget,
+      timeline,
+    });
   };
 
   return (
@@ -107,50 +121,61 @@ export function ContactSection() {
     >
       <SectionNumber n="12" sectionId="contact" />
       <DecorNetwork />
+<div className="relative z-10 mx-auto max-w-xl px-6">
+  <ParallaxDrift speed={0.1}>
+    <h2 
+      className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl"
+      data-aos="fade-up"
+    >
+      Contact
+    </h2>
+  </ParallaxDrift>
 
-      <div className="relative z-10 mx-auto max-w-xl px-6">
-        <h2 className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl">
-          Contact
-        </h2>
+  <div
+    data-aos="fade-up"
+    data-aos-delay="100"
+    className={`glass-pill mb-6 inline-flex items-center gap-2 ${availStyle[profile.availability]}`}
+  >
+    {profile.availability}
+  </div>
 
-        <div
-          className={`mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs ${availStyle[profile.availability]}`}
-        >
-          {profile.availability}
-        </div>
-
-        <div className="glass-card space-y-4 rounded-2xl p-6">
-          <div className="max-h-80 space-y-3 overflow-y-auto font-mono text-sm">
-            <div className="ml-auto max-w-[85%] rounded-2xl bg-surface/40 px-3 py-2 text-highlight/90">
+  <div 
+    className="glass-card space-y-4 rounded-2xl p-6"
+    data-aos="fade-up"
+    data-aos-delay="200"
+  >
+...
+          <div className="space-y-3">
+            <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-highlight/90">
               Hey — what&apos;s your name?
             </div>
             {name ? (
-              <div className="mr-auto max-w-[85%] rounded-2xl border border-highlight/15 px-3 py-2">
+              <div className="mr-auto w-fit max-w-[90%] rounded-2xl border border-highlight/15 bg-surface/10 px-4 py-2.5 text-highlight/95">
                 {name}
               </div>
             ) : null}
             {stepIdx >= 1 ? (
-              <div className="ml-auto max-w-[85%] rounded-2xl bg-surface/40 px-3 py-2 text-highlight/90">
+              <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-highlight/90">
                 Email for reply?
               </div>
             ) : null}
             {email ? (
-              <div className="mr-auto max-w-[85%] rounded-2xl border border-highlight/15 px-3 py-2">
+              <div className="mr-auto w-fit max-w-[90%] rounded-2xl border border-highlight/15 bg-surface/10 px-4 py-2.5 text-highlight/95">
                 {email}
               </div>
             ) : null}
             {stepIdx >= 2 ? (
-              <div className="ml-auto max-w-[85%] rounded-2xl bg-surface/40 px-3 py-2 text-highlight/90">
+              <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-highlight/90">
                 What are we building?
               </div>
             ) : null}
             {message ? (
-              <div className="mr-auto max-w-[85%] rounded-2xl border border-highlight/15 px-3 py-2">
+              <div className="mr-auto w-fit max-w-[90%] rounded-2xl border border-highlight/15 bg-surface/10 px-4 py-2.5 text-highlight/95">
                 {message}
               </div>
             ) : null}
             {sent ? (
-              <div className="ml-auto max-w-[85%] rounded-2xl bg-surface/40 px-3 py-2 text-emerald-300">
+              <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-emerald-300">
                 Message received. I&apos;ll reply shortly.
               </div>
             ) : null}
@@ -160,7 +185,7 @@ export function ContactSection() {
             <div className="flex gap-2">
               <input
                 autoFocus
-                className="flex-1 rounded-lg border border-highlight/15 bg-surface/20 px-3 py-2 font-mono text-sm text-highlight"
+                className="glass-field flex-1"
                 placeholder="Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -183,7 +208,7 @@ export function ContactSection() {
               <input
                 autoFocus
                 type="email"
-                className="flex-1 rounded-lg border border-highlight/15 bg-surface/20 px-3 py-2 font-mono text-sm text-highlight"
+                className="glass-field flex-1"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -203,15 +228,56 @@ export function ContactSection() {
           ) : null}
           {step === "message" ? (
             <>
+              <div className="grid gap-2 sm:grid-cols-3">
+                <label className="space-y-1">
+                  <span className="font-mono text-[11px] text-highlight/60">Project type</span>
+                  <select
+                    value={projectType}
+                    onChange={(e) => setProjectType(e.target.value)}
+                    className="glass-field w-full px-2 text-xs"
+                  >
+                    <option value="web-platform">Web Platform</option>
+                    <option value="security-review">Security Review</option>
+                    <option value="full-stack-feature">Full-stack Feature Build</option>
+                    <option value="ux-performance">UX + Performance Pass</option>
+                  </select>
+                </label>
+                <label className="space-y-1">
+                  <span className="font-mono text-[11px] text-highlight/60">Budget</span>
+                  <select
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    className="glass-field w-full px-2 text-xs"
+                  >
+                    <option value="under-1k">Under $1k</option>
+                    <option value="1k-3k">$1k - $3k</option>
+                    <option value="3k-8k">$3k - $8k</option>
+                    <option value="8k-plus">$8k+</option>
+                  </select>
+                </label>
+                <label className="space-y-1">
+                  <span className="font-mono text-[11px] text-highlight/60">Timeline</span>
+                  <select
+                    value={timeline}
+                    onChange={(e) => setTimeline(e.target.value)}
+                    className="glass-field w-full px-2 text-xs"
+                  >
+                    <option value="1-2-weeks">1-2 weeks</option>
+                    <option value="2-4-weeks">2-4 weeks</option>
+                    <option value="1-2-months">1-2 months</option>
+                    <option value="flexible">Flexible</option>
+                  </select>
+                </label>
+              </div>
               <textarea
                 autoFocus
-                className="h-28 w-full rounded-lg border border-highlight/15 bg-surface/20 px-3 py-2 font-mono text-sm text-highlight"
+                className="glass-field h-28 w-full"
                 placeholder="Message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               />
               <MagneticButton
-                className="btn-ghost w-full"
+                className="btn-ghost hotspot-magnetic w-full"
                 disabled={!message}
                 onClick={() => {
                   setStepIdx(3);
@@ -224,7 +290,7 @@ export function ContactSection() {
           ) : null}
         </div>
 
-        <div className="mt-8 flex justify-center gap-4 print:hidden">
+        <div className="mt-8 flex flex-col items-center gap-3 print:hidden">
           {(
             [
               ["GitHub", profile.social.github],
@@ -245,6 +311,7 @@ export function ContactSection() {
                 e.preventDefault();
                 setPendingLink({ label, href });
                 setLinkModalOpen(true);
+                emitToast(`Preparing ${label} link`, "info");
               }}
               className="glass-card flex h-12 w-12 items-center justify-center rounded-xl font-mono text-[10px] text-highlight/80 transition-transform hover:-translate-y-1 hover:shadow-lift"
             >
@@ -280,10 +347,26 @@ export function ContactSection() {
             </button>
             <button
               type="button"
+              className="btn-ghost"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(profile.email);
+                  emitToast("Copied", "success");
+                } catch {
+                  emitToast("Copy failed", "warning");
+                }
+              }}
+            >
+              Copy Email
+            </button>
+            <button
+              type="button"
               className="btn-ghost border-accent/60 text-accent"
               onClick={() => {
                 setSentModalOpen(false);
+                trackEvent("contact_email_direct");
                 window.open(`mailto:${profile.email}`, "_blank", "noopener,noreferrer");
+                emitToast("Opened email client", "success");
               }}
             >
               Email Directly
@@ -297,6 +380,15 @@ export function ContactSection() {
           </p>
           <p>
             Email: <span className="text-highlight">{email || "N/A"}</span>
+          </p>
+          <p>
+            Project type: <span className="text-highlight">{projectType}</span>
+          </p>
+          <p>
+            Budget: <span className="text-highlight">{budget}</span>
+          </p>
+          <p>
+            Timeline: <span className="text-highlight">{timeline}</span>
           </p>
           <p className="rounded-lg border border-highlight/15 bg-surface/20 p-3 text-highlight/80">
             {message || "No message body provided."}
@@ -323,7 +415,9 @@ export function ContactSection() {
               className="btn-ghost border-accent/60 text-accent"
               onClick={() => {
                 if (pendingLink) {
+                  trackEvent("contact_social_open", { label: pendingLink.label });
                   window.open(pendingLink.href, "_blank", "noopener,noreferrer");
+                  emitToast(`Opened ${pendingLink.label}`, "success");
                 }
                 setLinkModalOpen(false);
               }}

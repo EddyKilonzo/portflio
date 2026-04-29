@@ -5,14 +5,26 @@ import { scrambleText } from "@/lib/scramble";
 import { useTheme } from "@/context/ThemeContext";
 import { animate, stagger } from "animejs";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AppModal } from "@/components/ui/AppModal";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  getParallaxScaleForWidth,
+  getParallaxScrubForWidth,
+  motionTokens,
+} from "@/lib/motion-tokens";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const HeroScene = dynamic(
   () => import("./HeroScene").then((m) => m.HeroScene),
   { ssr: false },
 );
+const INTRO_LINE =
+  "I build secure, scalable digital experiences across cyber, software, and web.";
 
 type Props = {
   scrollProgressRef: React.MutableRefObject<number>;
@@ -99,9 +111,11 @@ export function HeroSection({
 }: Props) {
   const { light } = useTheme();
   const [sub, setSub] = useState("");
+  const [introLineText, setIntroLineText] = useState(reducedMotion ? INTRO_LINE : "");
   const [firstLineDone, setFirstLineDone] = useState(false);
   const [cvModalOpen, setCvModalOpen] = useState(false);
   const [heroLanded, setHeroLanded] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const shellRef = useRef<HTMLDivElement>(null);
   const photoCardRef = useRef<HTMLDivElement>(null);
   const photoImgWrapRef = useRef<HTMLDivElement>(null);
@@ -112,8 +126,10 @@ export function HeroSection({
   const ctaRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const introLineRef = useRef<HTMLParagraphElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const pillarsRef = useRef<HTMLDivElement>(null);
+  const bgLayerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isActive) {
@@ -145,15 +161,50 @@ export function HeroSection({
 
   useEffect(() => {
     if (!isActive) {
+      setSceneReady(false);
+      return;
+    }
+    if (reducedMotion || lowEnd) {
+      setSceneReady(false);
+      return;
+    }
+    const id = window.setTimeout(() => setSceneReady(true), 500);
+    return () => window.clearTimeout(id);
+  }, [isActive, reducedMotion, lowEnd]);
+
+  useEffect(() => {
+    if (!isActive) {
       setFirstLineDone(false);
       setSub("");
+      setIntroLineText(reducedMotion ? INTRO_LINE : "");
       return;
     }
     if (reducedMotion) {
       setFirstLineDone(true);
       setSub(profile.headlineScramble);
+      setIntroLineText(INTRO_LINE);
     }
   }, [isActive, reducedMotion]);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setIntroLineText(INTRO_LINE);
+      return;
+    }
+    if (!isActive || !heroLanded || !firstLineDone) {
+      setIntroLineText("");
+      return;
+    }
+    let i = 0;
+    const timer = window.setInterval(() => {
+      i += 1;
+      setIntroLineText(INTRO_LINE.slice(0, i));
+      if (i >= INTRO_LINE.length) {
+        window.clearInterval(timer);
+      }
+    }, 16);
+    return () => window.clearInterval(timer);
+  }, [firstLineDone, heroLanded, isActive, reducedMotion]);
 
   useEffect(() => {
     const onScroll = () => onFirstScroll();
@@ -338,11 +389,22 @@ export function HeroSection({
     const rightCol = rightColRef.current;
     const stats = statsRef.current;
     const subtitle = subtitleRef.current;
+    const introLine = introLineRef.current;
     const cta = ctaRef.current;
     const chips = chipsRef.current;
     const pillars = pillarsRef.current;
     const overlay = photoOverlayRef.current;
-    if (!shell || !leftCol || !rightCol || !stats || !subtitle || !cta || !chips || !pillars)
+    if (
+      !shell ||
+      !leftCol ||
+      !rightCol ||
+      !stats ||
+      !subtitle ||
+      !introLine ||
+      !cta ||
+      !chips ||
+      !pillars
+    )
       return;
 
     animate(shell, {
@@ -394,6 +456,13 @@ export function HeroSection({
       delay: 300,
       ease: "out(3)",
     });
+    animate(introLine, {
+      opacity: [0, 1],
+      y: [16, 0],
+      duration: 620,
+      delay: 260,
+      ease: "out(4)",
+    });
     animate(cta, {
       opacity: [0, 1],
       y: [22, 0],
@@ -412,6 +481,33 @@ export function HeroSection({
       });
     }
   }, [heroLanded, isActive, reducedMotion]);
+
+  useEffect(() => {
+    if (reducedMotion || lowEnd) return;
+    const section = shellRef.current;
+    const bg = bgLayerRef.current;
+    const left = leftColRef.current;
+    const right = rightColRef.current;
+    const photo = photoCardRef.current;
+    if (!section || !bg || !left || !right || !photo) return;
+    const scale = getParallaxScaleForWidth(window.innerWidth || 1024);
+    const scrub = getParallaxScrubForWidth(window.innerWidth || 1024);
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: "bottom top",
+      scrub,
+      onUpdate: (self) => {
+        const p = self.progress;
+        gsap.set(bg, { y: -(motionTokens.parallax.hero.bg * scale) * p });
+        gsap.set(section, { y: -(motionTokens.parallax.hero.shell * scale) * p });
+        gsap.set(left, { y: -(motionTokens.parallax.hero.left * scale) * p });
+        gsap.set(right, { y: -(motionTokens.parallax.hero.right * scale) * p });
+        gsap.set(photo, { y: -(motionTokens.parallax.hero.photo * scale) * p });
+      },
+    });
+    return () => st.kill();
+  }, [lowEnd, reducedMotion]);
 
   // Theme-adaptive panel backgrounds
   const outerPanel = light
@@ -459,12 +555,14 @@ export function HeroSection({
       className="relative min-h-screen scroll-mt-16 overflow-hidden px-0 pb-0 pt-0 section-bg"
     >
       {/* Three.js background (fully passive) */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-30">
-        <HeroScene
-          scrollProgressRef={scrollProgressRef}
-          lowEnd={lowEnd}
-          reducedMotion={reducedMotion}
-        />
+      <div ref={bgLayerRef} className="pointer-events-none absolute inset-0 z-0 opacity-30">
+        {sceneReady ? (
+          <HeroScene
+            scrollProgressRef={scrollProgressRef}
+            lowEnd={lowEnd}
+            reducedMotion={reducedMotion}
+          />
+        ) : null}
       </div>
 
       {/* Floating IP / binary ambient text */}
@@ -535,6 +633,8 @@ export function HeroSection({
               ref={leftColRef}
               className="relative z-[3] flex flex-col justify-between lg:col-span-7"
               style={{ opacity: 1 }}
+              data-aos="fade-right"
+              data-aos-delay="200"
             >
               <div>
                 {/* Identity badge */}
@@ -566,8 +666,8 @@ export function HeroSection({
                   <span
                     className={`bg-gradient-to-r bg-clip-text text-transparent ${
                       light
-                        ? "from-[#1a5c3a] to-[#2e7a5a]"
-                        : "from-surfaceMid to-highlight"
+                        ? "from-[#2e7a5a] via-[#3a9e70] to-[#1a5c3a]"
+                        : "from-highlight via-accent to-surfaceMid"
                     }`}
                   >
                     <TypedName
@@ -602,8 +702,12 @@ export function HeroSection({
                   </span>
                 </h1>
 
-                <p className={`mt-3 font-sans text-base sm:text-lg ${mutedText}`}>
-                  I build secure, scalable digital experiences across cyber, software, and web.
+                <p
+                  ref={introLineRef}
+                  className={`hero-introline mt-3 font-sans text-base sm:text-lg ${mutedText}`}
+                  style={{ opacity: reducedMotion ? 1 : 0 }}
+                >
+                  {introLineText}
                 </p>
                 <div
                   className={`mt-4 grid max-w-2xl grid-cols-2 gap-2 rounded-xl border p-3 md:grid-cols-4 ${
@@ -732,10 +836,12 @@ export function HeroSection({
               ref={rightColRef}
               className="relative mt-4 flex flex-col items-center justify-start lg:col-span-5 lg:-mt-6"
               style={{ opacity: 1 }}
+              data-aos="fade-left"
+              data-aos-delay="400"
             >
               <div
                 ref={photoCardRef}
-                className={`hero-person-frame relative h-[540px] w-full max-w-[470px] overflow-hidden rounded-[28px] border transition-colors duration-500 ${frameInner.split(" ")[0]} ${frameBg}`}
+                className={`hero-person-frame relative h-[420px] sm:h-[540px] w-full max-w-[470px] overflow-hidden rounded-[28px] border transition-colors duration-500 ${frameInner.split(" ")[0]} ${frameBg}`}
               >
                 <div
                   className={`absolute inset-x-10 bottom-0 top-20 rounded-t-[220px] border ${frameInner}`}
@@ -745,11 +851,13 @@ export function HeroSection({
                     ref={photoImgWrapRef}
                     className="hero-photo-wrap relative h-[94%] w-[88%] -translate-y-5 overflow-hidden rounded-t-[220px] border border-white/10 md:-translate-y-7"
                   >
-                    <img
+                    <Image
                       src="https://avatars.githubusercontent.com/EddyKilonzo?v=4"
                       alt={`${profile.name} portrait`}
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 90vw, 470px"
                       className="h-full w-full object-cover object-top saturate-110 contrast-105"
-                      loading="eager"
                     />
                     <div
                       className={`hero-silhouette absolute inset-0 rounded-t-[220px] ${silhouetteBg}`}
@@ -873,6 +981,10 @@ export function HeroSection({
           animation: cta-drift 4.8s ease-in-out infinite;
         }
 
+        .hero-introline {
+          animation: introline-breathe 5.2s ease-in-out infinite;
+        }
+
         .hero-photo-wrap::after {
           content: "";
           position: absolute;
@@ -923,6 +1035,18 @@ export function HeroSection({
           }
           50% {
             transform: translateY(5px);
+          }
+        }
+
+        @keyframes introline-breathe {
+          0%,
+          100% {
+            transform: translateY(0);
+            filter: drop-shadow(0 0 0 rgba(168, 217, 184, 0));
+          }
+          50% {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 0 6px rgba(168, 217, 184, 0.14));
           }
         }
       `}</style>

@@ -1,16 +1,10 @@
 "use client";
 
 import { BootSequence } from "@/components/boot/BootSequence";
-import { EasterTerminal } from "@/components/easter/EasterTerminal";
-import { Screensaver } from "@/components/easter/Screensaver";
 import { HeroSection } from "@/components/hero/HeroSection";
-import { ContextMenu } from "@/components/layout/ContextMenu";
-import { CustomCursor } from "@/components/layout/CustomCursor";
-import { CommandPalette } from "@/components/layout/CommandPalette";
 import { Nav } from "@/components/layout/Nav";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SkipLink } from "@/components/layout/SkipLink";
-import { StickySectionRail } from "@/components/layout/StickySectionRail";
 import { WaveBackground } from "@/components/layout/WaveBackground";
 import { CertificationsSection } from "@/components/sections/CertificationsSection";
 import { BadgesSection } from "@/components/sections/BadgesSection";
@@ -26,28 +20,97 @@ import { ReportViewerSection } from "@/components/sections/ReportViewerSection";
 import { RoleSwitcherSection } from "@/components/sections/RoleSwitcherSection";
 import { SectionDivider } from "@/components/sections/SectionDivider";
 import { SkillsSection } from "@/components/sections/SkillsSection";
+import { PublicationsSection } from "@/components/sections/PublicationsSection";
+import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
+import { FaqSection } from "@/components/sections/FaqSection";
+import { NowSection } from "@/components/sections/NowSection";
+import { BookingSection } from "@/components/sections/BookingSection";
+import { DownloadCenterSection } from "@/components/sections/DownloadCenterSection";
+import { TrustSection } from "@/components/sections/TrustSection";
+import { StorytellingSection } from "@/components/sections/StorytellingSection";
 import {
   getDeviceProfile,
   shouldUseLenis,
 } from "@/lib/device-profile";
 import { LazySection } from "@/components/motion/LazySection";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useTheme } from "@/context/ThemeContext";
+import AOS from "aos";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ToastViewport } from "@/components/ui/ToastViewport";
 
 const DevStats = dynamic(
   () => import("@/components/dev/DevStats").then((m) => m.DevStats),
   { ssr: false },
+);
+const CommandPalette = dynamic(
+  () => import("@/components/layout/CommandPalette").then((m) => m.CommandPalette),
+  { ssr: false, loading: () => null },
+);
+const CustomCursor = dynamic(
+  () => import("@/components/layout/CustomCursor").then((m) => m.CustomCursor),
+  { ssr: false, loading: () => null },
+);
+const ContextMenu = dynamic(
+  () => import("@/components/layout/ContextMenu").then((m) => m.ContextMenu),
+  { ssr: false, loading: () => null },
+);
+const ContextualStickyCta = dynamic(
+  () => import("@/components/layout/ContextualStickyCta").then((m) => m.ContextualStickyCta),
+  { ssr: false, loading: () => null },
+);
+const StickySectionRail = dynamic(
+  () => import("@/components/layout/StickySectionRail").then((m) => m.StickySectionRail),
+  { ssr: false, loading: () => null },
+);
+const ReadingProgressHud = dynamic(
+  () => import("@/components/layout/ReadingProgressHud").then((m) => m.ReadingProgressHud),
+  { ssr: false, loading: () => null },
+);
+const SectionPrefetchCues = dynamic(
+  () => import("@/components/layout/SectionPrefetchCues").then((m) => m.SectionPrefetchCues),
+  { ssr: false, loading: () => null },
+);
+const IdleAmbientLayer = dynamic(
+  () => import("@/components/layout/IdleAmbientLayer").then((m) => m.IdleAmbientLayer),
+  { ssr: false, loading: () => null },
+);
+const NarrativeChapters = dynamic(
+  () => import("@/components/layout/NarrativeChapters").then((m) => m.NarrativeChapters),
+  { ssr: false, loading: () => null },
+);
+const MobileQuickActions = dynamic(
+  () => import("@/components/layout/MobileQuickActions").then((m) => m.MobileQuickActions),
+  { ssr: false, loading: () => null },
+);
+const FirstTimeTour = dynamic(
+  () => import("@/components/layout/FirstTimeTour").then((m) => m.FirstTimeTour),
+  { ssr: false, loading: () => null },
+);
+const EasterTerminal = dynamic(
+  () => import("@/components/easter/EasterTerminal").then((m) => m.EasterTerminal),
+  { ssr: false, loading: () => null },
+);
+const Screensaver = dynamic(
+  () => import("@/components/easter/Screensaver").then((m) => m.Screensaver),
+  { ssr: false, loading: () => null },
+);
+const MotionQaOverlay = dynamic(
+  () => import("@/components/dev/MotionQaOverlay").then((m) => m.MotionQaOverlay),
+  { ssr: false, loading: () => null },
 );
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function PortfolioPage() {
   const reducedMotion = useReducedMotion();
+  const { ambientFx, cursorAccent } = useTheme();
   const [bootDone, setBootDone] = useState(reducedMotion);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [enhancementsReady, setEnhancementsReady] = useState(false);
   const heroScrollRef = useRef(0);
   const layer1 = useRef<HTMLDivElement>(null);
   const layer2 = useRef<HTMLDivElement>(null);
@@ -87,9 +150,37 @@ export function PortfolioPage() {
   }, [bootDone]);
 
   useEffect(() => {
+    if (!bootDone || enhancementsReady) return;
+    let cancelled = false;
+    const ready = () => {
+      if (!cancelled) setEnhancementsReady(true);
+    };
+    const onFirstInteraction = () => {
+      ready();
+      window.removeEventListener("pointerdown", onFirstInteraction);
+      window.removeEventListener("keydown", onFirstInteraction);
+      window.removeEventListener("touchstart", onFirstInteraction);
+    };
+    window.addEventListener("pointerdown", onFirstInteraction, { passive: true });
+    window.addEventListener("keydown", onFirstInteraction);
+    window.addEventListener("touchstart", onFirstInteraction, { passive: true });
+    const idleId = window.setTimeout(ready, 1800);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(idleId);
+      window.removeEventListener("pointerdown", onFirstInteraction);
+      window.removeEventListener("keydown", onFirstInteraction);
+      window.removeEventListener("touchstart", onFirstInteraction);
+    };
+  }, [bootDone, enhancementsReady]);
+
+  useEffect(() => {
     if (!bootDone) return;
     // Recompute trigger positions once boot/hero layout has settled.
-    const id = window.setTimeout(() => ScrollTrigger.refresh(), 120);
+    const id = window.setTimeout(() => {
+      ScrollTrigger.refresh();
+      AOS.refresh();
+    }, 150);
     return () => window.clearTimeout(id);
   }, [bootDone]);
 
@@ -112,7 +203,7 @@ export function PortfolioPage() {
   useEffect(() => {
     if (!bootDone) return;
     // Always land users at the hero/top after the boot loader completes.
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    window.scrollTo(0, 0);
     if (window.location.hash && window.location.hash !== "#hero") {
       history.replaceState(null, "", `${window.location.pathname}${window.location.search}#hero`);
     } else if (!window.location.hash) {
@@ -133,7 +224,8 @@ export function PortfolioPage() {
       <div
         className={`page-fx theme-wipe min-h-screen bg-bg ${shouldUseLenis(getDeviceProfile()) ? "" : ""}`}
       >
-        <WaveBackground lowEnd={lowEnd} />
+        {ambientFx ? <WaveBackground lowEnd={lowEnd} /> : null}
+        {ambientFx ? <IdleAmbientLayer /> : null}
         <div
           ref={layer1}
           className="pointer-events-none fixed inset-0 -z-10 will-change-transform"
@@ -159,12 +251,20 @@ export function PortfolioPage() {
         <SkipLink />
         <ScrollProgress />
         <Nav />
-        <StickySectionRail />
-        <CommandPalette />
-        <CustomCursor />
-        <ContextMenu />
-        <EasterTerminal />
-        <Screensaver />
+        {enhancementsReady ? <MobileQuickActions /> : null}
+        {enhancementsReady ? <ReadingProgressHud /> : null}
+        {enhancementsReady ? <NarrativeChapters /> : null}
+        {enhancementsReady ? <ContextualStickyCta /> : null}
+        {enhancementsReady ? <StickySectionRail /> : null}
+        {enhancementsReady ? <CommandPalette /> : null}
+        {enhancementsReady && cursorAccent ? <CustomCursor /> : null}
+        {enhancementsReady ? <ContextMenu /> : null}
+        {enhancementsReady ? <SectionPrefetchCues /> : null}
+        <ToastViewport />
+        {enhancementsReady ? <MotionQaOverlay /> : null}
+        {enhancementsReady ? <FirstTimeTour /> : null}
+        {enhancementsReady ? <EasterTerminal /> : null}
+        {enhancementsReady ? <Screensaver /> : null}
 
         <main id="main-content" className="pt-14">
           <HeroSection
@@ -175,6 +275,10 @@ export function PortfolioPage() {
             onFirstScroll={onFirstScroll}
             hasScrolled={hasScrolled}
           />
+          <SectionDivider />
+          <NowSection />
+          <SectionDivider variant="wave" />
+          <StorytellingSection />
           <SectionDivider />
           <AboutSection />
           <SectionDivider variant="wave" />
@@ -215,8 +319,34 @@ export function PortfolioPage() {
           <LazySection skeletonCards={2}>
             <CVSection />
           </LazySection>
+          <SectionDivider />
+          <LazySection skeletonCards={2}>
+            <DownloadCenterSection />
+          </LazySection>
           <SectionDivider variant="wave" />
-          <ContactSection />
+          <LazySection skeletonCards={2}>
+            <BookingSection />
+          </LazySection>
+          <SectionDivider />
+          <LazySection skeletonCards={2}>
+            <TrustSection />
+          </LazySection>
+          <SectionDivider variant="wave" />
+          <LazySection skeletonCards={2}>
+            <ContactSection />
+          </LazySection>
+          <SectionDivider />
+          <LazySection skeletonCards={2}>
+            <PublicationsSection />
+          </LazySection>
+          <SectionDivider variant="wave" />
+          <LazySection skeletonCards={2}>
+            <TestimonialsSection />
+          </LazySection>
+          <SectionDivider />
+          <LazySection skeletonCards={2}>
+            <FaqSection />
+          </LazySection>
         </main>
       </div>
     </>

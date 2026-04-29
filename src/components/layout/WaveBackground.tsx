@@ -119,7 +119,7 @@ export function WaveBackground({ lowEnd = false }: Props) {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none fixed inset-0 -z-[15] h-full w-full"
+      className="ambient-wave-canvas pointer-events-none fixed inset-0 -z-[15] h-full w-full"
       aria-hidden
     />
   );

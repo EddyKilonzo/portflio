@@ -21,10 +21,10 @@ export function useSectionReveal(index: number, enabled = true) {
     const mode = index % 3;
     const from =
       mode === 0
-        ? { x: -36, opacity: 0 }
+        ? { x: -24, y: 8, opacity: 0 }
         : mode === 1
-          ? { x: 36, opacity: 0 }
-          : { y: 28, opacity: 0 };
+          ? { x: 24, y: 8, opacity: 0 }
+          : { y: 20, opacity: 0 };
 
     let tween: gsap.core.Tween | null = null;
     try {
@@ -32,12 +32,12 @@ export function useSectionReveal(index: number, enabled = true) {
       tween = gsap.from(el, {
         ...from,
         immediateRender: false,
-        duration: 0.75,
-        ease: "power3.out",
+        duration: 0.52,
+        ease: "power2.out",
         clearProps: "transform,opacity",
         scrollTrigger: {
           trigger: el,
-          start: "top 90%",
+          start: "top 88%",
           invalidateOnRefresh: true,
           toggleActions: "play none none none",
         },

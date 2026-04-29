@@ -40,16 +40,18 @@ export function CustomCursor() {
       const interactive = t.closest("a,button,[role='button'],input,textarea");
       if (interactive) {
         gsap.to(ring.current, {
-          width: 56,
-          height: 56,
+          width: 44,
+          height: 44,
           borderColor: "var(--accent)",
+          opacity: 0.75,
           duration: 0.25,
         });
       } else {
         gsap.to(ring.current, {
-          width: 36,
-          height: 36,
+          width: 30,
+          height: 30,
           borderColor: "rgba(168,217,184,0.35)",
+          opacity: 0.55,
           duration: 0.25,
         });
       }
@@ -72,12 +74,12 @@ export function CustomCursor() {
     >
       <div
         ref={dot}
-        className="pointer-events-none fixed left-0 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-highlight will-change-transform"
+        className="pointer-events-none fixed left-0 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-highlight/85 will-change-transform"
         style={{ mixBlendMode: "screen" }}
       />
       <div
         ref={ring}
-        className="pointer-events-none fixed left-0 top-0 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border border-highlight/35 will-change-transform"
+        className="pointer-events-none fixed left-0 top-0 h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border border-highlight/30 will-change-transform"
       />
     </div>
   );
