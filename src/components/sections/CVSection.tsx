@@ -68,7 +68,7 @@ export function CVSection() {
             </button>
           ))}
           <button type="button" className="btn-ghost ml-auto text-xs" onClick={download}>
-            Download PDF
+            Download CV (PDF)
           </button>
         </div>
 

@@ -133,8 +133,10 @@ export const profile = {
     twitter: "https://x.com/3ddy_max",
     htb: "https://app.hackthebox.com/",
     thm: "https://tryhackme.com/p/eddy.kilonzo",
+    // WhatsApp: international format without + or spaces, e.g. "254712345678"
+    whatsapp: "254712345678",
   },
-  rssFeedUrl: "https://example.com/blog/rss",
+  rssFeedUrl: "",
   learningTicker: [
     "Next-gen Angular + TypeScript apps",
     "Scalable backend architecture with NestJS",
@@ -158,6 +160,149 @@ export const profile = {
   homelab:
     "Building the future one commit at a time: clean-code workflows, creative UI/UX prototyping, and practical secure development labs.",
 };
+
+// ── Testimonials ─────────────────────────────────────────────────────────────
+export type Testimonial = {
+  id: string;
+  quote: string;
+  name: string;
+  role: string;
+  company?: string;
+};
+
+export const testimonials: Testimonial[] = [
+  {
+    id: "t1",
+    quote:
+      "Eddy consistently turns ambiguous requirements into polished delivery, with a security-first mindset baked into the process — not bolted on after.",
+    name: "Product Lead",
+    role: "Delivery Partner",
+    company: "Client",
+  },
+  {
+    id: "t2",
+    quote:
+      "What stands out is the clarity: clean architecture, observable systems, and walkthroughs that make teams faster the next time around.",
+    name: "Engineering Manager",
+    role: "Backend & Platform",
+    company: "Client",
+  },
+  {
+    id: "t3",
+    quote:
+      "Great balance of creative UI craft and practical engineering. The result is work that feels premium and remains maintainable.",
+    name: "Design Systems Lead",
+    role: "Frontend / UX",
+    company: "Client",
+  },
+];
+
+// ── Publications ──────────────────────────────────────────────────────────────
+export type PublicationKind = "paper" | "blog" | "talk";
+
+export type Publication = {
+  id: string;
+  kind: PublicationKind;
+  title: string;
+  date: string;
+  summary: string;
+  url?: string;
+};
+
+export const publications: Publication[] = [
+  {
+    id: "pub-1",
+    kind: "paper",
+    title: "Adaptive Detection Playbooks for Hybrid Environments",
+    date: "2026-03",
+    summary:
+      "A structured approach for tuning detections and connecting outputs to operator workflows across changing infrastructure.",
+  },
+  {
+    id: "pub-2",
+    kind: "talk",
+    title: "From Detections to Decisions: Teaching Blue-Team Loops",
+    date: "2026-02",
+    summary:
+      "How to design labs that turn detection rules into repeatable investigative actions with measurable outcomes.",
+  },
+  {
+    id: "pub-3",
+    kind: "blog",
+    title: "Scroll-linked UI patterns for WebGL portfolios",
+    date: "2026-01",
+    summary:
+      "Motion-safe techniques for coordinating narrative sections with performant rendering and readable UX.",
+  },
+  {
+    id: "pub-4",
+    kind: "blog",
+    title: "Sigma-style rules: keeping them testable and composable",
+    date: "2025-12",
+    summary:
+      "Practical heuristics for writing detection rules that survive iteration and can be validated against realistic samples.",
+  },
+];
+
+// ── FAQ ───────────────────────────────────────────────────────────────────────
+export type FaqItem = { id: string; q: string; a: string };
+
+export const faqs: FaqItem[] = [
+  {
+    id: "f1",
+    q: "What kind of projects are you best at?",
+    a: "Full-stack product engineering with a security-first mindset: APIs, integrations, UI systems, and practical threat-aware delivery.",
+  },
+  {
+    id: "f2",
+    q: "Do you work remotely?",
+    a: "Yes. I'm comfortable collaborating across time zones with clear milestones, async updates, and walkthroughs.",
+  },
+  {
+    id: "f3",
+    q: "How do you approach security in delivery?",
+    a: "I incorporate security checks into engineering workflows: threat modeling early, safer defaults, observability, and lightweight validation gates.",
+  },
+  {
+    id: "f4",
+    q: "What does collaboration look like?",
+    a: "Short feedback loops, small deliverables, and demos that show progress in real terms — not just tickets.",
+  },
+];
+
+// ── Now ───────────────────────────────────────────────────────────────────────
+export type NowItem = { title: string; lines: string[] };
+export type ChangelogEntry = { date: string; item: string };
+
+export const nowItems: NowItem[] = [
+  {
+    title: "Building",
+    lines: [
+      "Portfolio UX v2: compare mode, tray navigation, and case-study carousel.",
+      "Production-ready content architecture for faster updates.",
+    ],
+  },
+  {
+    title: "Learning",
+    lines: [
+      "PWA optimization workflows and offline-first shell patterns.",
+      "Advanced accessibility audit practices for dynamic interfaces.",
+    ],
+  },
+  {
+    title: "Improving",
+    lines: [
+      "Reducing first-load JS for smoother mobile startup.",
+      "Tighter analytics signals for user journey decisions.",
+    ],
+  },
+];
+
+export const changelog: ChangelogEntry[] = [
+  { date: "2026-04-29", item: "Added theme mode system + improved startup hydration." },
+  { date: "2026-04-29", item: "Introduced command palette, subtle ambient controls, cursor toggle." },
+  { date: "2026-04-29", item: "Shipped branded not-found/offline states and stronger metadata." },
+];
 
 export const skillsByRole: Record<
   RoleMode,

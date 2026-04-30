@@ -4,63 +4,14 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { SectionNumber } from "@/components/layout/SectionNumber";
+import { publications, type PublicationKind } from "@/content/portfolio";
 import { useMemo, useState } from "react";
-
-type PublicationKind = "paper" | "blog" | "talk";
-
-type Publication = {
-  id: string;
-  kind: PublicationKind;
-  title: string;
-  date: string;
-  summary: string;
-  url?: string;
-};
 
 const kindLabel: Record<PublicationKind, string> = {
   paper: "Paper",
   blog: "Blog",
   talk: "Talk",
 };
-
-const publications: Publication[] = [
-  {
-    id: "pub-1",
-    kind: "paper",
-    title: "Adaptive Detection Playbooks for Hybrid Environments",
-    date: "2026-03",
-    summary:
-      "A structured approach for tuning detections and connecting outputs to operator workflows across changing infrastructure.",
-    url: "#",
-  },
-  {
-    id: "pub-2",
-    kind: "talk",
-    title: "From Detections to Decisions: Teaching Blue-Team Loops",
-    date: "2026-02",
-    summary:
-      "How to design labs that turn detection rules into repeatable investigative actions with measurable outcomes.",
-    url: "#",
-  },
-  {
-    id: "pub-3",
-    kind: "blog",
-    title: "Scroll-linked UI patterns for WebGL portfolios",
-    date: "2026-01",
-    summary:
-      "Motion-safe techniques for coordinating narrative sections with performant rendering and readable UX.",
-    url: "#",
-  },
-  {
-    id: "pub-4",
-    kind: "blog",
-    title: "Sigma-style rules: keeping them testable and composable",
-    date: "2025-12",
-    summary:
-      "Practical heuristics for writing detection rules that survive iteration and can be validated against realistic samples.",
-    url: "#",
-  },
-];
 
 export function PublicationsSection() {
   const sectionRef = useSectionReveal(13);

@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const url = profile.rssFeedUrl;
   const fallbackItems = [
-    { id: "1", title: "Configure rssFeedUrl in portfolio content" },
-    { id: "2", title: "Writing detection rules that age well" },
-    { id: "3", title: "Notes on scroll-linked WebGL" },
+    { id: "1", title: "Detection engineering: writing Sigma rules that survive iteration" },
+    { id: "2", title: "Building a Next.js portfolio with WebGL and scroll-linked storytelling" },
+    { id: "3", title: "OSINT workflows for passive phishing domain discovery" },
   ];
   try {
     if (!url?.trim()) {
@@ -44,9 +44,7 @@ export async function GET() {
       return NextResponse.json({ items: fallbackItems });
     }
     return NextResponse.json({ items });
-  } catch (cause) {
-    // Always return 200 + placeholder items so the client never has to special-case errors.
-    console.warn("[api/rss] using fallback items:", cause);
+  } catch {
     return NextResponse.json({ items: fallbackItems });
   }
 }

@@ -4,29 +4,7 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-
-const faqs: { id: string; q: string; a: string }[] = [
-  {
-    id: "f1",
-    q: "What kind of projects are you best at?",
-    a: "Full-stack product engineering with a security-first mindset: APIs, integrations, UI systems, and practical threat-aware delivery.",
-  },
-  {
-    id: "f2",
-    q: "Do you work remotely?",
-    a: "Yes. I'm comfortable collaborating across time zones with clear milestones, async updates, and walkthroughs.",
-  },
-  {
-    id: "f3",
-    q: "How do you approach security in delivery?",
-    a: "I incorporate security checks into engineering workflows: threat modeling early, safer defaults, observability, and lightweight validation gates.",
-  },
-  {
-    id: "f4",
-    q: "What does collaboration look like?",
-    a: "Short feedback loops, small deliverables, and demos that show progress in real terms (not just tickets).",
-  },
-];
+import { faqs } from "@/content/portfolio";
 
 export function FaqSection() {
   const sectionRef = useSectionReveal(15);

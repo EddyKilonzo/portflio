@@ -15,6 +15,7 @@ export function MobileQuickActions() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [trayMotion, setTrayMotion] = useState<"full" | "reduced">("full");
   const [traySize, setTraySize] = useState<"sm" | "md" | "lg">("md");
+  const [previewSectionId, setPreviewSectionId] = useState<string | null>(null);
   const audioRef = useRef<AudioContext | null>(null);
   const tickTimersRef = useRef<number[]>([]);
   const nodeRefs = useRef<Array<HTMLAnchorElement | null>>([]);
@@ -144,10 +145,11 @@ export function MobileQuickActions() {
       : traySize === "lg"
         ? "h-64 w-64 lg:h-72 lg:w-72"
         : "h-56 w-56 lg:h-64 lg:w-64";
-  const outerRadius =
-    traySize === "sm" ? 90 : traySize === "lg" ? 122 : 108;
-  const innerRadius =
-    traySize === "sm" ? 62 : traySize === "lg" ? 84 : 74;
+  const dialRadius = traySize === "sm" ? 88 : traySize === "lg" ? 126 : 108;
+  const previewLabel =
+    sectionLinks.find((s) => s.id === previewSectionId)?.label ??
+    sectionLinks.find((s) => s.id === activeSection)?.label ??
+    "Section";
 
   return (
     <div
@@ -168,19 +170,10 @@ export function MobileQuickActions() {
     >
       <div className={`relative ${traySizeClass}`}>
         {sectionLinks.map((s, idx) => {
-          const outerCount = Math.ceil(sectionLinks.length / 2);
-          const innerCount = sectionLinks.length - outerCount;
-          const outerRing = idx < outerCount;
-          const ringIdx = outerRing ? idx : idx - outerCount;
-          const ringCount = outerRing ? outerCount : Math.max(innerCount, 1);
-          const startDeg = 165;
-          const endDeg = 285;
-          const angleDeg =
-            ringCount === 1
-              ? (startDeg + endDeg) / 2
-              : startDeg + ringIdx * ((endDeg - startDeg) / (ringCount - 1));
+          const ringCount = Math.max(sectionLinks.length, 1);
+          const angleDeg = ringCount === 1 ? -90 : -90 + idx * (360 / ringCount);
           const angle = angleDeg * (Math.PI / 180);
-          const radius = open ? (outerRing ? outerRadius : innerRadius) : 0;
+          const radius = open ? dialRadius : 0;
           const x = Math.cos(angle) * radius;
           const y = Math.sin(angle) * radius;
           return (
@@ -193,26 +186,27 @@ export function MobileQuickActions() {
                 setAnnounce(`Navigating to ${s.label}`);
                 setOpen(false);
               }}
+              onMouseEnter={() => setPreviewSectionId(s.id)}
+              onMouseLeave={() => setPreviewSectionId(null)}
+              onFocus={() => setPreviewSectionId(s.id)}
+              onBlur={() => setPreviewSectionId(null)}
               ref={(el) => {
                 nodeRefs.current[idx] = el;
               }}
-              className={`absolute left-1/2 top-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-highlight/20 bg-bg/90 text-[8px] font-mono text-highlight shadow-glass transition-all duration-300 lg:h-10 lg:w-10 ${
+              className={`absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-highlight/20 bg-bg/90 px-1 text-center text-[9px] font-mono text-highlight shadow-glass transition-all duration-300 lg:h-11 lg:w-11 lg:text-[10px] ${
                 open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
               }`}
               style={{
                 transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${
                   open ? 1 : 0.75
                 })`,
-                transitionDelay: `${open && !reducedMotion ? ringIdx * 26 : 0}ms`,
+                transitionDelay: `${open && !reducedMotion ? idx * 16 : 0}ms`,
               }}
               aria-label={`Go to ${s.label}`}
               title={s.label}
             >
               <span className={activeSection === s.id ? "text-accent" : ""}>
                 {s.shortLabel}
-              </span>
-              <span className="pointer-events-none absolute left-1/2 top-[110%] hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-highlight/20 bg-bg/90 px-1.5 py-0.5 text-[9px] text-highlight/80 shadow-glass lg:block">
-                {s.label}
               </span>
             </a>
           );
@@ -275,6 +269,12 @@ export function MobileQuickActions() {
             >
               Size: {traySize}
             </button>
+          </div>
+        ) : null}
+        {open ? (
+          <div className="pointer-events-none absolute -top-14 left-1/2 -translate-x-1/2 rounded-md border border-highlight/20 bg-bg/90 px-3 py-1.5 text-center font-mono text-[10px] text-highlight/75">
+            <p>Tap a code to jump</p>
+            <p className="text-accent/90">Selected: {previewLabel}</p>
           </div>
         ) : null}
       </div>

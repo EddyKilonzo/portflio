@@ -5,12 +5,6 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { profile } from "@/content/portfolio";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motionTokens } from "@/lib/motion-tokens";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const availabilityLabel: Record<string, string> = {
   open: "Open to work",
@@ -20,40 +14,6 @@ const availabilityLabel: Record<string, string> = {
 
 export function AboutSection() {
   const sectionRef = useSectionReveal(1);
-  const sectionAnimRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    sectionAnimRef.current = document.getElementById("about");
-  }, []);
-
-  useEffect(() => {
-    const sectionEl = sectionAnimRef.current;
-    if (!sectionEl) return;
-    const targets = sectionEl.querySelectorAll<HTMLElement>("[data-about-step]");
-    const run = (direction: 1 | -1) => {
-      targets.forEach((el) => (el.style.willChange = "transform, opacity"));
-      gsap.fromTo(
-        targets,
-        { y: 18 * direction, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: motionTokens.duration.base,
-          ease: motionTokens.ease.standard,
-          stagger: motionTokens.stagger.section,
-          onComplete: () => targets.forEach((el) => (el.style.willChange = "auto")),
-        },
-      );
-    };
-    const st = ScrollTrigger.create({
-      trigger: sectionEl,
-      start: "top 78%",
-      once: false,
-      onEnter: () => run(1),
-      onEnterBack: () => run(-1),
-    });
-    return () => st.kill();
-  }, []);
 
   return (
     <section
@@ -69,7 +29,7 @@ export function AboutSection() {
         <ParallaxDrift speed={0.15} className="md:col-span-4 md:row-span-2">
           <div 
             className="glass-card h-full rounded-2xl p-6"
-            data-about-step
+            data-aos="fade-up"
           >
             <h2 className="mb-4 font-display text-4xl text-highlight md:text-5xl">
               About
@@ -89,7 +49,8 @@ export function AboutSection() {
         <ParallaxDrift speed={0.25} className="md:col-span-2">
           <aside 
             className="glass-card rounded-2xl border border-highlight/15 p-5"
-            data-about-step
+            data-aos="fade-up"
+            data-aos-delay="100"
           >
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
               Availability
@@ -112,7 +73,8 @@ export function AboutSection() {
         <ParallaxDrift speed={0.35} className="md:col-span-2">
           <aside 
             className="glass-card rounded-2xl border border-highlight/15 p-5"
-            data-about-step
+            data-aos="fade-up"
+            data-aos-delay="200"
           >
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">Proof</p>
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-xs">

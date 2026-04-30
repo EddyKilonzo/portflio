@@ -4,36 +4,7 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-
-const nowItems = [
-  {
-    title: "Building",
-    lines: [
-      "Portfolio UX v2: compare mode, tray navigation, and case-study carousel.",
-      "Production-ready content architecture for faster updates.",
-    ],
-  },
-  {
-    title: "Learning",
-    lines: [
-      "PWA optimization workflows and offline-first shell patterns.",
-      "Advanced accessibility audit practices for dynamic interfaces.",
-    ],
-  },
-  {
-    title: "Improving",
-    lines: [
-      "Reducing first-load JS for smoother mobile startup.",
-      "Tighter analytics signals for user journey decisions.",
-    ],
-  },
-];
-
-const changelog = [
-  { date: "2026-04-29", item: "Added theme mode system + improved startup hydration." },
-  { date: "2026-04-29", item: "Introduced command palette, subtle ambient controls, cursor toggle." },
-  { date: "2026-04-29", item: "Shipped branded not-found/offline states and stronger metadata." },
-];
+import { nowItems, changelog } from "@/content/portfolio";
 
 export function NowSection() {
   const sectionRef = useSectionReveal(16);

@@ -2,32 +2,12 @@
 
 import { BootSequence } from "@/components/boot/BootSequence";
 import { HeroSection } from "@/components/hero/HeroSection";
+import { Footer } from "@/components/layout/Footer";
 import { Nav } from "@/components/layout/Nav";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { WaveBackground } from "@/components/layout/WaveBackground";
-import { CertificationsSection } from "@/components/sections/CertificationsSection";
-import { BadgesSection } from "@/components/sections/BadgesSection";
-import { AboutSection } from "@/components/sections/AboutSection";
-import { ContactSection } from "@/components/sections/ContactSection";
-import { CyberShowcaseSection } from "@/components/sections/CyberShowcaseSection";
-import { CVSection } from "@/components/sections/CVSection";
-import { EducationSection } from "@/components/sections/EducationSection";
-import { ExperienceSection } from "@/components/sections/ExperienceSection";
-import { IntegrationsSection } from "@/components/sections/IntegrationsSection";
-import { ProjectsSection } from "@/components/sections/ProjectsSection";
-import { ReportViewerSection } from "@/components/sections/ReportViewerSection";
-import { RoleSwitcherSection } from "@/components/sections/RoleSwitcherSection";
 import { SectionDivider } from "@/components/sections/SectionDivider";
-import { SkillsSection } from "@/components/sections/SkillsSection";
-import { PublicationsSection } from "@/components/sections/PublicationsSection";
-import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
-import { FaqSection } from "@/components/sections/FaqSection";
-import { NowSection } from "@/components/sections/NowSection";
-import { BookingSection } from "@/components/sections/BookingSection";
-import { DownloadCenterSection } from "@/components/sections/DownloadCenterSection";
-import { TrustSection } from "@/components/sections/TrustSection";
-import { StorytellingSection } from "@/components/sections/StorytellingSection";
 import {
   getDeviceProfile,
   shouldUseLenis,
@@ -41,6 +21,88 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ToastViewport } from "@/components/ui/ToastViewport";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+
+// --- Dynamic Imports for Sections ---
+
+const NowSection = dynamic(
+  () => import("@/components/sections/NowSection").then((m) => m.NowSection),
+  { ssr: false }
+);
+const AboutSection = dynamic(
+  () => import("@/components/sections/AboutSection").then((m) => m.AboutSection),
+  { ssr: false }
+);
+const RoleSwitcherSection = dynamic(
+  () => import("@/components/sections/RoleSwitcherSection").then((m) => m.RoleSwitcherSection),
+  { ssr: false }
+);
+const SkillsSection = dynamic(
+  () => import("@/components/sections/SkillsSection").then((m) => m.SkillsSection),
+  { ssr: false }
+);
+const ProjectsSection = dynamic(
+  () => import("@/components/sections/ProjectsSection").then((m) => m.ProjectsSection),
+  { ssr: false }
+);
+const CyberShowcaseSection = dynamic(
+  () => import("@/components/sections/CyberShowcaseSection").then((m) => m.CyberShowcaseSection),
+  { ssr: false }
+);
+const ReportViewerSection = dynamic(
+  () => import("@/components/sections/ReportViewerSection").then((m) => m.ReportViewerSection),
+  { ssr: false }
+);
+const EducationSection = dynamic(
+  () => import("@/components/sections/EducationSection").then((m) => m.EducationSection),
+  { ssr: false }
+);
+const BadgesSection = dynamic(
+  () => import("@/components/sections/BadgesSection").then((m) => m.BadgesSection),
+  { ssr: false }
+);
+const CertificationsSection = dynamic(
+  () => import("@/components/sections/CertificationsSection").then((m) => m.CertificationsSection),
+  { ssr: false }
+);
+const ExperienceSection = dynamic(
+  () => import("@/components/sections/ExperienceSection").then((m) => m.ExperienceSection),
+  { ssr: false }
+);
+const IntegrationsSection = dynamic(
+  () => import("@/components/sections/IntegrationsSection").then((m) => m.IntegrationsSection),
+  { ssr: false }
+);
+const CVSection = dynamic(
+  () => import("@/components/sections/CVSection").then((m) => m.CVSection),
+  { ssr: false }
+);
+const DownloadCenterSection = dynamic(
+  () => import("@/components/sections/DownloadCenterSection").then((m) => m.DownloadCenterSection),
+  { ssr: false }
+);
+const BookingSection = dynamic(
+  () => import("@/components/sections/BookingSection").then((m) => m.BookingSection),
+  { ssr: false }
+);
+const TrustSection = dynamic(
+  () => import("@/components/sections/TrustSection").then((m) => m.TrustSection),
+  { ssr: false }
+);
+const ContactSection = dynamic(
+  () => import("@/components/sections/ContactSection").then((m) => m.ContactSection),
+  { ssr: false }
+);
+const TestimonialsSection = dynamic(
+  () => import("@/components/sections/TestimonialsSection").then((m) => m.TestimonialsSection),
+  { ssr: false }
+);
+const FaqSection = dynamic(
+  () => import("@/components/sections/FaqSection").then((m) => m.FaqSection),
+  { ssr: false }
+);
+
+// --- Dynamic Imports for UI/Layout Enhancements ---
 
 const DevStats = dynamic(
   () => import("@/components/dev/DevStats").then((m) => m.DevStats),
@@ -58,18 +120,6 @@ const ContextMenu = dynamic(
   () => import("@/components/layout/ContextMenu").then((m) => m.ContextMenu),
   { ssr: false, loading: () => null },
 );
-const ContextualStickyCta = dynamic(
-  () => import("@/components/layout/ContextualStickyCta").then((m) => m.ContextualStickyCta),
-  { ssr: false, loading: () => null },
-);
-const StickySectionRail = dynamic(
-  () => import("@/components/layout/StickySectionRail").then((m) => m.StickySectionRail),
-  { ssr: false, loading: () => null },
-);
-const ReadingProgressHud = dynamic(
-  () => import("@/components/layout/ReadingProgressHud").then((m) => m.ReadingProgressHud),
-  { ssr: false, loading: () => null },
-);
 const SectionPrefetchCues = dynamic(
   () => import("@/components/layout/SectionPrefetchCues").then((m) => m.SectionPrefetchCues),
   { ssr: false, loading: () => null },
@@ -78,16 +128,8 @@ const IdleAmbientLayer = dynamic(
   () => import("@/components/layout/IdleAmbientLayer").then((m) => m.IdleAmbientLayer),
   { ssr: false, loading: () => null },
 );
-const NarrativeChapters = dynamic(
-  () => import("@/components/layout/NarrativeChapters").then((m) => m.NarrativeChapters),
-  { ssr: false, loading: () => null },
-);
 const MobileQuickActions = dynamic(
   () => import("@/components/layout/MobileQuickActions").then((m) => m.MobileQuickActions),
-  { ssr: false, loading: () => null },
-);
-const FirstTimeTour = dynamic(
-  () => import("@/components/layout/FirstTimeTour").then((m) => m.FirstTimeTour),
   { ssr: false, loading: () => null },
 );
 const EasterTerminal = dynamic(
@@ -123,30 +165,24 @@ export function PortfolioPage() {
 
   useEffect(() => {
     if (!bootDone) return;
-    const p = getDeviceProfile();
-    if (p.prefersReducedMotion || p.lowEnd || p.isMobileWidth) return;
-
-    const l1 = layer1.current;
-    const l2 = layer2.current;
-    const l3 = layer3.current;
-    if (!l1 || !l2 || !l3) return;
-
-    const setY1 = gsap.quickSetter(l1, "yPercent");
-    const setY2 = gsap.quickSetter(l2, "yPercent");
-    const setY3 = gsap.quickSetter(l3, "yPercent");
-
-    const st = ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      scrub: 1.2,
-      onUpdate: (self) => {
-        const t = self.progress;
-        setY1(-18 * t);
-        setY2(-9 * t);
-        setY3(-4 * t);
-      },
+    
+    // Initialize AOS after the boot sequence completes
+    AOS.init({
+      duration: 860,
+      easing: "ease-out-quart",
+      once: false,
+      offset: 120,
+      mirror: true,
+      anchorPlacement: "top-bottom",
     });
-    return () => st.kill();
+
+    // Refresh AOS and ScrollTrigger once the boot sequence is finished
+    // and the main content is rendered.
+    const id = window.setTimeout(() => {
+      ScrollTrigger.refresh();
+      AOS.refresh();
+    }, 150);
+    return () => window.clearTimeout(id);
   }, [bootDone]);
 
   useEffect(() => {
@@ -176,44 +212,40 @@ export function PortfolioPage() {
 
   useEffect(() => {
     if (!bootDone) return;
-    // Recompute trigger positions once boot/hero layout has settled.
-    const id = window.setTimeout(() => {
-      ScrollTrigger.refresh();
-      AOS.refresh();
-    }, 150);
-    return () => window.clearTimeout(id);
-  }, [bootDone]);
+    const p = getDeviceProfile();
+    if (p.prefersReducedMotion || p.lowEnd || p.isMobileWidth) return;
 
-  useEffect(() => {
-    if (!bootDone) return;
-    const hero = document.getElementById("hero");
-    if (!hero) return;
+    const l1 = layer1.current;
+    const l2 = layer2.current;
+    const l3 = layer3.current;
+    if (!l1 || !l2 || !l3) return;
+
+    // Use a direct scrub: true for a more responsive native-scroll feel
     const st = ScrollTrigger.create({
-      trigger: hero,
-      start: "top top",
-      end: "bottom top",
+      start: 0,
+      end: "max",
       scrub: true,
       onUpdate: (self) => {
-        heroScrollRef.current = self.progress;
+        const t = self.progress;
+        gsap.set(l1, { yPercent: -18 * t });
+        gsap.set(l2, { yPercent: -9 * t });
+        gsap.set(l3, { yPercent: -4 * t });
       },
     });
     return () => st.kill();
   }, [bootDone]);
 
+  // Removed internal hero scroll tracking to fix potential state-update glitching during scroll.
+
   useEffect(() => {
     if (!bootDone) return;
-    // Always land users at the hero/top after the boot loader completes.
+    // Land users at top after boot without hash mutation jumps.
     window.scrollTo(0, 0);
-    if (window.location.hash && window.location.hash !== "#hero") {
-      history.replaceState(null, "", `${window.location.pathname}${window.location.search}#hero`);
-    } else if (!window.location.hash) {
-      history.replaceState(null, "", `${window.location.pathname}${window.location.search}#hero`);
-    }
   }, [bootDone]);
 
   return (
     <>
-      <DevStats />
+      {/* DevStats removed to eliminate redundant GPU monitor */}
       {!bootDone ? (
         <BootSequence
           reducedMotion={reducedMotion}
@@ -252,21 +284,17 @@ export function PortfolioPage() {
         <ScrollProgress />
         <Nav />
         {enhancementsReady ? <MobileQuickActions /> : null}
-        {enhancementsReady ? <ReadingProgressHud /> : null}
-        {enhancementsReady ? <NarrativeChapters /> : null}
-        {enhancementsReady ? <ContextualStickyCta /> : null}
-        {enhancementsReady ? <StickySectionRail /> : null}
         {enhancementsReady ? <CommandPalette /> : null}
         {enhancementsReady && cursorAccent ? <CustomCursor /> : null}
         {enhancementsReady ? <ContextMenu /> : null}
         {enhancementsReady ? <SectionPrefetchCues /> : null}
         <ToastViewport />
         {enhancementsReady ? <MotionQaOverlay /> : null}
-        {enhancementsReady ? <FirstTimeTour /> : null}
         {enhancementsReady ? <EasterTerminal /> : null}
         {enhancementsReady ? <Screensaver /> : null}
 
         <main id="main-content" className="pt-14">
+          <ErrorBoundary label="Hero">
           <HeroSection
             scrollProgressRef={heroScrollRef}
             lowEnd={lowEnd}
@@ -275,79 +303,75 @@ export function PortfolioPage() {
             onFirstScroll={onFirstScroll}
             hasScrolled={hasScrolled}
           />
+          </ErrorBoundary>
           <SectionDivider />
-          <NowSection />
+          <ErrorBoundary label="About"><AboutSection /></ErrorBoundary>
           <SectionDivider variant="wave" />
-          <StorytellingSection />
+          <ErrorBoundary label="Now"><NowSection /></ErrorBoundary>
+          <SectionDivider variant="wave" />
+          <ErrorBoundary label="Roles"><RoleSwitcherSection /></ErrorBoundary>
+          <SectionDivider variant="wave" />
+          <ErrorBoundary label="Skills"><SkillsSection /></ErrorBoundary>
           <SectionDivider />
-          <AboutSection />
-          <SectionDivider variant="wave" />
-          <RoleSwitcherSection />
-          <SectionDivider variant="wave" />
-          <SkillsSection />
+          <ErrorBoundary label="Projects"><ProjectsSection /></ErrorBoundary>
           <SectionDivider />
-          <ProjectsSection />
+          <LazySection skeletonCards={2}>
+            <ErrorBoundary label="Experience"><ExperienceSection /></ErrorBoundary>
+          </LazySection>
           <SectionDivider variant="wave" />
           <LazySection skeletonCards={2}>
-            <CyberShowcaseSection />
+            <ErrorBoundary label="Cyber"><CyberShowcaseSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={2}>
-            <ReportViewerSection />
+            <ErrorBoundary label="Reports"><ReportViewerSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={2}>
-            <EducationSection />
+            <ErrorBoundary label="Education"><EducationSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
           <LazySection skeletonCards={3}>
-            <BadgesSection />
+            <ErrorBoundary label="Badges"><BadgesSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={3}>
-            <CertificationsSection />
-          </LazySection>
-          <SectionDivider />
-          <LazySection skeletonCards={2}>
-            <ExperienceSection />
+            <ErrorBoundary label="Certs"><CertificationsSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={3}>
-            <IntegrationsSection />
+            <ErrorBoundary label="Integrations"><IntegrationsSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={2}>
-            <CVSection />
+            <ErrorBoundary label="CV"><CVSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={2}>
-            <DownloadCenterSection />
+            <ErrorBoundary label="Downloads"><DownloadCenterSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
           <LazySection skeletonCards={2}>
-            <BookingSection />
+            <ErrorBoundary label="Booking"><BookingSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={2}>
-            <TrustSection />
+            <ErrorBoundary label="Trust"><TrustSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
           <LazySection skeletonCards={2}>
-            <ContactSection />
-          </LazySection>
-          <SectionDivider />
-          <LazySection skeletonCards={2}>
-            <PublicationsSection />
+            <ErrorBoundary label="Contact"><ContactSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
           <LazySection skeletonCards={2}>
-            <TestimonialsSection />
+            <ErrorBoundary label="Testimonials"><TestimonialsSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={2}>
-            <FaqSection />
+            <ErrorBoundary label="FAQ"><FaqSection /></ErrorBoundary>
           </LazySection>
         </main>
+        <Footer />
       </div>
     </>
   );

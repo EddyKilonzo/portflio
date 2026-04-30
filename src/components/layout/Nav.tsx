@@ -40,11 +40,16 @@ export function Nav() {
       .slice(0, 8);
   }, [quickQuery, quickTargets]);
 
+  const getNavOffset = () => {
+    const nav = document.querySelector("header");
+    return nav ? nav.getBoundingClientRect().height : 56;
+  };
+
   const navigateQuick = (target: (typeof quickTargets)[number]) => {
     if (target.type === "section") {
       const el = document.getElementById(target.id);
       if (el) {
-        const y = el.getBoundingClientRect().top + window.scrollY - 76;
+        const y = el.getBoundingClientRect().top + window.scrollY - getNavOffset();
         window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
         history.replaceState(null, "", `#${target.id}`);
       }
@@ -123,7 +128,7 @@ export function Nav() {
       const el = document.getElementById(id);
       if (!el) return;
       e.preventDefault();
-      const y = el.getBoundingClientRect().top + window.scrollY - 76;
+      const y = el.getBoundingClientRect().top + window.scrollY - getNavOffset();
       window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
       history.replaceState(null, "", `#${id}`);
       setSheetOpen(false);
@@ -162,6 +167,7 @@ export function Nav() {
         className={`glass-nav fixed left-0 right-0 top-0 z-[9997] transition-all duration-300 ${scrolled ? "py-0.5 shadow-[0_6px_24px_rgba(0,0,0,0.22)]" : ""} ${hidden ? "-translate-y-full" : "translate-y-0"}`}
         data-aos="fade-down"
         data-aos-duration="600"
+        data-aos-once="true"
       >
         <nav aria-label="Primary" className={`mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 transition-all ${scrolled ? "py-2" : "py-3"}`}>
           <a
@@ -187,8 +193,8 @@ export function Nav() {
               >
                 {l.label}
                 <span
-                  className={`absolute -bottom-0.5 left-1/2 h-[2px] -translate-x-1/2 rounded-full bg-accent transition-all duration-300 ${
-                    activeSection === l.id ? "w-[70%] opacity-100" : "w-0 opacity-0"
+                  className={`absolute -bottom-0.5 inset-x-1 h-[2px] rounded-full bg-accent transition-all duration-300 ${
+                    activeSection === l.id ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
                   }`}
                   aria-hidden
                 />
@@ -233,19 +239,12 @@ export function Nav() {
             </button>
             <button
               type="button"
-              onClick={toggleLight}
-              className="mi-interactive ml-2 rounded px-2 py-1 font-mono text-[11px] text-accent transition-colors hover:text-highlight"
-              aria-label="Toggle light/dark mode"
-            >
-              {themeMode === "system" ? "System" : light ? "Dark" : "Light"}
-            </button>
-            <button
-              type="button"
               onClick={() => setThemeMode(themeMode === "system" ? "dark" : themeMode === "dark" ? "light" : "system")}
-              className="mi-interactive rounded px-2 py-1 font-mono text-[11px] text-highlight/80 transition-colors hover:text-highlight"
+              className="mi-interactive ml-2 rounded border border-highlight/15 px-2.5 py-1 font-mono text-[11px] text-accent/80 transition-colors hover:border-highlight/30 hover:text-accent"
               aria-label="Cycle theme mode"
+              title={`Theme: ${themeMode} — click to cycle`}
             >
-              Mode: {themeMode}
+              {themeMode === "system" ? "⊙ Auto" : light ? "☀ Light" : "☾ Dark"}
             </button>
             <button
               type="button"

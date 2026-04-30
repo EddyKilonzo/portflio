@@ -13,6 +13,7 @@ export function ReadingProgressHud() {
   const [lastSection, setLastSection] = useState<string | null>(null);
   const [visited, setVisited] = useState<Record<string, boolean>>({});
   const [showResume, setShowResume] = useState(false);
+  const [resumeExiting, setResumeExiting] = useState(false);
 
   useEffect(() => {
     try {
@@ -53,10 +54,11 @@ export function ReadingProgressHud() {
       {showResume && lastSection && lastSection !== "hero" ? (
         <button
           type="button"
-          className="fixed left-4 top-20 z-[10010] rounded-full border border-accent/50 bg-bg/85 px-3 py-1 font-mono text-xs text-accent backdrop-blur"
+          className={`fixed left-4 top-20 z-[10010] rounded-full border border-accent/50 bg-bg/85 px-3 py-1 font-mono text-xs text-accent backdrop-blur transition-all duration-300 ${resumeExiting ? "pointer-events-none translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}
           onClick={() => {
             document.getElementById(lastSection)?.scrollIntoView({ behavior: "smooth", block: "start" });
-            setShowResume(false);
+            setResumeExiting(true);
+            window.setTimeout(() => setShowResume(false), 300);
           }}
         >
           Resume from {resumeLabel}

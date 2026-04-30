@@ -1,6 +1,6 @@
 "use client";
 
-import { skillsByRole } from "@/content/portfolio";
+import { skillsByRole, projects } from "@/content/portfolio";
 import { useSkillFilter } from "@/context/SkillFilterContext";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { animate } from "animejs";
@@ -120,6 +120,23 @@ function SkillGraph({
       : [],
   );
 
+  function handleNodeClick(e: React.MouseEvent<SVGCircleElement>, name: string) {
+    gsap.fromTo(
+      e.currentTarget,
+      { scale: 0.9 },
+      { scale: 1, duration: 0.3, ease: "back.out(2)", transformOrigin: "center" },
+    );
+    onPick(name);
+  }
+
+  const activeConnections = new Set(
+    activeSkill
+      ? links
+          .filter((l) => l.a === activeSkill || l.b === activeSkill)
+          .flatMap((l) => [l.a, l.b])
+      : [],
+  );
+
   return (
     <svg
       viewBox="0 0 400 320"
@@ -133,6 +150,30 @@ function SkillGraph({
           <stop offset="100%" stopColor="#A8D9B8" />
         </linearGradient>
       </defs>
+
+      {/* Glow lines behind active connections */}
+      {activeSkill &&
+        links.map((l, i) => {
+          const A = pos(l.a);
+          const B = pos(l.b);
+          if (!A || !B) return null;
+          const isActive = l.a === activeSkill || l.b === activeSkill;
+          if (!isActive) return null;
+          return (
+            <line
+              key={`glow-${i}`}
+              x1={A.x}
+              y1={A.y}
+              x2={B.x}
+              y2={B.y}
+              stroke="url(#sk)"
+              strokeWidth="4"
+              opacity="0.3"
+              className="transition-all duration-200"
+            />
+          );
+        })}
+
       {links.map((l, i) => {
         const A = pos(l.a);
         const B = pos(l.b);
@@ -161,7 +202,10 @@ function SkillGraph({
         x={center.x}
         y={center.y + 24}
         textAnchor="middle"
-        className="fill-highlight/50 font-mono text-[10px]"
+        fill="#a8d9b8"
+        fillOpacity="0.75"
+        fontSize="10"
+        fontFamily="monospace"
       >
         core
       </text>
@@ -194,7 +238,7 @@ function SkillGraph({
             className="cursor-pointer transition-all duration-200"
             onMouseEnter={() => onHover(n.name)}
             onMouseLeave={() => onHover(null)}
-            onClick={() => onPick(n.name)}
+            onClick={(e) => handleNodeClick(e, n.name)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -209,11 +253,11 @@ function SkillGraph({
             x={n.x}
             y={n.y + 28}
             textAnchor="middle"
-            className={`pointer-events-none font-mono text-[9px] ${
-              activeSkill === n.name || relatedSet.has(n.name)
-                ? "fill-accent"
-                : "fill-highlight/70"
-            }`}
+            fill={activeSkill === n.name || relatedSet.has(n.name) ? "#a8d9b8" : "#a8d9b8"}
+            fillOpacity={activeSkill === n.name ? "1" : relatedSet.has(n.name) ? "0.85" : "0.7"}
+            fontSize={activeSkill === n.name ? "11" : "9"}
+            fontFamily="monospace"
+            className="pointer-events-none transition-all duration-200"
           >
             {n.name.length > 10 ? n.name.slice(0, 9) + "…" : n.name}
           </text>
@@ -331,25 +375,28 @@ export function SkillsSection() {
       once: true,
       onEnter: () => {
         all.forEach((el) => (el.style.willChange = "transform, opacity"));
+        if (!shouldReduce) {
+          gsap.set(heading, { y: 18, opacity: 0 });
+          gsap.set(graphs,  { y: 14, opacity: 0 });
+          gsap.set(bars,    { y: 12, opacity: 0, scale: 0.95 });
+        }
         const tl = gsap.timeline({
           onComplete: () => all.forEach((el) => (el.style.willChange = "auto")),
         });
         const base = {
           duration: motionTokens.duration.base,
-          ease: motionTokens.ease.standard,
+          ease: "power3.out",
         };
-        tl.fromTo(heading, { y: shouldReduce ? 0 : 14, opacity: 0 }, { y: 0, opacity: 1, ...base })
-          .fromTo(
+        tl.to(heading, { y: 0, opacity: 1, ...base })
+          .to(
             graphs,
-            { y: shouldReduce ? 0 : 12, opacity: 0 },
             { y: 0, opacity: 1, ...base, stagger: shouldReduce ? 0 : motionTokens.stagger.section },
             "-=0.12",
           )
-          .fromTo(
+          .to(
             bars,
-            { y: shouldReduce ? 0 : 10, opacity: 0 },
-            { y: 0, opacity: 1, ...base, stagger: shouldReduce ? 0 : 0.04 },
-            "-=0.08",
+            { y: 0, opacity: 1, scale: 1, ...base, stagger: shouldReduce ? 0 : 0.025 },
+            "-=0.1",
           );
       },
     });
@@ -365,16 +412,12 @@ export function SkillsSection() {
       start: "top 80%",
       once: true,
       onEnter: () => {
-        gsap.fromTo(
-          bars,
-          { width: "0%" },
-          {
-            width: (i, el) => `${el.getAttribute("data-level")}%`,
-            duration: 1.2,
-            ease: "power3.out",
-            stagger: 0.1,
-          },
-        );
+        gsap.to(bars, {
+          width: (i, el) => `${el.getAttribute("data-level")}%`,
+          duration: 1.0,
+          ease: "power3.out",
+          stagger: 0.055,
+        });
       },
     });
     return () => st.kill();
@@ -427,7 +470,7 @@ export function SkillsSection() {
         </p>
         </ParallaxDrift>
 
-        <div className="mb-8 flex flex-wrap items-center gap-2">
+        <div className="mb-8 flex flex-wrap items-center gap-2" data-aos="fade-up" data-aos-delay="120">
           <span className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/70">
             Developer: {developerSkills.length}
           </span>
@@ -445,7 +488,11 @@ export function SkillsSection() {
           ) : null}
         </div>
 
-        <div className="mb-8 rounded-2xl border border-highlight/15 bg-surface/15 p-4">
+        <div
+          className="mb-8 rounded-2xl border border-highlight/15 bg-surface/15 p-4"
+          data-aos="fade-up"
+          data-aos-delay="180"
+        >
           <p className="mb-3 font-mono text-xs text-highlight/55">
             Daily toolkit
           </p>
@@ -527,7 +574,7 @@ export function SkillsSection() {
             <div
               key={`${s.group}-${s.name}`}
               data-sk-step="bar"
-              className={`glass-card cursor-pointer rounded-xl p-4 transition-transform hover:-translate-y-1 ${bentoSpans[i % bentoSpans.length]}`}
+              className={`glass-card cursor-pointer rounded-xl p-4 transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.025] hover:border-highlight/25 hover:shadow-[0_8px_32px_rgba(168,217,184,0.12)] ${bentoSpans[i % bentoSpans.length]}`}
               onClick={() => setModalSkill(s)}
             >
               <div className="mb-2 flex items-center justify-between gap-2">
@@ -538,18 +585,23 @@ export function SkillsSection() {
                     className="font-mono text-sm text-highlight"
                   />
                 </div>
-                <span className="rounded-full border border-white/55 px-2 py-0.5 font-mono text-[10px] text-white">
-                  {s.group === "software" ? "Developer" : "Cyber"}
+                <span className={`rounded-full border px-2 py-0.5 font-mono text-[10px] ${
+                  s.group === "software"
+                    ? "border-eng/40 text-eng"
+                    : "border-cyber/40 text-cyber"
+                }`}>
+                  {s.group === "software" ? "Dev" : "Cyber"}
                 </span>
               </div>
-              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface/40">
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-surface/40">
                 <div
                   data-bar
                   data-level={s.level}
-                  className="h-full rounded-full bg-surfaceMid"
+                  className={`h-full rounded-full ${s.group === "software" ? "bg-gradient-to-r from-eng/60 to-accent" : "bg-gradient-to-r from-cyber/60 to-orange-400/80"}`}
                   style={{ width: "0%" }}
                 />
               </div>
+              <p className="mt-2 font-mono text-[9px] text-highlight/35">click to explore →</p>
             </div>
           ))}
         </div>
@@ -605,6 +657,23 @@ export function SkillsSection() {
                 </li>
               ))}
             </ul>
+            {(() => {
+              const relatedProjects = projects.filter((p) => p.tech.includes(modalSkill.name));
+              if (!relatedProjects.length) return null;
+              return (
+                <>
+                  <p className="font-mono text-xs text-highlight/50 mt-4">Projects built with this</p>
+                  <ul className="space-y-2">
+                    {relatedProjects.map((p) => (
+                      <li key={p.id} className="flex items-start gap-2 rounded-lg border border-highlight/10 bg-surface/20 px-3 py-2">
+                        <span className="font-mono text-sm text-highlight">{p.title}</span>
+                        <span className="ml-auto shrink-0 font-mono text-[10px] text-accent/70">{p.category}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              );
+            })()}
           </div>
         ) : null}
       </AppModal>

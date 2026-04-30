@@ -12,10 +12,10 @@ const LINES = [
   "Establishing session...",
   "Access granted. Welcome.",
 ];
-const TYPE_DELAY_MS = 8;
-const LINE_PAUSE_MS = 48;
-const POST_COMPLETE_PAUSE_MS = 120;
-const EXIT_DURATION_MS = 380;
+const TYPE_DELAY_MS = 6;
+const LINE_PAUSE_MS = 40;
+const POST_COMPLETE_PAUSE_MS = 150;
+const EXIT_DURATION_MS = 400;
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -32,22 +32,40 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Booting");
   const wrapRef = useRef<HTMLDivElement>(null);
+  const doneCalledRef = useRef(false);
+  // Stable ref so changing onDone never re-runs the animation effect
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
+  const completeRef = useRef(() => {
+    if (doneCalledRef.current) return;
+    doneCalledRef.current = true;
+    setVisible(false);
+    onDoneRef.current();
+  });
 
   useEffect(() => {
+    const complete = completeRef.current;
+
     if (reducedMotion) {
-      onDone();
-      setVisible(false);
+      complete();
       return;
     }
 
     let cancelled = false;
+    // Absolute safety net — boot never takes longer than 5 s
+    const safetyTimer = window.setTimeout(() => {
+      cancelled = true;
+      complete();
+    }, 5000);
 
     (async () => {
-      const totalSteps = LINES.length + 1;
+      const totalSteps = LINES.length;
       for (let i = 0; i < LINES.length; i++) {
         if (cancelled) return;
         const line = LINES[i]!;
         setStatusText(line.replace(/\.\.\.$/, ""));
+
         for (let c = 0; c <= line.length; c++) {
           if (cancelled) return;
           const partial = line.slice(0, c);
@@ -58,57 +76,58 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
           });
           await sleep(TYPE_DELAY_MS);
         }
+
         await sleep(LINE_PAUSE_MS);
         setProgress(Math.round(((i + 1) / totalSteps) * 100));
       }
 
       if (cancelled) return;
-      setStatusText("Boot complete");
+      setStatusText("System Ready");
       setProgress(100);
       await sleep(POST_COMPLETE_PAUSE_MS);
 
+      if (cancelled) return;
+
       const el = wrapRef.current;
-      if (el && !cancelled) {
-        animate(el, {
-          clipPath: ["inset(0% 0% 0% 0%)", "inset(0% 0% 100% 0%)"],
+      if (el) {
+        // animejs v4 animations are Promises — await instead of using 'complete' key
+        await animate(el, {
           opacity: [1, 0],
-          scale: [1, 0.985],
+          scale: [1, 1.02],
+          translateY: [0, -20],
           duration: EXIT_DURATION_MS,
-          ease: "inOut(3)",
-          onComplete: () => {
-            if (!cancelled) {
-              setVisible(false);
-              onDone();
-            }
-          },
+          easing: "easeOutQuart",
         });
-      } else if (!cancelled) {
-        setVisible(false);
-        onDone();
       }
+
+      if (!cancelled) complete();
     })();
 
     return () => {
       cancelled = true;
+      window.clearTimeout(safetyTimer);
     };
-  }, [reducedMotion, onDone]);
+  }, [reducedMotion]);
 
   if (!visible) return null;
 
   return (
     <div
       ref={wrapRef}
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#dae1dd] px-4 font-mono text-sm text-[#1f443d] will-change-[clip-path,opacity,transform]"
-      style={{ clipPath: "inset(0% 0% 0% 0%)" }}
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#dae1dd] px-4 font-mono text-sm text-[#1f443d] transition-colors duration-500"
       aria-live="polite"
       aria-busy="true"
     >
-      <div className="glass-card w-full max-w-5xl rounded-xl border border-highlight/25 bg-bg/90 p-4 text-highlight shadow-[0_20px_60px_rgba(18,48,42,0.22)] sm:p-6">
+      <div className="glass-card w-full max-w-5xl rounded-xl border border-highlight/25 bg-bg/95 p-4 text-highlight shadow-[0_20px_80px_rgba(18,48,42,0.25)] sm:p-6">
         <div className="mb-4 flex items-center justify-between border-b border-highlight/20 pb-3 text-[11px] text-highlight/75">
           <p>{profile.initials.toLowerCase()}@secure-shell: ~</p>
           <div className="flex items-center gap-3">
-            <p>session: bootloader</p>
-            <button type="button" onClick={onDone} className="mi-interactive rounded border border-highlight/25 px-2 py-0.5 text-[10px]">
+            <p>session: v0.4.2</p>
+            <button
+              type="button"
+              onClick={() => completeRef.current()}
+              className="mi-interactive rounded border border-highlight/25 bg-highlight/5 px-2 py-0.5 text-[10px] hover:bg-highlight/10"
+            >
               Skip
             </button>
           </div>
@@ -118,28 +137,28 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
           {profile.initials}
         </pre>
 
-        <div className="max-h-[42vh] space-y-2 overflow-y-auto text-xs sm:text-sm">
+        <div className="max-h-[42vh] space-y-2 overflow-y-auto font-mono text-xs sm:text-sm">
           {LINES.map((line, i) => (
             <div key={line} className="min-h-[1.25rem] text-highlight/90">
               <span className="mr-2 text-highlight/55">&gt;</span>
               {linesShown[i] ?? ""}
               {linesShown[i] !== line && linesShown[i] !== undefined ? (
-                <span className="animate-pulse">_</span>
+                <span className="inline-block h-4 w-1 animate-pulse bg-accent align-middle" />
               ) : null}
             </div>
           ))}
         </div>
 
         <div className="mt-9">
-          <div className="h-2.5 w-full rounded-full bg-surface/45">
+          <div className="h-1.5 w-full rounded-full bg-surface/30">
             <div
-              className="h-full rounded-full bg-accent transition-[width] duration-200 ease-linear"
+              className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-highlight/70">
+          <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-highlight/70">
             <span>{statusText}</span>
-            <span>{progress}%</span>
+            <span className="text-accent">{progress}%</span>
           </div>
         </div>
       </div>

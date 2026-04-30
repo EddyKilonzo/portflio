@@ -12,7 +12,10 @@ const COLORS: Record<RoleMode, number> = {
 
 export function RoleParticles({ mode }: { mode: RoleMode }) {
   const mountRef = useRef<HTMLDivElement>(null);
+  // Hold material ref so color updates never recreate the WebGL context
+  const matRef = useRef<THREE.PointsMaterial | null>(null);
 
+  // Three.js setup — runs once, never on mode change
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
@@ -32,11 +35,12 @@ export function RoleParticles({ mode }: { mode: RoleMode }) {
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 6;
+      pos[i * 3]     = (Math.random() - 0.5) * 6;
       pos[i * 3 + 1] = (Math.random() - 0.5) * 4;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 2;
     }
     geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+
     const mat = new THREE.PointsMaterial({
       color: COLORS[mode],
       size: 0.035,
@@ -44,15 +48,15 @@ export function RoleParticles({ mode }: { mode: RoleMode }) {
       opacity: 0.22,
       depthWrite: false,
     });
+    matRef.current = mat;
+
     const pts = new THREE.Points(geo, mat);
     scene.add(pts);
 
     let raf = 0;
     const t0 = performance.now();
     const tick = (t: number) => {
-      const e = (t - t0) * 0.001;
-      pts.rotation.y = e * 0.08;
-      mat.color.setHex(COLORS[mode]);
+      pts.rotation.y = (t - t0) * 0.00008;
       renderer.render(scene, camera);
       raf = requestAnimationFrame(tick);
     };
@@ -73,8 +77,16 @@ export function RoleParticles({ mode }: { mode: RoleMode }) {
       geo.dispose();
       mat.dispose();
       renderer.dispose();
-      mount.removeChild(renderer.domElement);
+      matRef.current = null;
+      if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Color update — no canvas recreation, just swap the material color
+  useEffect(() => {
+    if (matRef.current) {
+      matRef.current.color.setHex(COLORS[mode]);
+    }
   }, [mode]);
 
   return (

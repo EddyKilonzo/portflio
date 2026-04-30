@@ -1,4 +1,4 @@
-const CACHE = "portfolio-shell-v1";
+const CACHE = "portfolio-shell-v2";
 const OFFLINE_URL = "/offline";
 const SHELL = ["/", OFFLINE_URL, "/icon.svg"];
 
@@ -22,7 +22,20 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
+  const url = new URL(request.url);
   if (request.method !== "GET") return;
+
+  // Never cache Next.js build assets/chunks. They are content-hashed and can
+  // change between builds, and stale cache here causes ChunkLoadError.
+  if (
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".css")
+  ) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request).catch(() => caches.match(OFFLINE_URL)),

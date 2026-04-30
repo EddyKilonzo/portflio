@@ -4,45 +4,10 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { useMemo } from "react";
-
-type Testimonial = {
-  id: string;
-  quote: string;
-  name: string;
-  role: string;
-};
-
-const testimonials: Testimonial[] = [
-  {
-    id: "t1",
-    quote:
-      "Eddy consistently turns ambiguous requirements into polished delivery, with a security-first mindset baked into the process - not bolted on after.",
-    name: "Product Lead",
-    role: "Client / Delivery Partner",
-  },
-  {
-    id: "t2",
-    quote:
-      "What stands out is the clarity: clean architecture, observable systems, and walkthroughs that make teams faster the next time around.",
-    name: "Engineering Manager",
-    role: "Backend & Platform",
-  },
-  {
-    id: "t3",
-    quote:
-      "Great balance of creative UI craft and practical engineering. The result is work that feels premium and remains maintainable.",
-    name: "Design Systems Lead",
-    role: "Frontend / UX",
-  },
-];
+import { testimonials } from "@/content/portfolio";
 
 export function TestimonialsSection() {
   const sectionRef = useSectionReveal(14);
-  const randomized = useMemo(() => {
-    // Keep stable output per mount; avoids layout shift from re-sorting each render.
-    return testimonials;
-  }, []);
 
   return (
     <section
@@ -72,7 +37,7 @@ export function TestimonialsSection() {
         </ParallaxDrift>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {randomized.map((t, idx) => (
+          {testimonials.map((t, idx) => (
             <div
               key={t.id}
               className="glass-card rounded-2xl p-6"
@@ -84,7 +49,9 @@ export function TestimonialsSection() {
               </p>
               <div className="mt-5">
                 <p className="font-display text-lg text-highlight">{t.name}</p>
-                <p className="mt-1 font-mono text-xs text-highlight/55">{t.role}</p>
+                <p className="mt-0.5 font-mono text-xs text-highlight/55">
+                  {t.role}{t.company ? ` · ${t.company}` : ""}
+                </p>
               </div>
             </div>
           ))}

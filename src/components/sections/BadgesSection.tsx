@@ -6,7 +6,6 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 
 type GhPinnedRepo = { stars: number };
 type GhStats = {
@@ -158,18 +157,16 @@ export function BadgesSection() {
               GitHub
             </p>
             <div className="mt-4 space-y-3">
-              <Image
-                src={`https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=111827`}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://img.shields.io/badge/GitHub-Profile-181717?style=for-the-badge&logo=github&logoColor=white&labelColor=111827"
                 alt="GitHub profile badge"
-                width={226}
-                height={32}
                 className="h-8 w-auto"
               />
-              <Image
-                src={`https://img.shields.io/badge/Focus-Software%20Engineering-2e7a5a?style=for-the-badge`}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://img.shields.io/badge/Focus-Software%20Engineering-2e7a5a?style=for-the-badge"
                 alt="Software engineering focus badge"
-                width={304}
-                height={32}
                 className="h-8 w-auto"
               />
             </div>
@@ -188,18 +185,16 @@ export function BadgesSection() {
               TryHackMe + Hack The Box
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="https://img.shields.io/badge/TryHackMe-Profile-212C42?style=for-the-badge&logo=tryhackme&logoColor=white"
                 alt="TryHackMe profile badge"
-                width={245}
-                height={32}
                 className="h-8 w-auto"
               />
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="https://img.shields.io/badge/HackTheBox-Profile-111927?style=for-the-badge&logo=hackthebox&logoColor=9FEF00"
                 alt="Hack The Box profile badge"
-                width={260}
-                height={32}
                 className="h-8 w-auto"
               />
             </div>

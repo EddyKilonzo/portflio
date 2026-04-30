@@ -13,11 +13,13 @@ type Props = {
   selector?: string;
   /** Stagger seconds between each child. Default: 0.09 */
   stagger?: number;
+  /** Duration per item in seconds. Default: 0.65 */
+  duration?: number;
   /** Distance to slide from. Default: 28 */
   distance?: number;
   /** Slide direction. Default: "up" */
   from?: "up" | "down" | "left" | "right";
-  /** When to start. Default: "top 88%" */
+  /** When to start. Default: "top 87%" */
   start?: string;
 };
 
@@ -26,9 +28,10 @@ export function StaggerReveal({
   className = "",
   selector = "> *",
   stagger = 0.09,
+  duration = 0.65,
   distance = 28,
   from = "up",
-  start = "top 88%",
+  start = "top 87%",
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -55,14 +58,15 @@ export function StaggerReveal({
       x: from === "left" ? distance : from === "right" ? -distance : 0,
     };
 
-    gsap.set(items, { opacity: 1 });
+    gsap.set(items, fromVars);
 
-    const tween = gsap.from(items, {
-      ...fromVars,
-      duration: 0.65,
+    const tween = gsap.to(items, {
+      opacity: 1,
+      y: 0,
+      x: 0,
+      duration,
       ease: "power3.out",
       stagger,
-      immediateRender: false,
       clearProps: "transform,opacity",
       scrollTrigger: {
         trigger: container,
@@ -75,8 +79,9 @@ export function StaggerReveal({
     return () => {
       tween.scrollTrigger?.kill();
       tween.kill();
+      gsap.set(items, { clearProps: "all" });
     };
-  }, [selector, stagger, distance, from, start]);
+  }, [selector, stagger, duration, distance, from, start]);
 
   return (
     <div ref={ref} className={className}>

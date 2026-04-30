@@ -4,25 +4,14 @@ import { profile } from "@/content/portfolio";
 import { scrambleText } from "@/lib/scramble";
 import { useTheme } from "@/context/ThemeContext";
 import { animate, stagger } from "animejs";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { AppModal } from "@/components/ui/AppModal";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import {
-  getParallaxScaleForWidth,
-  getParallaxScrubForWidth,
-  motionTokens,
-} from "@/lib/motion-tokens";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const HeroScene = dynamic(
-  () => import("./HeroScene").then((m) => m.HeroScene),
-  { ssr: false },
-);
 const INTRO_LINE =
   "I build secure, scalable digital experiences across cyber, software, and web.";
 
@@ -41,12 +30,17 @@ function TypedName({
   reducedMotion,
   start,
   onDone,
+  blinkAfterDone = true,
 }: {
   name: string;
   reducedMotion: boolean;
   start: boolean;
   onDone?: () => void;
+  blinkAfterDone?: boolean;
 }) {
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
   const [displayed, setDisplayed] = useState(reducedMotion ? name : "");
   const [cursorVisible, setCursorVisible] = useState(!reducedMotion);
   const [typing, setTyping] = useState(!reducedMotion);
@@ -62,31 +56,41 @@ function TypedName({
       setDisplayed(name);
       setCursorVisible(false);
       setTyping(false);
-      onDone?.();
+      onDoneRef.current?.();
       return;
     }
     setDisplayed("");
     setCursorVisible(true);
     setTyping(true);
-    let i = 0;
-    const timer = setInterval(() => {
-      i++;
-      setDisplayed(name.slice(0, i));
-      if (i >= name.length) {
-        clearInterval(timer);
-        setTyping(false);
-        onDone?.();
+
+    const MS_PER_CHAR = 72;
+    const startT = performance.now();
+    let raf = 0;
+    let lastShown = 0;
+
+    const tick = (now: number) => {
+      const n = Math.min(name.length, Math.floor((now - startT) / MS_PER_CHAR));
+      if (n !== lastShown) {
+        lastShown = n;
+        setDisplayed(name.slice(0, n));
       }
-    }, 112);
-    return () => clearInterval(timer);
-  }, [name, reducedMotion, onDone, start]);
+      if (n < name.length) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        setTyping(false);
+        onDoneRef.current?.();
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [name, reducedMotion, start]);
 
   // After typing finishes, blink; during typing keep cursor solid
   useEffect(() => {
-    if (typing) return;
+    if (typing || !blinkAfterDone) return;
     const id = setInterval(() => setCursorVisible((c) => !c), 530);
     return () => clearInterval(id);
-  }, [typing]);
+  }, [blinkAfterDone, typing]);
 
   return (
     <span>
@@ -113,9 +117,9 @@ export function HeroSection({
   const [sub, setSub] = useState("");
   const [introLineText, setIntroLineText] = useState(reducedMotion ? INTRO_LINE : "");
   const [firstLineDone, setFirstLineDone] = useState(false);
+  const [secondLineDone, setSecondLineDone] = useState(false);
   const [cvModalOpen, setCvModalOpen] = useState(false);
   const [heroLanded, setHeroLanded] = useState(false);
-  const [sceneReady, setSceneReady] = useState(false);
   const shellRef = useRef<HTMLDivElement>(null);
   const photoCardRef = useRef<HTMLDivElement>(null);
   const photoImgWrapRef = useRef<HTMLDivElement>(null);
@@ -129,8 +133,6 @@ export function HeroSection({
   const introLineRef = useRef<HTMLParagraphElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const pillarsRef = useRef<HTMLDivElement>(null);
-  const bgLayerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!isActive) {
       setHeroLanded(false);
@@ -142,7 +144,7 @@ export function HeroSection({
     }
     const shell = shellRef.current;
     if (!shell) return;
-    const fallback = window.setTimeout(() => setHeroLanded(true), 650);
+    const fallback = window.setTimeout(() => setHeroLanded(true), 150);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
@@ -161,26 +163,15 @@ export function HeroSection({
 
   useEffect(() => {
     if (!isActive) {
-      setSceneReady(false);
-      return;
-    }
-    if (reducedMotion || lowEnd) {
-      setSceneReady(false);
-      return;
-    }
-    const id = window.setTimeout(() => setSceneReady(true), 500);
-    return () => window.clearTimeout(id);
-  }, [isActive, reducedMotion, lowEnd]);
-
-  useEffect(() => {
-    if (!isActive) {
       setFirstLineDone(false);
+      setSecondLineDone(false);
       setSub("");
       setIntroLineText(reducedMotion ? INTRO_LINE : "");
       return;
     }
     if (reducedMotion) {
       setFirstLineDone(true);
+      setSecondLineDone(true);
       setSub(profile.headlineScramble);
       setIntroLineText(INTRO_LINE);
     }
@@ -191,20 +182,25 @@ export function HeroSection({
       setIntroLineText(INTRO_LINE);
       return;
     }
-    if (!isActive || !heroLanded || !firstLineDone) {
+    if (!isActive || !heroLanded || !secondLineDone) {
       setIntroLineText("");
       return;
     }
-    let i = 0;
-    const timer = window.setInterval(() => {
-      i += 1;
-      setIntroLineText(INTRO_LINE.slice(0, i));
-      if (i >= INTRO_LINE.length) {
-        window.clearInterval(timer);
+    const CHAR_INTERVAL = 22;
+    const t0 = performance.now();
+    let rafId = 0;
+    let lastN = -1;
+    const tick = (now: number) => {
+      const n = Math.min(INTRO_LINE.length, Math.floor((now - t0) / CHAR_INTERVAL));
+      if (n !== lastN) {
+        lastN = n;
+        setIntroLineText(INTRO_LINE.slice(0, n));
       }
-    }, 16);
-    return () => window.clearInterval(timer);
-  }, [firstLineDone, heroLanded, isActive, reducedMotion]);
+      if (n < INTRO_LINE.length) rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [heroLanded, isActive, reducedMotion, secondLineDone]);
 
   useEffect(() => {
     const onScroll = () => onFirstScroll();
@@ -218,49 +214,22 @@ export function HeroSection({
       setSub(profile.headlineScramble);
       return;
     }
-    scrambleText(
-      profile.headlineScramble,
-      1400,
-      setSub,
-      () => {
-        if (ctaRef.current) {
-          const buttons = ctaRef.current.querySelectorAll("button");
-          animate(buttons, {
-            opacity: [0, 1],
-            y: [20, 0],
-            delay: stagger(90),
-            duration: 550,
-            ease: "out(3)",
-          });
-        }
-      },
-    );
+    scrambleText(profile.headlineScramble, 1400, setSub, () => {
+      if (ctaRef.current) {
+        const buttons = ctaRef.current.querySelectorAll("button");
+        animate(buttons, {
+          opacity: [0, 1],
+          y: [20, 0],
+          delay: stagger(90),
+          duration: 550,
+          ease: "out(3)",
+        });
+      }
+    });
   }, [reducedMotion]);
 
-  useEffect(() => {
-    if (reducedMotion) return;
-    const photoCard = photoCardRef.current;
-    const section = shellRef.current;
-    if (!photoCard || !section) return;
-
-    const onScroll = () => {
-      const rect = section.getBoundingClientRect();
-      const vh = window.innerHeight || 1;
-      const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)));
-      const y = 20 - progress * 26;
-      const scale = 0.985 + progress * 0.03;
-      animate(photoCard, {
-        translateY: y,
-        scale,
-        duration: 320,
-        ease: "out(3)",
-      });
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [reducedMotion]);
+  // Photo card scroll parallax is handled by the GSAP ScrollTrigger below —
+  // no separate anime.js scroll listener needed.
 
   useEffect(() => {
     if (reducedMotion || lowEnd) return;
@@ -275,108 +244,50 @@ export function HeroSection({
     if (!section || !leftCol || !rightCol || !photoCard || !photoImgWrap || !photoOverlay)
       return;
 
+    // RAF gate — only one batch of tweens per rendered frame regardless of
+    // how many pointermove events fire (can be 120+/sec on high-refresh displays).
+    let rafId = 0;
+    let pendingNx = 0;
+    let pendingNy = 0;
+
+    const flush = () => {
+      rafId = 0;
+      const nx = pendingNx;
+      const ny = pendingNy;
+      // gsap.to with overwrite:"auto" cancels any in-flight tween on the same
+      // target+property before starting the new one — no tween pile-up.
+      gsap.to(leftCol, { x: nx * -12, y: ny * -8, duration: 0.38, ease: "power3.out", overwrite: "auto" as const });
+      gsap.to(rightCol, { x: nx * 16, y: ny * 10, duration: 0.42, ease: "power3.out", overwrite: "auto" as const });
+      gsap.to(photoCard, { rotateY: nx * 4.6, rotateX: ny * -3.1, duration: 0.46, ease: "power3.out", overwrite: "auto" as const });
+      gsap.to(photoImgWrap, { scale: 1.05 + Math.abs(nx) * 0.02, x: nx * 13, y: ny * 8, duration: 0.46, ease: "power3.out", overwrite: "auto" as const });
+      gsap.to(photoOverlay, { x: nx * 8, y: ny * 6, duration: 0.45, ease: "power3.out", overwrite: "auto" as const });
+      if (chips) gsap.to(chips, { x: nx * -5, y: ny * -3, duration: 0.36, ease: "power3.out", overwrite: "auto" as const });
+      if (pillars) gsap.to(pillars, { x: nx * -7, y: ny * -4, duration: 0.38, ease: "power3.out", overwrite: "auto" as const });
+    };
+
     const onMove = (e: PointerEvent) => {
       const rect = section.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
-      const nx = (e.clientX - rect.left) / rect.width - 0.5;
-      const ny = (e.clientY - rect.top) / rect.height - 0.5;
-
-      animate(leftCol, {
-        translateX: nx * -12,
-        translateY: ny * -8,
-        duration: 380,
-        ease: "out(3)",
-      });
-      animate(rightCol, {
-        translateX: nx * 16,
-        translateY: ny * 10,
-        duration: 420,
-        ease: "out(3)",
-      });
-      animate(photoCard, {
-        rotateY: nx * 4.6,
-        rotateX: ny * -3.1,
-        duration: 460,
-        ease: "out(3)",
-      });
-      animate(photoImgWrap, {
-        scale: 1.05 + Math.abs(nx) * 0.02,
-        translateX: nx * 13,
-        translateY: ny * 8,
-        duration: 460,
-        ease: "out(3)",
-      });
-      animate(photoOverlay, {
-        translateX: nx * 8,
-        translateY: ny * 6,
-        duration: 450,
-        ease: "out(3)",
-      });
-      if (chips) {
-        animate(chips, {
-          translateX: nx * -5,
-          translateY: ny * -3,
-          duration: 360,
-          ease: "out(3)",
-        });
-      }
-      if (pillars) {
-        animate(pillars, {
-          translateX: nx * -7,
-          translateY: ny * -4,
-          duration: 380,
-          ease: "out(3)",
-        });
-      }
+      pendingNx = (e.clientX - rect.left) / rect.width - 0.5;
+      pendingNy = (e.clientY - rect.top) / rect.height - 0.5;
+      if (!rafId) rafId = requestAnimationFrame(flush);
     };
 
     const onLeave = () => {
-      animate([leftCol, rightCol], {
-        translateX: 0,
-        translateY: 0,
-        duration: 450,
-        ease: "out(4)",
-      });
-      animate(photoCard, {
-        rotateX: 0,
-        rotateY: 0,
-        duration: 480,
-        ease: "out(4)",
-      });
-      animate(photoImgWrap, {
-        scale: 1,
-        translateX: 0,
-        translateY: 0,
-        duration: 480,
-        ease: "out(4)",
-      });
-      animate(photoOverlay, {
-        translateX: 0,
-        translateY: 0,
-        duration: 480,
-        ease: "out(4)",
-      });
-      if (chips) {
-        animate(chips, {
-          translateX: 0,
-          translateY: 0,
-          duration: 420,
-          ease: "out(4)",
-        });
-      }
-      if (pillars) {
-        animate(pillars, {
-          translateX: 0,
-          translateY: 0,
-          duration: 450,
-          ease: "out(4)",
-        });
-      }
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+      const leaveOpts = { duration: 0.48, ease: "power3.out", overwrite: "auto" as const };
+      gsap.to([leftCol, rightCol], { x: 0, y: 0, ...leaveOpts });
+      gsap.to(photoCard, { rotateX: 0, rotateY: 0, ...leaveOpts });
+      gsap.to(photoImgWrap, { scale: 1, x: 0, y: 0, ...leaveOpts });
+      gsap.to(photoOverlay, { x: 0, y: 0, ...leaveOpts });
+      if (chips) gsap.to(chips, { x: 0, y: 0, ...leaveOpts });
+      if (pillars) gsap.to(pillars, { x: 0, y: 0, ...leaveOpts });
     };
 
     section.addEventListener("pointermove", onMove);
     section.addEventListener("pointerleave", onLeave);
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       section.removeEventListener("pointermove", onMove);
       section.removeEventListener("pointerleave", onLeave);
     };
@@ -384,57 +295,15 @@ export function HeroSection({
 
   useEffect(() => {
     if (!isActive || reducedMotion || !heroLanded) return;
-    const shell = shellRef.current;
-    const leftCol = leftColRef.current;
-    const rightCol = rightColRef.current;
     const stats = statsRef.current;
-    const subtitle = subtitleRef.current;
-    const introLine = introLineRef.current;
     const cta = ctaRef.current;
     const chips = chipsRef.current;
     const pillars = pillarsRef.current;
     const overlay = photoOverlayRef.current;
-    if (
-      !shell ||
-      !leftCol ||
-      !rightCol ||
-      !stats ||
-      !subtitle ||
-      !introLine ||
-      !cta ||
-      !chips ||
-      !pillars
-    )
-      return;
+    if (!stats || !cta || !chips || !pillars) return;
 
-    animate(shell, {
-      opacity: [0, 1],
-      y: [34, 0],
-      duration: 620,
-      ease: "out(4)",
-    });
-    animate(leftCol, {
-      opacity: [0, 1],
-      x: [-34, 0],
-      duration: 760,
-      delay: 100,
-      ease: "out(3)",
-    });
-    animate(rightCol, {
-      opacity: [0, 1],
-      x: [34, 0],
-      scale: [0.93, 1],
-      duration: 840,
-      delay: 200,
-      ease: "out(4)",
-    });
-    animate(stats.children, {
-      opacity: [0, 1],
-      y: [14, 0],
-      delay: stagger(90, { start: 380 }),
-      duration: 480,
-      ease: "out(3)",
-    });
+    // We rely on CSS transitions for the main containers (shell, leftCol, rightCol).
+    // These animejs calls handle staggered children that don't have CSS transitions.
     animate(chips.children, {
       opacity: [0, 1],
       y: [12, 0],
@@ -448,20 +317,6 @@ export function HeroSection({
       delay: stagger(90, { start: 340 }),
       duration: 520,
       ease: "out(3)",
-    });
-    animate(subtitle, {
-      opacity: [0, 1],
-      y: [10, 0],
-      duration: 500,
-      delay: 300,
-      ease: "out(3)",
-    });
-    animate(introLine, {
-      opacity: [0, 1],
-      y: [16, 0],
-      duration: 620,
-      delay: 260,
-      ease: "out(4)",
     });
     animate(cta, {
       opacity: [0, 1],
@@ -482,32 +337,9 @@ export function HeroSection({
     }
   }, [heroLanded, isActive, reducedMotion]);
 
-  useEffect(() => {
-    if (reducedMotion || lowEnd) return;
-    const section = shellRef.current;
-    const bg = bgLayerRef.current;
-    const left = leftColRef.current;
-    const right = rightColRef.current;
-    const photo = photoCardRef.current;
-    if (!section || !bg || !left || !right || !photo) return;
-    const scale = getParallaxScaleForWidth(window.innerWidth || 1024);
-    const scrub = getParallaxScrubForWidth(window.innerWidth || 1024);
-    const st = ScrollTrigger.create({
-      trigger: section,
-      start: "top top",
-      end: "bottom top",
-      scrub,
-      onUpdate: (self) => {
-        const p = self.progress;
-        gsap.set(bg, { y: -(motionTokens.parallax.hero.bg * scale) * p });
-        gsap.set(section, { y: -(motionTokens.parallax.hero.shell * scale) * p });
-        gsap.set(left, { y: -(motionTokens.parallax.hero.left * scale) * p });
-        gsap.set(right, { y: -(motionTokens.parallax.hero.right * scale) * p });
-        gsap.set(photo, { y: -(motionTokens.parallax.hero.photo * scale) * p });
-      },
-    });
-    return () => st.kill();
-  }, [lowEnd, reducedMotion]);
+  // Scroll parallax for hero elements removed to improve scroll performance
+  // and maintain a cleaner native-scroll feel. 
+  // Background parallax in PortfolioPage is preserved.
 
   // Theme-adaptive panel backgrounds
   const outerPanel = light
@@ -518,10 +350,6 @@ export function HeroSection({
     : "bg-[#050b16]/92 border-highlight/10";
   const headText = light ? "text-[#0d1f1a]" : "text-white";
   const mutedText = light ? "text-[#0d1f1a]/60" : "text-highlight/75";
-  const statCard = light
-    ? "bg-black/5 border-black/12"
-    : "bg-black/35 border-highlight/15";
-  const statNum = light ? "text-[#0d1f1a]" : "text-white";
   const glowLine = light
     ? "bg-[radial-gradient(circle_at_15%_18%,rgba(76,158,255,0.10),transparent_48%),radial-gradient(circle_at_76%_36%,rgba(46,122,90,0.12),transparent_52%)]"
     : "bg-[radial-gradient(circle_at_15%_18%,rgba(76,158,255,0.18),transparent_48%),radial-gradient(circle_at_76%_36%,rgba(168,217,184,0.20),transparent_52%)]";
@@ -554,17 +382,6 @@ export function HeroSection({
       data-section="hero"
       className="relative min-h-screen scroll-mt-16 overflow-hidden px-0 pb-0 pt-0 section-bg"
     >
-      {/* Three.js background (fully passive) */}
-      <div ref={bgLayerRef} className="pointer-events-none absolute inset-0 z-0 opacity-30">
-        {sceneReady ? (
-          <HeroScene
-            scrollProgressRef={scrollProgressRef}
-            lowEnd={lowEnd}
-            reducedMotion={reducedMotion}
-          />
-        ) : null}
-      </div>
-
       {/* Floating IP / binary ambient text */}
       <div className="pointer-events-none absolute inset-0 z-[1] overflow-hidden opacity-60">
         {["192.168.4.21", "10.0.33.7", "172.16.0.42"].map((ip, i) => (
@@ -598,8 +415,13 @@ export function HeroSection({
 
       <div
         ref={shellRef}
-        className="relative z-10 w-full"
-        style={{ opacity: 1 }}
+        className={`relative z-10 w-full will-change-[opacity,transform] motion-reduce:transition-none ${
+          reducedMotion
+            ? "opacity-100"
+            : heroLanded
+              ? "translate-y-0 opacity-100 transition-[opacity,transform] duration-[720ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+              : "translate-y-9 opacity-0 transition-none"
+        }`}
       >
         <div
           className={`relative w-full overflow-hidden border-y p-0 transition-colors duration-500 ${outerPanel}`}
@@ -629,13 +451,20 @@ export function HeroSection({
             </div>
 
             {/* ── Left column ── */}
+            {/* Outer: GSAP scroll + tilt; inner: CSS entrance (no transform fight). */}
             <div
               ref={leftColRef}
-              className="relative z-[3] flex flex-col justify-between lg:col-span-7"
-              style={{ opacity: 1 }}
-              data-aos="fade-right"
-              data-aos-delay="200"
+              className="relative z-[3] lg:col-span-7"
             >
+              <div
+                className={`flex flex-col justify-between will-change-[opacity,transform] motion-reduce:transition-none ${
+                  reducedMotion
+                    ? "translate-x-0 opacity-100"
+                    : heroLanded
+                      ? "translate-x-0 opacity-100 transition-[opacity,transform] delay-100 duration-[760ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      : "-translate-x-[34px] opacity-0 transition-none"
+                }`}
+              >
               <div>
                 {/* Identity badge */}
                 <div className={`mb-7 mt-1 flex items-center gap-3 ${headText}`}>
@@ -664,48 +493,56 @@ export function HeroSection({
                   <br />
                   {/* Line 1: "Eddy Max" */}
                   <span
-                    className={`bg-gradient-to-r bg-clip-text text-transparent ${
+                    className={`bg-gradient-to-r bg-clip-text text-transparent transition-opacity duration-300 ${
                       light
                         ? "from-[#2e7a5a] via-[#3a9e70] to-[#1a5c3a]"
                         : "from-highlight via-accent to-surfaceMid"
                     }`}
                   >
                     <TypedName
-                      name={`${profile.name.split(" ").slice(0, 2).join(" ")}`}
+                      name="Eddy Max"
                       reducedMotion={reducedMotion}
                       start={isActive && heroLanded}
                       onDone={() => setFirstLineDone(true)}
+                      blinkAfterDone={false}
                     />
                   </span>
                   <br />
                   {/* Line 2: "Kilonzo" — starts only after line 1 finishes */}
                   <span
-                    className={`bg-gradient-to-r bg-clip-text text-transparent ${
+                    className={`bg-gradient-to-r bg-clip-text text-transparent transition-opacity duration-500 ${
                       light
                         ? "from-[#2e7a5a] via-[#3a9e70] to-[#1a5c3a]"
                         : "from-highlight via-accent to-surfaceMid"
-                    }`}
+                    } ${firstLineDone ? "opacity-100" : "opacity-0"}`}
                   >
                     {firstLineDone ? (
                       <TypedName
-                        name={profile.name.split(" ").slice(2).join(" ")}
+                        name="Kilonzo"
                         reducedMotion={reducedMotion}
                         start={isActive && heroLanded && firstLineDone}
-                        onDone={startSubtitle}
+                        onDone={() => {
+                          setSecondLineDone(true);
+                          startSubtitle();
+                        }}
+                        blinkAfterDone={false}
                       />
                     ) : (
                       /* invisible placeholder keeps layout stable */
-                      <span className="invisible">
-                        {profile.name.split(" ").slice(2).join(" ")}
-                      </span>
+                      <span className="invisible">Kilonzo</span>
                     )}
                   </span>
                 </h1>
 
                 <p
                   ref={introLineRef}
-                  className={`hero-introline mt-3 font-sans text-base sm:text-lg ${mutedText}`}
-                  style={{ opacity: reducedMotion ? 1 : 0 }}
+                  className={`hero-introline mt-3 font-sans text-base sm:text-lg ${mutedText} will-change-[opacity,transform] motion-reduce:transition-none ${
+                    reducedMotion
+                      ? "opacity-100"
+                      : heroLanded
+                        ? "translate-y-0 opacity-100 transition-[opacity,transform] delay-[260ms] duration-[620ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                        : "translate-y-4 opacity-0 transition-none"
+                  }`}
                 >
                   {introLineText}
                 </p>
@@ -800,45 +637,38 @@ export function HeroSection({
                 {/* Subtitle scramble */}
                 <p
                   ref={subtitleRef}
-                  className={`mt-6 min-h-[1.6em] max-w-2xl font-sans text-lg ${mutedText}`}
-                  style={{ opacity: 1 }}
+                  className={`mt-6 min-h-[1.6em] max-w-2xl font-sans text-lg ${mutedText} will-change-[opacity,transform] motion-reduce:transition-none ${
+                    reducedMotion
+                      ? "translate-y-0 opacity-100"
+                      : heroLanded
+                        ? "translate-y-0 opacity-100 transition-[opacity,transform] delay-[300ms] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                        : "translate-y-2.5 opacity-0 transition-none"
+                  }`}
                 >
                   {sub}
                 </p>
               </div>
 
-              {/* Stats row */}
               <div
                 ref={statsRef}
-                className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3"
+                className="hidden"
               >
-                {[
-                  ["23", "Security Findings"],
-                  ["84", "Labs / CTF Solved"],
-                  ["12", "Client Projects Delivered"],
-                ].map(([n, label]) => (
-                  <div
-                    key={label}
-                    className={`interactive-card rounded-xl border px-4 py-3 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 ${statCard}`}
-                    style={{ opacity: 1 }}
-                  >
-                    <p className={`font-display text-4xl font-semibold leading-none ${statNum}`}>
-                      {n}
-                    </p>
-                    <p className={`mt-1 font-sans text-sm ${mutedText}`}>{label}</p>
-                  </div>
-                ))}
+                {/* Stats row removed as requested */}
+              </div>
               </div>
             </div>
 
             {/* ── Right column (portrait frame) ── */}
-            <div
-              ref={rightColRef}
-              className="relative mt-4 flex flex-col items-center justify-start lg:col-span-5 lg:-mt-6"
-              style={{ opacity: 1 }}
-              data-aos="fade-left"
-              data-aos-delay="400"
-            >
+            <div ref={rightColRef} className="relative mt-8 lg:col-span-5 lg:mt-6">
+              <div
+                className={`flex flex-col items-center justify-start will-change-[opacity,transform] motion-reduce:transition-none ${
+                  reducedMotion
+                    ? "translate-x-0 scale-100 opacity-100"
+                    : heroLanded
+                      ? "translate-x-0 scale-100 opacity-100 transition-[opacity,transform] delay-200 duration-[840ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      : "translate-x-[34px] scale-[0.93] opacity-0 transition-none"
+                }`}
+              >
               <div
                 ref={photoCardRef}
                 className={`hero-person-frame relative h-[420px] sm:h-[540px] w-full max-w-[470px] overflow-hidden rounded-[28px] border transition-colors duration-500 ${frameInner.split(" ")[0]} ${frameBg}`}
@@ -897,6 +727,7 @@ export function HeroSection({
                     CV
                   </MagneticButton>
                 </div>
+              </div>
               </div>
             </div>
 

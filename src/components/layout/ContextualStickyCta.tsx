@@ -56,7 +56,7 @@ export function ContextualStickyCta() {
     label: "View Projects",
     hint: "Jump to project track.",
     action: () => {
-      jumpTo("projects");
+      jumpTo("project-track");
       emitToast("Navigating to Projects", "info");
     },
   }, [activeSection]);

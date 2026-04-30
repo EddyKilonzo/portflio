@@ -5,10 +5,8 @@ import { cveLog, profile } from "@/content/portfolio";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { MagneticAnchor } from "@/components/ui/MagneticButton";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
-import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 
 const CyberDemo = dynamic(
@@ -20,19 +18,15 @@ const CyberDemo = dynamic(
         <div className="space-y-2">
           <div className="h-3 w-24 animate-pulse rounded bg-surface/35" />
           <div className="h-64 animate-pulse rounded-xl border border-highlight/15 bg-surface/20" />
-          <div className="h-2 w-40 animate-pulse rounded bg-surface/25" />
         </div>
         <div className="space-y-4">
           <div className="glass-card h-24 animate-pulse rounded-xl p-4" />
           <div className="glass-card h-24 animate-pulse rounded-xl p-4" />
-          <div className="glass-card h-20 animate-pulse rounded-xl p-4" />
         </div>
       </div>
     ),
   },
 );
-
-const levels = ["Low", "Medium", "High", "Critical"] as const;
 
 function severityColor(s: string) {
   if (s === "critical") return "text-red-400 border-red-400/50";
@@ -41,19 +35,37 @@ function severityColor(s: string) {
   return "text-blue-300 border-blue-300/40";
 }
 
+const severityBars = [
+  { label: "Critical", count: profile.bugBounty.severities.critical, bar: "bg-red-500/80",    text: "text-red-400"    },
+  { label: "High",     count: profile.bugBounty.severities.high,     bar: "bg-orange-500/80", text: "text-orange-400" },
+  { label: "Medium",   count: profile.bugBounty.severities.medium,   bar: "bg-yellow-400/80", text: "text-yellow-300" },
+  { label: "Low",      count: profile.bugBounty.severities.low,      bar: "bg-blue-400/80",   text: "text-blue-300"   },
+];
+
+const methodology = [
+  { phase: "01", label: "Recon",   desc: "OSINT, footprinting & attack surface mapping",         accent: "border-t-highlight/40"  },
+  { phase: "02", label: "Scan",    desc: "Port scanning, service enumeration & vuln assessment", accent: "border-t-eng/60"        },
+  { phase: "03", label: "Exploit", desc: "Payload delivery, privesc & lateral movement",          accent: "border-t-cyber/60"      },
+  { phase: "04", label: "Report",  desc: "CVSS scoring, responsible disclosure & remediation",   accent: "border-t-accent/60"     },
+];
+
+const toolsArsenal = [
+  "Burp Suite", "Metasploit", "Wireshark", "Nmap", "Kali Linux",
+  "OWASP ZAP", "Nikto", "SQLmap", "John the Ripper", "Hashcat",
+  "Ghidra", "Shodan", "theHarvester", "Gobuster", "Responder",
+  "BloodHound", "Mimikatz", "Nuclei",
+];
+
 export function CyberShowcaseSection() {
   const sectionRef = useSectionReveal(3);
-  const [threat, setThreat] = useState(1);
+  const total = profile.bugBounty.totalFindings;
 
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setThreat((t) => {
-        const n = t + (Math.random() > 0.5 ? 1 : -1);
-        return Math.max(0, Math.min(3, n));
-      });
-    }, 4000);
-    return () => clearInterval(id);
-  }, []);
+  const stats = [
+    { label: "Bug Findings", value: String(total)              },
+    { label: "HTB Rank",     value: profile.ctf.htbRank        },
+    { label: "THM Rank",     value: profile.ctf.thmRank        },
+    { label: "CTF Solved",   value: String(profile.ctf.solved) },
+  ];
 
   return (
     <section
@@ -61,203 +73,150 @@ export function CyberShowcaseSection() {
       id="cyber"
       data-section="cyber"
       className="relative overflow-hidden py-24 section-bg"
-      style={
-        { "--section-tint": "rgba(255, 76, 76, 0.06)" } as React.CSSProperties
-      }
+      style={{ "--section-tint": "rgba(255, 76, 76, 0.05)" } as React.CSSProperties}
     >
       <SectionNumber n="05" sectionId="cyber" />
       <DecorNetwork />
 
-      <div className="pointer-events-none absolute right-4 top-24 z-[1] hidden h-40 w-40 opacity-90 md:block lg:right-10 lg:top-28 lg:h-48 lg:w-48">
+      <div className="absolute right-4 top-24 z-[1] hidden h-40 w-40 opacity-80 md:block lg:right-10 lg:top-28 lg:h-52 lg:w-52">
         <CyberOrbit className="h-full w-full rounded-2xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
+        {/* Heading */}
         <ParallaxDrift speed={0.1}>
-          <h2 
-            className="glitch-hover mb-10 font-display text-4xl text-highlight md:text-5xl"
+          <h2
+            className="glitch-hover mb-3 font-display text-4xl text-highlight md:text-5xl"
             data-aos="fade-right"
           >
-            Cybersecurity showcase
+            Security &amp; Research
           </h2>
+          <p
+            className="mb-10 max-w-2xl font-sans text-sm text-highlight/65"
+            data-aos="fade-up"
+            data-aos-delay="80"
+          >
+            Bug hunting, CTF competition, responsible disclosure and hands-on penetration testing — a live snapshot of active security work.
+          </p>
         </ParallaxDrift>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="glass-card rounded-2xl p-6 lg:col-span-1" data-aos="fade-up" data-aos-delay="100">
-            <p className="font-mono text-xs text-highlight/50">CTF tracker</p>
-            <p className="mt-2 font-display text-2xl text-highlight">
-              HTB {profile.ctf.htbRank}
-            </p>
-            <p className="font-mono text-sm text-accent">
-              THM {profile.ctf.thmRank}
-            </p>
-            <div className="mt-4 flex gap-4 font-mono text-xs text-highlight/70">
-              <span>Badges {profile.ctf.badges}</span>
-              <span>Solved {profile.ctf.solved}</span>
+        {/* Stat row */}
+        <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {stats.map((s, i) => (
+            <div
+              key={s.label}
+              className="glass-card rounded-2xl p-5 text-center"
+              data-aos="zoom-in"
+              data-aos-delay={i * 70}
+            >
+              <p className="font-display text-3xl text-highlight">{s.value}</p>
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-highlight/50">{s.label}</p>
             </div>
-            <div className="mt-4 h-2 w-full rounded-full bg-surface/40">
-              <div
-                className="h-2 rounded-full bg-cyber transition-all duration-700"
-                style={{
-                  width: `${profile.ctf.progressToNext * 100}%`,
-                }}
-              />
-            </div>
-            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-xs">
-              <MagneticAnchor
-                href={profile.social.htb}
-                target="_blank"
-                rel="noreferrer"
-                className="text-accent underline hover:text-highlight"
-              >
-                Hack The Box profile
-              </MagneticAnchor>
-              <MagneticAnchor
-                href={profile.social.thm}
-                target="_blank"
-                rel="noreferrer"
-                className="text-accent underline hover:text-highlight"
-              >
-                TryHackMe profile
-              </MagneticAnchor>
-              <MagneticAnchor
-                href={profile.social.github}
-                target="_blank"
-                rel="noreferrer"
-                className="text-accent underline hover:text-highlight"
-              >
-                GitHub profile
-              </MagneticAnchor>
-            </div>
-          </div>
+          ))}
+        </div>
 
-          <div className="glass-card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="200">
-            <p className="font-mono text-xs text-highlight/50">Bug bounty</p>
-            <p className="mt-2 text-3xl font-bold text-highlight">
-              {profile.bugBounty.totalFindings}
-            </p>
-            <p className="font-mono text-xs text-highlight/60">findings</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {profile.bugBounty.platforms.map((p) => (
-                <span
-                  key={p}
-                  className="rounded border border-highlight/15 px-2 py-0.5 font-mono text-[10px]"
-                >
-                  {p}
-                </span>
-              ))}
+        {/* Bug bounty + CVE grid */}
+        <div className="mb-8 grid gap-6 lg:grid-cols-2">
+          {/* Bug bounty severity breakdown */}
+          <div className="glass-card space-y-5 rounded-2xl p-6" data-aos="fade-right" data-aos-delay="80">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-mono text-xs text-highlight/50">Bug Bounty</p>
+                <p className="mt-1 font-display text-3xl text-highlight">
+                  {total} <span className="text-lg font-sans text-highlight/55">findings</span>
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {profile.bugBounty.platforms.map((p) => (
+                  <span key={p} className="rounded-full border border-highlight/20 px-2.5 py-0.5 font-mono text-[10px] text-highlight/70">
+                    {p}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="mt-4 grid grid-cols-4 gap-2 text-center font-mono text-[10px]">
-              {(
-                [
-                  ["C", profile.bugBounty.severities.critical],
-                  ["H", profile.bugBounty.severities.high],
-                  ["M", profile.bugBounty.severities.medium],
-                  ["L", profile.bugBounty.severities.low],
-                ] as const
-              ).map(([k, v]) => (
-                <div key={k} className="rounded bg-surface/30 py-2">
-                  <div className="text-lg text-highlight">{v}</div>
-                  {k}
+
+            <div className="space-y-3">
+              {severityBars.map((s) => (
+                <div key={s.label} className="flex items-center gap-3">
+                  <span className={`w-16 shrink-0 font-mono text-[10px] ${s.text}`}>{s.label}</span>
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface/40">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${s.bar}`}
+                      style={{ width: `${Math.round((s.count / total) * 100)}%` }}
+                    />
+                  </div>
+                  <span className={`w-4 text-right font-mono text-xs ${s.text}`}>{s.count}</span>
                 </div>
               ))}
             </div>
-            <p className="mt-3 font-mono text-[10px] text-highlight/50">
-              Hall of fame: {profile.bugBounty.hallOfFame.join(", ")}
-            </p>
-          </div>
 
-          <div className="glass-card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="300">
-            <p className="font-mono text-xs text-highlight/50">
-              Threat level (easter egg)
-            </p>
-            <p className="mt-4 font-display text-3xl text-cyber">
-              {levels[threat]}
-            </p>
             <p className="font-mono text-[10px] text-highlight/40">
-              simulated gauge — slow drift
+              Hall of Fame: {profile.bugBounty.hallOfFame.join(", ")}
             </p>
-          </div>
-        </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <div className="glass-card max-h-80 overflow-y-auto rounded-2xl p-6" data-aos="fade-right" data-aos-delay="400">
-            <p className="mb-4 font-mono text-xs text-highlight/50">
-              CVE & disclosure log
-            </p>
+            <div className="flex flex-wrap gap-4 font-mono text-xs">
+              <MagneticAnchor href={profile.social.htb} target="_blank" rel="noreferrer" className="text-accent underline hover:text-highlight">
+                HTB profile →
+              </MagneticAnchor>
+              <MagneticAnchor href={profile.social.thm} target="_blank" rel="noreferrer" className="text-accent underline hover:text-highlight">
+                THM profile →
+              </MagneticAnchor>
+              <MagneticAnchor href={profile.social.github} target="_blank" rel="noreferrer" className="text-accent underline hover:text-highlight">
+                GitHub →
+              </MagneticAnchor>
+            </div>
+          </div>
+
+          {/* CVE log */}
+          <div className="glass-card max-h-72 overflow-y-auto rounded-2xl p-6" data-aos="fade-left" data-aos-delay="120">
+            <p className="mb-4 font-mono text-xs text-highlight/50">CVE &amp; Disclosure Log</p>
             <ul className="space-y-3">
               {cveLog.map((c) => (
-                <li
-                  key={c.id}
-                  className="border-l-2 border-highlight/20 pl-3 font-mono text-xs"
-                >
-                  <span className={severityColor(c.severity)}>{c.severity}</span>{" "}
+                <li key={c.id} className="border-l-2 border-highlight/20 pl-3 font-mono text-xs leading-relaxed">
+                  <span className={`${severityColor(c.severity)} mr-1`}>{c.severity}</span>
                   {c.cve ?? "responsible disclosure"} — {c.software}{" "}
-                  <span className="text-highlight/50">{c.disclosed}</span>{" "}
+                  <span className="text-highlight/45">{c.disclosed}</span>{" "}
                   <span className="text-accent">{c.status}</span>
                 </li>
               ))}
             </ul>
           </div>
+        </div>
 
-          <div className="glass-card rounded-2xl p-6" data-aos="fade-left" data-aos-delay="500">
-            <p className="font-mono text-xs text-highlight/50">Home lab</p>
-            <p className="mt-2 font-sans text-sm text-highlight/80">
-              {profile.homelab}
-            </p>
-            <svg viewBox="0 0 200 100" className="mt-4 w-full opacity-80">
-              <rect
-                x="10"
-                y="20"
-                width="60"
-                height="40"
-                rx="4"
-                fill="none"
-                stroke="#2E7A5A"
-              />
-              <rect
-                x="90"
-                y="15"
-                width="50"
-                height="50"
-                rx="4"
-                fill="none"
-                stroke="#A8D9B8"
-              />
-              <line
-                x1="70"
-                y1="40"
-                x2="90"
-                y2="40"
-                stroke="#2E7A5A"
-                strokeDasharray="3 2"
-              />
-              <text x="20" y="38" className="fill-highlight/50 font-mono text-[8px]">
-                proxmox
-              </text>
-              <text x="95" y="38" className="fill-highlight/50 font-mono text-[8px]">
-                siem
-              </text>
-            </svg>
+        {/* Penetration testing methodology */}
+        <div className="mb-8" data-aos="fade-up">
+          <p className="mb-4 font-mono text-xs text-highlight/50">Penetration Testing Methodology</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {methodology.map((m, i) => (
+              <div
+                key={m.phase}
+                className={`glass-card rounded-2xl border-t-2 p-5 ${m.accent}`}
+                data-aos="fade-up"
+                data-aos-delay={i * 75}
+              >
+                <p className="mb-1 font-mono text-[10px] text-highlight/35">{m.phase}</p>
+                <p className="font-display text-lg text-highlight">{m.label}</p>
+                <p className="mt-2 font-mono text-[10px] leading-relaxed text-highlight/55">{m.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          {["Pen test walkthrough", "CTF solve", "Tooling demo"].map((t, idx) => (
-            <div key={t} className="glass-card rounded-2xl p-6" data-aos="zoom-in" data-aos-delay={600 + idx * 100}>
-              <p className="font-mono text-xs text-highlight/50">Video</p>
-              <p className="mt-2 font-display text-xl text-highlight">{t}</p>
-              <MagneticButton className="btn-ghost mt-4 w-full text-xs">
-                Watch clip
-              </MagneticButton>
-            </div>
-          ))}
+        {/* Tools Arsenal */}
+        <div className="mb-8" data-aos="fade-up" data-aos-delay="80">
+          <p className="mb-4 font-mono text-xs text-highlight/50">Tools Arsenal</p>
+          <div className="flex flex-wrap gap-2">
+            {toolsArsenal.map((tool) => (
+              <span key={tool} className="glass-pill">
+                {tool}
+              </span>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-10">
-          <p className="mb-2 font-mono text-xs text-highlight/50">
-            Embedded terminal
-          </p>
+        {/* Embedded terminal */}
+        <div data-aos="fade-up" data-aos-delay="100">
+          <p className="mb-2 font-mono text-xs text-highlight/50">Embedded Terminal</p>
           <div className="glass-card overflow-hidden rounded-2xl">
             <CyberDemo />
           </div>

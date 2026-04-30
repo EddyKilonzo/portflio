@@ -3,14 +3,13 @@
 import { certifications, type CertItem } from "@/content/portfolio";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { animate } from "animejs";
+import AOS from "aos";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
-import { motionTokens } from "@/lib/motion-tokens";
-import { useMotionProfile } from "@/hooks/useMotionProfile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,64 +24,15 @@ const categorySummary: Record<(typeof tabs)[number], string> = {
 
 export function CertificationsSection() {
   const sectionRef = useSectionReveal(6);
-  const sectionAnimRef = useRef<HTMLElement | null>(null);
   const [tab, setTab] = useState<(typeof tabs)[number]>("all");
-  const { shouldReduce } = useMotionProfile();
   const list = certifications.filter(
     (c) => tab === "all" || c.category === tab,
   );
 
   useEffect(() => {
-    sectionAnimRef.current = document.getElementById("certs");
-  }, []);
-
-  useEffect(() => {
-    const sectionEl = sectionAnimRef.current;
-    if (!sectionEl) return;
-    const heading = sectionEl.querySelectorAll<HTMLElement>("[data-cert-step='heading']");
-    const controls = sectionEl.querySelectorAll<HTMLElement>("[data-cert-step='controls']");
-    const cards = sectionEl.querySelectorAll<HTMLElement>("[data-cert-step='card']");
-    const all = Array.from(heading).concat(Array.from(controls), Array.from(cards));
-    const st = ScrollTrigger.create({
-      trigger: sectionEl,
-      start: "top 76%",
-      once: true,
-      onEnter: () => {
-        all.forEach((el) => (el.style.willChange = "transform, opacity"));
-        const tl = gsap.timeline({
-          onComplete: () => all.forEach((el) => (el.style.willChange = "auto")),
-        });
-        tl.fromTo(
-          heading,
-          { y: shouldReduce ? 0 : 14, opacity: 0 },
-          { y: 0, opacity: 1, duration: motionTokens.duration.base, ease: motionTokens.ease.standard },
-        ).fromTo(
-          controls,
-          { y: shouldReduce ? 0 : 12, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: motionTokens.duration.base,
-            ease: motionTokens.ease.standard,
-            stagger: shouldReduce ? 0 : motionTokens.stagger.section,
-          },
-          "-=0.1",
-        ).fromTo(
-          cards,
-          { y: shouldReduce ? 0 : 10, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: motionTokens.duration.base,
-            ease: motionTokens.ease.standard,
-            stagger: shouldReduce ? 0 : 0.06,
-          },
-          "-=0.08",
-        );
-      },
-    });
-    return () => st.kill();
-  }, [shouldReduce, tab]);
+    const id = window.setTimeout(() => AOS.refresh(), 80);
+    return () => window.clearTimeout(id);
+  }, [tab, list.length]);
 
   return (
     <section
@@ -96,21 +46,17 @@ export function CertificationsSection() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <ParallaxDrift speed={0.1}>
-          <h2 
-            className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl"
-            data-cert-step="heading"
-          >
-            Certifications & Learning Path
-          </h2>
-          <p 
-            className="mb-4 max-w-3xl font-sans text-highlight/70"
-            data-cert-step="heading"
-          >
-            Structured certification track with active progression in cyber, cloud, and
-            engineering domains.
-          </p>
+          <div data-aos="fade-up">
+            <h2 className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl">
+              Certifications & Learning Path
+            </h2>
+            <p className="mb-4 max-w-3xl font-sans text-highlight/70">
+              Structured certification track with active progression in cyber, cloud, and
+              engineering domains.
+            </p>
+          </div>
         </ParallaxDrift>
-        <div className="mb-4 flex flex-wrap gap-2" data-cert-step="controls">
+        <div className="mb-4 flex flex-wrap gap-2" data-aos="fade-up" data-aos-delay="80">
           <span className="rounded-full border border-highlight/20 px-2 py-0.5 font-mono text-[10px] text-highlight/65">
             Last updated: Apr 2026
           </span>
@@ -119,7 +65,7 @@ export function CertificationsSection() {
           </span>
         </div>
 
-        <div className="mb-8 flex flex-wrap gap-2" data-cert-step="controls">
+        <div className="mb-8 flex flex-wrap gap-2" data-aos="fade-up" data-aos-delay="120">
           {tabs.map((t) => (
             <button
               key={t}
@@ -133,13 +79,13 @@ export function CertificationsSection() {
             </button>
           ))}
         </div>
-        <p className="mb-6 max-w-3xl font-sans text-sm text-highlight/65" data-cert-step="controls">
+        <p className="mb-6 max-w-3xl font-sans text-sm text-highlight/65" data-aos="fade-up" data-aos-delay="140">
           {categorySummary[tab]}
         </p>
 
-        <div className="mb-8 grid gap-4 sm:grid-cols-3" data-cert-step="controls">
+        <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <ParallaxDrift speed={0.05} className="w-full">
-            <div className="glass-card rounded-xl p-4" data-aos="zoom-in" data-aos-delay="300">
+            <div className="glass-card rounded-xl p-4" data-aos="fade-up" data-aos-delay="160">
               <p className="font-mono text-[10px] uppercase tracking-wide text-highlight/50">
                 Total credentials
               </p>
@@ -147,7 +93,7 @@ export function CertificationsSection() {
             </div>
           </ParallaxDrift>
           <ParallaxDrift speed={0.1} className="w-full">
-            <div className="glass-card rounded-xl p-4" data-aos="zoom-in" data-aos-delay="400">
+            <div className="glass-card rounded-xl p-4" data-aos="fade-up" data-aos-delay="220">
               <p className="font-mono text-[10px] uppercase tracking-wide text-highlight/50">
                 In progress
               </p>
@@ -157,7 +103,7 @@ export function CertificationsSection() {
             </div>
           </ParallaxDrift>
           <ParallaxDrift speed={0.15} className="w-full">
-            <div className="glass-card rounded-xl p-4" data-aos="zoom-in" data-aos-delay="500">
+            <div className="glass-card rounded-xl p-4" data-aos="fade-up" data-aos-delay="280">
               <p className="font-mono text-[10px] uppercase tracking-wide text-highlight/50">
                 Security focused
               </p>
@@ -169,8 +115,8 @@ export function CertificationsSection() {
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((c, i) => (
-            <div key={c.id} data-cert-step="card">
-              <CertCard cert={c} index={i} />
+            <div key={c.id} data-aos="fade-up" data-aos-delay={Math.min(i, 12) * 45}>
+              <CertCard cert={c} />
             </div>
           ))}
         </div>
@@ -179,27 +125,10 @@ export function CertificationsSection() {
   );
 }
 
-function CertCard({ cert, index }: { cert: CertItem; index: number }) {
+function CertCard({ cert }: { cert: CertItem }) {
   const wrap = useRef<HTMLDivElement>(null);
   const inner = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = wrap.current;
-    if (!el) return;
-    gsap.fromTo(
-      el,
-      { opacity: 0, y: 32 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.55,
-        delay: index * 0.06,
-        ease: "power2.out",
-        scrollTrigger: { trigger: el, start: "top 85%" },
-      },
-    );
-  }, [index]);
 
   useEffect(() => {
     if (!cert.inProgress || !barRef.current) return;

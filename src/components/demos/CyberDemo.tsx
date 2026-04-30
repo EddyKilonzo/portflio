@@ -1,22 +1,70 @@
 "use client";
 
-import { profile } from "@/content/portfolio";
+import { profile, cveLog } from "@/content/portfolio";
 import { PacketCapture } from "@/components/demos/PacketCapture";
 import { useEffect, useRef, useState } from "react";
 import type { Terminal as XTerm } from "xterm";
 import type { FitAddon as XTermFitAddon } from "xterm-addon-fit";
 
-const cvSummary = `${profile.name} — detection engineering, full-stack shipping, WebGL storytelling.`;
 const quickFacts = [
-  "Security-first software engineer",
-  "Full-stack delivery: web + backend + cloud",
-  "Hands-on cybersecurity labs and reporting",
+  `${profile.bugBounty.totalFindings} bug bounty findings across ${profile.bugBounty.platforms.join(", ")}`,
+  `HTB rank: ${profile.ctf.htbRank} · THM rank: ${profile.ctf.thmRank}`,
+  `${profile.ctf.solved} CTF challenges solved`,
+  "Full-stack delivery with a security-first mindset",
 ];
+
 const commandExamples = [
+  "whoami",
+  "bug-hunt",
+  "cve-log",
   "nmap -sV portfolio.local",
-  "wireshark --read auth_spike.pcap",
   "impact",
 ];
+
+// Varied, realistic threat intel events
+const LIVE_EVENTS = [
+  { tag: "detect",  text: "sigma rule matched: lateral_movement_lsass"        },
+  { tag: "bounty",  text: "HackerOne: P2 finding submitted for triage"         },
+  { tag: "ctf",     text: "HTB machine rooted: Absolute"                       },
+  { tag: "detect",  text: "EDR alert: PowerShell obfuscation pattern"          },
+  { tag: "scan",    text: "Nmap sweep: 3 open ports on test target"            },
+  { tag: "bounty",  text: "Bugcrowd: report escalated to P3"                   },
+  { tag: "ctf",     text: "THM room completed: Carnage"                        },
+  { tag: "report",  text: "CVE draft submitted for vendor review"               },
+  { tag: "detect",  text: "YARA rule authored: ransomware_indicator_v2"        },
+  { tag: "fw",      text: "deny tcp/445 src=10.0.4.12 — SMB blocked"          },
+  { tag: "audit",   text: "authentication log anomaly: 52 events / 4 min"     },
+  { tag: "scan",    text: "Burp Suite: IDOR finding in API endpoint"           },
+  { tag: "ctf",     text: "HTB pro lab milestone: 8 flags"                     },
+  { tag: "detect",  text: "SIEM correlation rule fired: auth_spike"            },
+  { tag: "bounty",  text: "HackerOne: disclosure approved — hall of fame"      },
+  { tag: "report",  text: "pen test report delivered: executive summary ready" },
+];
+
+const TAG_COLORS: Record<string, string> = {
+  detect: "#4C9EFF",
+  bounty: "#A8D9B8",
+  ctf:    "#B794F6",
+  scan:   "#F6E05E",
+  report: "#A8D9B8",
+  fw:     "#FF4C4C",
+  audit:  "#FF9A4C",
+};
+
+type LogEntry = { id: number; tag: string; text: string; ts: string };
+
+const severityColor: Record<string, string> = {
+  critical: "text-red-400",
+  high:     "text-orange-400",
+  medium:   "text-yellow-300",
+  low:      "text-blue-300",
+};
+
+const statusDot: Record<string, string> = {
+  patched:    "bg-emerald-400",
+  disclosed:  "bg-yellow-400",
+  pending:    "bg-orange-400",
+};
 
 function typeLine(term: XTerm, text: string, speed = 12) {
   return new Promise<void>((resolve) => {
@@ -38,10 +86,16 @@ export function CyberDemo() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<XTerm | null>(null);
   const fitRef = useRef<XTermFitAddon | null>(null);
-  const [logs, setLogs] = useState<string[]>([
-    "[siem] correlation rule fired: auth_spike",
-    "[fw] deny tcp/445 src=10.0.4.12",
-  ]);
+  const counterRef = useRef(0);
+  const [logs, setLogs] = useState<LogEntry[]>(() => {
+    const now = new Date();
+    return LIVE_EVENTS.slice(0, 4).map((e, i) => ({
+      id: i,
+      tag: e.tag,
+      text: e.text,
+      ts: `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes() + i).padStart(2, "0")}`,
+    }));
+  });
   const [termReady, setTermReady] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -49,12 +103,7 @@ export function CyberDemo() {
     const el = rootRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
+      ([entry]) => { if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); } },
       { rootMargin: "220px" },
     );
     observer.observe(el);
@@ -72,61 +121,86 @@ export function CyberDemo() {
 
     const safeFit = () => {
       if (!el.isConnected || el.clientWidth < 8 || el.clientHeight < 8) return;
-      try {
-        fitRef.current?.fit();
-      } catch {
-        // xterm-fit can throw while renderer is still syncing; ignore and retry later.
-      }
+      try { fitRef.current?.fit(); } catch { /* xterm fit race */ }
     };
 
     const runCmd = async (line: string) => {
       const parts = line.trim().split(/\s+/);
       const cmd = parts[0]?.toLowerCase();
       if (!term) return;
+
       if (cmd === "help") {
-        term.writeln(
-          "Commands: whoami | stack | impact | nmap -sV portfolio.local | wireshark --read auth_spike.pcap | ls projects | cat cv.txt | contact | clear",
-        );
+        term.writeln("Commands: whoami | stack | impact | bug-hunt | cve-log | ctf");
+        term.writeln("         nmap -sV portfolio.local | wireshark --read auth_spike.pcap");
+        term.writeln("         ls projects | cat cv.txt | contact | clear");
       } else if (cmd === "whoami") {
-        term.writeln(`${profile.name} — software engineer · web · cybersecurity`);
+        term.writeln(`${profile.name}`);
+        term.writeln("Role: Software Engineer · Web · Cybersecurity");
+        term.writeln(`Availability: ${profile.availability}`);
+      } else if (cmd === "bug-hunt") {
+        const { totalFindings, severities, platforms, hallOfFame } = profile.bugBounty;
+        term.writeln(`Bug Bounty Summary — ${totalFindings} total findings`);
+        term.writeln(`Platforms: ${platforms.join(", ")}`);
+        term.writeln(`  Critical : ${severities.critical}`);
+        term.writeln(`  High     : ${severities.high}`);
+        term.writeln(`  Medium   : ${severities.medium}`);
+        term.writeln(`  Low      : ${severities.low}`);
+        term.writeln(`Hall of Fame: ${hallOfFame.join(", ")}`);
+      } else if (cmd === "cve-log") {
+        term.writeln("CVE / Disclosure Log:");
+        cveLog.slice(0, 5).forEach((c) => {
+          const label = c.cve ?? "responsible-disclosure";
+          term.writeln(`  [${c.severity.padEnd(8)}] ${label} — ${c.software} (${c.status})`);
+        });
+      } else if (cmd === "ctf") {
+        const { htbRank, thmRank, solved, badges } = profile.ctf;
+        term.writeln(`CTF Activity`);
+        term.writeln(`  HackTheBox : rank ${htbRank}`);
+        term.writeln(`  TryHackMe  : rank ${thmRank}`);
+        term.writeln(`  Solved     : ${solved} challenges`);
+        term.writeln(`  Badges     : ${badges}`);
       } else if (cmd === "stack") {
-        term.writeln("Angular, TypeScript, NestJS, Node.js, Express, PostgreSQL, Prisma");
-        term.writeln("WordPress, WooCommerce, Docker, Git/GitHub, Figma, VS Code");
+        term.writeln("Dev stack:");
+        term.writeln("  Angular, TypeScript, NestJS, Node.js, PostgreSQL, Prisma");
+        term.writeln("  Next.js, React, Docker, Git/GitHub, Figma");
+        term.writeln("Security tools:");
+        term.writeln("  Burp Suite, Nmap, Metasploit, Wireshark, Kali Linux");
       } else if (cmd === "impact") {
-        term.writeln("Highlights:");
-        term.writeln("- 8+ services shipped");
-        term.writeln("- 60% latency reduction on key flows");
-        term.writeln("- 500+ CI/CD pipeline runs");
+        term.writeln("Career highlights:");
+        term.writeln(`  ${profile.bugBounty.totalFindings} security findings reported`);
+        term.writeln(`  ${profile.ctf.solved} CTF challenges solved`);
+        term.writeln("  60% latency reduction on core API flows");
+        term.writeln("  8+ production services shipped end-to-end");
+        term.writeln("  500+ CI/CD pipeline runs");
       } else if (cmd === "nmap" && parts.includes("-sV")) {
-        term.writeln("Starting Nmap 7.94 ( simulated assessment )");
+        term.writeln("Starting Nmap 7.94 (simulated)");
         term.writeln("Host: portfolio.local (10.10.30.21)");
-        term.writeln("PORT    STATE SERVICE  VERSION");
-        term.writeln("22/tcp  open  ssh      OpenSSH 9.2");
-        term.writeln("80/tcp  open  http     nginx 1.24");
-        term.writeln("443/tcp open  https    TLS 1.3 enabled");
-        term.writeln("3000/tcp open  nodejs  portfolio app");
-        term.writeln("Risk note: no critical exposures detected in baseline profile.");
+        term.writeln("PORT     STATE SERVICE  VERSION");
+        term.writeln("22/tcp   open  ssh      OpenSSH 9.2");
+        term.writeln("80/tcp   open  http     nginx 1.24");
+        term.writeln("443/tcp  open  https    TLS 1.3");
+        term.writeln("3000/tcp open  node     portfolio app");
+        term.writeln("No critical exposures in baseline scan.");
       } else if (cmd === "wireshark") {
-        term.writeln("Wireshark analysis: auth_spike.pcap");
-        term.writeln("Display filter: tcp.port == 443 && ip.addr == 10.0.4.12");
+        term.writeln("Wireshark: auth_spike.pcap");
+        term.writeln("Filter: tcp.port == 443 && ip.addr == 10.0.4.12");
         term.writeln("Findings:");
-        term.writeln("- 1,284 TLS packets inspected");
-        term.writeln("- Repeated failed auth pattern (52 events / 4 min)");
-        term.writeln("- Source grouped to automated credential stuffing behavior");
-        term.writeln("Action: alert raised, source blocked at edge firewall.");
+        term.writeln("  1,284 TLS packets · 52 failed auth events in 4 min");
+        term.writeln("  Pattern: automated credential stuffing");
+        term.writeln("Action: source blocked at edge firewall.");
       } else if (cmd === "ls" && parts[1] === "projects") {
         term.writeln("sentinel-siem  mesh-api  aurora-portfolio  design-system");
       } else if (cmd === "cat" && parts[1] === "cv.txt") {
-        await typeLine(term, cvSummary);
+        await typeLine(term, `${profile.name} — ${profile.subtitle}`);
       } else if (cmd === "contact") {
-        term.writeln("Email: hello@eddymax.dev");
-        term.writeln("LinkedIn: linkedin.com/in/eddy-kilonzo-");
-        term.writeln("GitHub: github.com/EddyKilonzo");
+        term.writeln(`Email    : ${profile.email}`);
+        term.writeln(`LinkedIn : ${profile.social.linkedin}`);
+        term.writeln(`GitHub   : ${profile.social.github}`);
       } else if (cmd === "clear") {
         term.clear();
         term.writeln("Portfolio shell — type help");
-      } else {
-        term.writeln(`command not found: ${line}`);
+      } else if (line.trim()) {
+        term.writeln(`command not found: ${line.trim()} — try 'help'`);
       }
       term.write("\r\n$ ");
     };
@@ -140,13 +214,10 @@ export function CyberDemo() {
       if (cancelled || !el.isConnected) return;
 
       term = new Terminal({
-        theme: {
-          background: "#0D1F1A",
-          foreground: "#A8D9B8",
-          cursor: "#A8D9B8",
-        },
+        theme: { background: "#0D1F1A", foreground: "#A8D9B8", cursor: "#A8D9B8" },
         fontFamily: "var(--font-jetbrains), monospace",
         fontSize: 12,
+        cursorBlink: true,
       });
       const fit = new FitAddon();
       fitRef.current = fit;
@@ -154,61 +225,43 @@ export function CyberDemo() {
       term.open(el);
       termRef.current = term;
 
-      // Delay first fit to next paint so xterm has measured viewport.
-      requestAnimationFrame(() => {
-        safeFit();
-        setTermReady(true);
-      });
-      term.writeln("Portfolio shell — recruiter quick view");
-      term.writeln("Type: help");
+      requestAnimationFrame(() => { safeFit(); setTermReady(true); });
+      term.writeln("Portfolio shell — type \x1b[32mhelp\x1b[0m to explore");
       term.write("\r\n$ ");
-      const interactiveTerm = term;
-      if (!interactiveTerm) return;
 
       let buf = "";
-      interactiveTerm.onData((d: string) => {
+      term.onData((d: string) => {
+        if (!termRef.current) return;
         if (d === "\r") {
-          interactiveTerm.write("\r\n");
+          termRef.current.write("\r\n");
           void runCmd(buf);
           buf = "";
-        } else if (d === "\u007f") {
-          if (buf.length) {
-            buf = buf.slice(0, -1);
-            interactiveTerm.write("\b \b");
-          }
+        } else if (d === "") {
+          if (buf.length) { buf = buf.slice(0, -1); termRef.current.write("\b \b"); }
         } else {
           buf += d;
-          interactiveTerm.write(d);
+          termRef.current.write(d);
         }
       });
 
-      const onResize = () => safeFit();
-      window.addEventListener("resize", onResize);
       ro = new ResizeObserver(() => safeFit());
       ro.observe(el);
-
-      return () => {
-        window.removeEventListener("resize", onResize);
-      };
+      window.addEventListener("resize", safeFit);
+      return () => window.removeEventListener("resize", safeFit);
     };
 
+    // Staggered event feed — uses incrementing IDs to avoid duplicate key warnings
     const logTimer = window.setInterval(() => {
-      setLogs((prev) => {
-        const events = [
-          "[signal] production release validated",
-          "[metric] p95 latency improved by 18%",
-          "[security] auth policy rule verified",
-          "[quality] CI checks passed on main",
-        ];
-        const next = [...prev, events[Math.floor(Math.random() * events.length)]];
-        return next.slice(-12);
-      });
-    }, 2800);
+      counterRef.current += 1;
+      const idx = counterRef.current % LIVE_EVENTS.length;
+      const ev = LIVE_EVENTS[idx]!;
+      const now = new Date();
+      const ts = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+      setLogs((prev) => [...prev.slice(-9), { id: counterRef.current, tag: ev.tag, text: ev.text, ts }]);
+    }, 2400);
 
     let removeResize: (() => void) | undefined;
-    void init().then((cleanup) => {
-      removeResize = cleanup;
-    });
+    void init().then((cleanup) => { removeResize = cleanup; });
 
     return () => {
       cancelled = true;
@@ -217,15 +270,22 @@ export function CyberDemo() {
       clearInterval(logTimer);
       fitRef.current = null;
       setTermReady(false);
-      if (termRef.current) {
-        termRef.current.dispose();
-      }
+      termRef.current?.dispose();
       termRef.current = null;
     };
   }, [isVisible]);
 
+  const { totalFindings, severities } = profile.bugBounty;
+  const metrics = [
+    { label: "Findings",  value: totalFindings,          pct: Math.round((totalFindings / 30) * 100), color: "bg-accent/70"      },
+    { label: "Critical",  value: severities.critical,    pct: Math.round((severities.critical / totalFindings) * 100), color: "bg-red-500/75"   },
+    { label: "CTF solved",value: profile.ctf.solved,     pct: Math.round(profile.ctf.progressToNext * 100), color: "bg-violet-400/70" },
+    { label: "CVEs filed",value: cveLog.length,          pct: Math.round((cveLog.length / 10) * 100), color: "bg-eng/70"         },
+  ];
+
   return (
     <div ref={rootRef} className="grid gap-4 p-6 lg:grid-cols-2">
+      {/* ── Terminal ── */}
       <div>
         <p className="mb-2 font-mono text-xs text-highlight/50">Terminal</p>
         <div
@@ -233,75 +293,88 @@ export function CyberDemo() {
           className="h-64 w-full overflow-hidden rounded-xl border border-highlight/15"
         />
         {!isVisible ? (
-          <p className="mt-2 font-mono text-[10px] text-highlight/45">
-            Lazy loading terminal module...
-          </p>
+          <p className="mt-2 font-mono text-[10px] text-highlight/45">Loading terminal…</p>
         ) : !termReady ? (
-          <p className="mt-2 font-mono text-[10px] text-highlight/45">
-            Initializing terminal...
-          </p>
+          <p className="mt-2 font-mono text-[10px] text-highlight/45">Initialising…</p>
         ) : null}
-      </div>
-      <div className="space-y-4 lg:col-span-1">
-        <div className="glass-card rounded-xl p-4">
-          <p className="font-mono text-xs text-highlight/50">Recruiter quick summary</p>
-          <ul className="mt-2 space-y-1.5 font-sans text-xs text-highlight/85">
-            {quickFacts.map((f) => (
-              <li key={f}>• {f}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="glass-card rounded-xl p-4">
+
+        <div className="mt-3 glass-card rounded-xl p-4">
           <p className="font-mono text-xs text-highlight/50">Try these commands</p>
-          <div className="mt-2 space-y-1 font-mono text-[11px] text-highlight/75">
+          <div className="mt-2 grid grid-cols-2 gap-1.5 font-mono text-[11px] text-highlight/75">
             {commandExamples.map((c) => (
-              <div key={c} className="rounded border border-highlight/15 bg-surface/20 px-2 py-1">
+              <div
+                key={c}
+                className="rounded border border-highlight/15 bg-surface/20 px-2 py-1 truncate"
+              >
                 $ {c}
               </div>
             ))}
           </div>
         </div>
+      </div>
+
+      {/* ── Right panels ── */}
+      <div className="space-y-3">
+        {/* Quick facts */}
         <div className="glass-card rounded-xl p-4">
-          <p className="font-mono text-xs text-highlight/50">Execution log</p>
-          <div className="mt-2 max-h-24 overflow-y-auto font-mono text-[10px] text-highlight/70">
-            {logs.map((l) => (
-              <div key={l}>{l}</div>
+          <p className="font-mono text-xs text-highlight/50">Security profile</p>
+          <ul className="mt-2 space-y-1.5 font-sans text-xs text-highlight/80">
+            {quickFacts.map((f) => (
+              <li key={f} className="flex gap-2">
+                <span className="text-accent shrink-0">▸</span>
+                {f}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
+
+        {/* Bug bounty metrics — real data */}
         <div className="glass-card rounded-xl p-4">
-          <p className="font-mono text-xs text-highlight/50">SIEM metrics (fake)</p>
-          <div className="mt-3 flex gap-4">
-            {[72, 45, 88].map((n, i) => (
-              <div key={i} className="flex-1">
-                <div className="h-2 rounded-full bg-surface/40">
-                  <div
-                    className="h-2 rounded-full bg-surfaceMid transition-all duration-700"
-                    style={{ width: `${n}%` }}
-                  />
+          <p className="mb-3 font-mono text-xs text-highlight/50">Bug bounty &amp; CTF metrics</p>
+          <div className="space-y-2.5">
+            {metrics.map((m) => (
+              <div key={m.label} className="flex items-center gap-3">
+                <span className="w-20 shrink-0 font-mono text-[10px] text-highlight/60">{m.label}</span>
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface/40">
+                  <div className={`h-full rounded-full ${m.color}`} style={{ width: `${Math.min(m.pct, 100)}%` }} />
                 </div>
-                <p className="mt-1 font-mono text-[10px] text-highlight/50">
-                  sig_{i}
-                </p>
+                <span className="w-6 text-right font-mono text-[10px] text-highlight/70">{m.value}</span>
               </div>
             ))}
           </div>
         </div>
+
+        {/* CVE status board — real cveLog */}
         <div className="glass-card rounded-xl p-4">
-          <p className="font-mono text-xs text-highlight/50">Attack map</p>
-          <svg viewBox="0 0 200 80" className="mt-2 w-full">
-            <path
-              d="M20,40 Q60,10 100,40 T180,40"
-              fill="none"
-              stroke="#2E7A5A"
-              strokeWidth="0.5"
-              className="animate-pulse"
-            />
-            <circle cx="20" cy="40" r="2" fill="#FF4C4C" />
-            <circle cx="180" cy="40" r="2" fill="#4C9EFF" />
-          </svg>
+          <p className="mb-3 font-mono text-xs text-highlight/50">CVE &amp; disclosure status</p>
+          <ul className="space-y-2">
+            {cveLog.slice(0, 4).map((c) => (
+              <li key={c.id} className="flex items-center gap-2 font-mono text-[10px]">
+                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${statusDot[c.status] ?? "bg-surface-mid"}`} />
+                <span className={`shrink-0 ${severityColor[c.severity]}`}>{c.severity}</span>
+                <span className="flex-1 truncate text-highlight/65">{c.cve ?? "responsible-disclosure"} — {c.software}</span>
+                <span className="shrink-0 text-highlight/40">{c.status}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Live threat intel feed — deduped via numeric ID */}
+        <div className="glass-card rounded-xl p-4">
+          <p className="mb-2 font-mono text-xs text-highlight/50">Live security feed</p>
+          <div className="max-h-28 overflow-y-auto space-y-1">
+            {logs.map((l) => (
+              <div key={l.id} className="flex gap-2 font-mono text-[10px] leading-relaxed">
+                <span className="shrink-0 text-highlight/35">{l.ts}</span>
+                <span className="shrink-0" style={{ color: TAG_COLORS[l.tag] ?? "#A8D9B8" }}>[{l.tag}]</span>
+                <span className="text-highlight/70">{l.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* ── Packet Capture ── */}
       <div className="lg:col-span-2">
         <PacketCapture />
       </div>

@@ -5,24 +5,28 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const chapters = [
-  { id: "hero", label: "Chapter 1: Intro" },
-  { id: "story", label: "Chapter 2: Narrative" },
-  { id: "projects", label: "Chapter 3: Work" },
+  { id: "hero",       label: "Chapter 1: Intro"      },
+  { id: "about",      label: "Chapter 2: Background" },
+  { id: "experience", label: "Chapter 3: Experience" },
+  { id: "projects",   label: "Chapter 4: Work"       },
+  { id: "cyber",      label: "Chapter 5: Security"   },
 ];
 
 export function NarrativeChapters() {
   const active = useActiveSection(chapters.map((c) => c.id), "hero");
   const [milestone, setMilestone] = useState<string | null>(null);
-  const [milestoneMs, setMilestoneMs] = useState(1400);
+  // Store milestoneMs in a ref so the active-change effect always reads the
+  // latest value without being listed as a dependency (avoids re-running the
+  // effect — and leaking a stale timeout — on every resize).
+  const milestoneMsRef = useRef(1400);
   const chipRef = useRef<HTMLDivElement | null>(null);
   const prevRef = useRef(active);
+  const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      if (w <= 1024) setMilestoneMs(900);
-      else if (w <= 1280) setMilestoneMs(1100);
-      else setMilestoneMs(1400);
+      milestoneMsRef.current = w <= 1024 ? 900 : w <= 1280 ? 1100 : 1400;
     };
     update();
     window.addEventListener("resize", update);
@@ -34,17 +38,26 @@ export function NarrativeChapters() {
     prevRef.current = active;
     const chapter = chapters.find((c) => c.id === active);
     if (!chapter) return;
+
+    // Clear any pending hide-timeout from the previous milestone.
+    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+
     setMilestone(`${chapter.label} reached`);
     const node = chipRef.current;
-    if (!node) return;
-    gsap.fromTo(
-      node,
-      { opacity: 0, y: 8, scale: 0.98 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: "power2.out" },
-    );
-    const id = window.setTimeout(() => setMilestone(null), milestoneMs);
-    return () => window.clearTimeout(id);
-  }, [active, milestoneMs]);
+    if (node) {
+      gsap.fromTo(
+        node,
+        { opacity: 0, y: 8, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.2, ease: "power2.out" },
+      );
+    }
+    timeoutRef.current = window.setTimeout(() => setMilestone(null), milestoneMsRef.current);
+  }, [active]);
+
+  // Cleanup on unmount
+  useEffect(() => () => {
+    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+  }, []);
 
   return (
     <div className="pointer-events-none fixed left-2 top-20 z-[9997] hidden lg:left-3 lg:top-24 lg:block xl:left-4 xl:top-24" aria-hidden>

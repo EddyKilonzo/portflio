@@ -21,16 +21,18 @@ export function TrustSection() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <ParallaxDrift speed={0.12}>
-          <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
-            Trust & Verification
-          </h2>
-          <p className="mt-2 max-w-3xl font-sans text-highlight/70">
-            Verifiable links and profile signals with transparent update timestamps.
-          </p>
+          <div data-aos="fade-up">
+            <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
+              Trust & Verification
+            </h2>
+            <p className="mt-2 max-w-3xl font-sans text-highlight/70">
+              Verifiable links and profile signals with transparent update timestamps.
+            </p>
+          </div>
         </ParallaxDrift>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          <div className="glass-card rounded-2xl p-6">
+          <div className="glass-card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="100">
             <p className="font-mono text-xs uppercase tracking-wide text-highlight/55">
               Verified profiles
             </p>
@@ -57,7 +59,7 @@ export function TrustSection() {
               </li>
             </ul>
           </div>
-          <div className="glass-card rounded-2xl p-6">
+          <div className="glass-card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="200">
             <p className="font-mono text-xs uppercase tracking-wide text-highlight/55">
               Evidence signals
             </p>

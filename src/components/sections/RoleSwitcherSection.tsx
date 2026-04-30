@@ -283,7 +283,7 @@ export function RoleSwitcherSection() {
       ref={sectionRef}
       id="roles"
       data-section="roles"
-      className="relative overflow-visible py-24 section-bg"
+      className="relative overflow-hidden py-24 section-bg"
       style={{ "--section-tint": "rgba(46, 122, 90, 0.04)" } as React.CSSProperties}
     >
       <SectionNumber n="02" sectionId="roles" />
@@ -316,8 +316,8 @@ export function RoleSwitcherSection() {
                   className="relative rounded-full px-5 py-2 font-mono text-xs font-semibold tracking-wide transition-all duration-300"
                   style={{
                     border: `1px solid ${active ? t.border : "rgba(168,217,184,0.35)"}`,
-                    background: active ? t.tag : "rgba(255,255,255,0.88)",
-                    color: active ? t.tagText : "rgba(12, 32, 24, 0.98)",
+                    background: active ? t.tag : "rgba(168,217,184,0.08)",
+                    color: active ? t.tagText : "var(--highlight)",
                     boxShadow: active ? `0 0 14px ${t.glow}` : "0 1px 0 rgba(0,0,0,0.25)",
                   }}
                 >
@@ -338,7 +338,11 @@ export function RoleSwitcherSection() {
         <div className="grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)] lg:items-start">
           {/* Desktop mini sidebar tabs */}
           <aside className="hidden lg:block">
-            <div className="sticky top-24 space-y-2 rounded-2xl border border-highlight/15 bg-bg/40 p-2 backdrop-blur-sm">
+            <div
+              className="sticky top-24 space-y-2 rounded-2xl border border-highlight/15 bg-bg/40 p-2 backdrop-blur-sm"
+              data-aos="fade-right"
+              data-aos-delay="100"
+            >
               {modes.map((m) => {
                 const t = roleTheme[m.id];
                 const active = mode === m.id;

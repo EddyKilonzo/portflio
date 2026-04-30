@@ -28,12 +28,14 @@ export function DownloadCenterSection() {
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <ParallaxDrift speed={0.12}>
-          <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
-            Download Center
-          </h2>
-          <p className="mt-2 max-w-3xl font-sans text-highlight/70">
-            Tailored CV variants and summary sheets for different review contexts.
-          </p>
+          <div data-aos="fade-up">
+            <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
+              Download Center
+            </h2>
+            <p className="mt-2 max-w-3xl font-sans text-highlight/70">
+              Tailored CV variants and summary sheets for different review contexts.
+            </p>
+          </div>
         </ParallaxDrift>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -55,7 +57,7 @@ export function DownloadCenterSection() {
             </article>
           ))}
         </div>
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-8 flex flex-wrap gap-2" data-aos="fade-up" data-aos-delay="160">
           <a href={`mailto:${profile.email}`} className="btn-ghost text-xs">Email</a>
           <a href={profile.social.linkedin} target="_blank" rel="noreferrer" className="btn-ghost text-xs">LinkedIn</a>
           <a href={profile.social.github} target="_blank" rel="noreferrer" className="btn-ghost text-xs">GitHub</a>

@@ -12,8 +12,6 @@ type Props = {
 
 export function SettingsPanel({ open, onClose }: Props) {
   const {
-    light,
-    toggleLight,
     themeMode,
     setThemeMode,
     accentPreset,
@@ -86,7 +84,7 @@ export function SettingsPanel({ open, onClose }: Props) {
           role="dialog"
           aria-modal="true"
           aria-label="Site settings"
-          className="glass-card w-full max-w-md rounded-2xl p-6 shadow-glass"
+          className="glass-card w-full max-w-md rounded-2xl p-6 shadow-glass max-h-[85vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="mb-4 flex items-center justify-between">
@@ -116,30 +114,16 @@ export function SettingsPanel({ open, onClose }: Props) {
                       setThemeMode(mode.id as "light" | "dark" | "system");
                       emitToast("Theme preference saved", "success");
                     }}
-                    className={`rounded-lg border px-3 py-1 font-mono text-xs ${
+                    className={`rounded-lg border px-3 py-2 font-mono text-xs transition-colors ${
                       themeMode === mode.id
-                        ? "border-accent text-accent"
-                        : "border-highlight/20 text-highlight/70"
+                        ? "border-accent bg-surface/30 text-accent"
+                        : "border-highlight/20 text-highlight/70 hover:border-highlight/40 hover:text-highlight"
                     }`}
                   >
                     {mode.label}
                   </button>
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  toggleLight();
-                  emitToast("Preference saved", "success");
-                }}
-                className="btn-ghost w-full"
-              >
-                {themeMode === "system"
-                  ? `Switch to ${light ? "dark" : "light"} override`
-                  : light
-                    ? "Switch to dark"
-                    : "Switch to light"}
-              </button>
               <p className="mt-1 font-mono text-[10px] text-highlight/40">
                 Supports system defaults with remembered preference and smooth transition.
               </p>
@@ -158,13 +142,14 @@ export function SettingsPanel({ open, onClose }: Props) {
                       setAccentPreset(p.id);
                       emitToast("Preference saved", "success");
                     }}
-                    className={`rounded-lg border px-3 py-1 font-mono text-xs ${
+                    className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs transition-colors ${
                       accentPreset === p.id
-                        ? "border-accent text-accent"
-                        : "border-highlight/20 text-highlight/70"
+                        ? "bg-surface/30 text-highlight"
+                        : "border-highlight/20 text-highlight/70 hover:text-highlight"
                     }`}
-                    style={{ borderColor: accentPreset === p.id ? p.value : undefined }}
+                    style={{ borderColor: p.value, opacity: accentPreset === p.id ? 1 : 0.6 }}
                   >
+                    <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: p.value }} />
                     {p.label}
                   </button>
                 ))}
@@ -185,10 +170,10 @@ export function SettingsPanel({ open, onClose }: Props) {
                       setThemePack(pack.id as "classic" | "neon" | "minimal");
                       emitToast("Preference saved", "success");
                     }}
-                    className={`rounded-lg border px-3 py-1 font-mono text-xs ${
+                    className={`rounded-lg border px-3 py-2 font-mono text-xs transition-colors ${
                       themePack === pack.id
-                        ? "border-accent text-accent"
-                        : "border-highlight/20 text-highlight/70"
+                        ? "border-accent bg-surface/30 text-accent"
+                        : "border-highlight/20 text-highlight/70 hover:border-highlight/40 hover:text-highlight"
                     }`}
                   >
                     {pack.label}
@@ -210,10 +195,10 @@ export function SettingsPanel({ open, onClose }: Props) {
                       setVisualMode(mode.id as "default" | "neon");
                       emitToast("Preference saved", "success");
                     }}
-                    className={`rounded-lg border px-3 py-1 font-mono text-xs ${
+                    className={`rounded-lg border px-3 py-2 font-mono text-xs transition-colors ${
                       visualMode === mode.id
-                        ? "border-accent text-accent"
-                        : "border-highlight/20 text-highlight/70"
+                        ? "border-accent bg-surface/30 text-accent"
+                        : "border-highlight/20 text-highlight/70 hover:border-highlight/40 hover:text-highlight"
                     }`}
                   >
                     {mode.label}
@@ -236,32 +221,16 @@ export function SettingsPanel({ open, onClose }: Props) {
                       setMotionLevel(motion.id as "full" | "balanced" | "minimal");
                       emitToast("Preference saved", "success");
                     }}
-                    className={`rounded-lg border px-3 py-1 font-mono text-xs ${
+                    className={`rounded-lg border px-3 py-2 font-mono text-xs transition-colors ${
                       motionLevel === motion.id
-                        ? "border-accent text-accent"
-                        : "border-highlight/20 text-highlight/70"
+                        ? "border-accent bg-surface/30 text-accent"
+                        : "border-highlight/20 text-highlight/70 hover:border-highlight/40 hover:text-highlight"
                     }`}
                   >
                     {motion.label}
                   </button>
                 ))}
               </div>
-            </div>
-            <div>
-              <p className="mb-2 font-mono text-xs text-highlight/60">Readability</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setHighContrast(!highContrast);
-                  emitToast("Preference saved", "success");
-                }}
-                className="btn-ghost w-full"
-              >
-                {highContrast ? "Disable high contrast mode" : "Enable high contrast mode"}
-              </button>
-              <p className="mt-1 font-mono text-[10px] text-highlight/45">
-                Boosts text visibility and reduces visual washout.
-              </p>
             </div>
             <div>
               <p className="mb-2 font-mono text-xs text-highlight/60">A11y quick toggles</p>
@@ -357,6 +326,28 @@ export function SettingsPanel({ open, onClose }: Props) {
               <p className="mt-1 font-mono text-[10px] text-highlight/45">
                 Subtle visuals can be disabled anytime; reduced-motion still takes priority.
               </p>
+            </div>
+
+            <div className="border-t border-highlight/10 pt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setThemeMode("system");
+                  setAccentPreset("forest");
+                  setThemePack("classic");
+                  setVisualMode("default");
+                  setMotionLevel("balanced");
+                  setHighContrast(false);
+                  setReducedMotionAssist(false);
+                  setLargeText(false);
+                  setCursorAccent(true);
+                  setAmbientFx(true);
+                  emitToast("Settings reset to defaults", "success");
+                }}
+                className="w-full rounded-lg border border-highlight/20 px-3 py-2 font-mono text-xs text-highlight/60 transition-colors hover:border-highlight/40 hover:text-highlight"
+              >
+                Reset to defaults
+              </button>
             </div>
           </div>
         </div>

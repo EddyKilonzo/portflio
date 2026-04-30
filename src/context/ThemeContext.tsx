@@ -23,11 +23,11 @@ const CURSOR_ACCENT_STORAGE = "portfolio-cursor-accent-v1";
 const AMBIENT_FX_STORAGE = "portfolio-ambient-fx-v1";
 
 export const ACCENT_PRESETS = [
-  { id: "forest", label: "Forest", value: "#A8D9B8" },
-  { id: "cyber", label: "Cyber", value: "#FF4C4C" },
-  { id: "engineering", label: "Engineering", value: "#4C9EFF" },
-  { id: "violet", label: "Violet", value: "#B794F6" },
-  { id: "amber", label: "Amber", value: "#F6E05E" },
+  { id: "forest",      label: "Forest",      value: "#A8D9B8", rgb: "168 217 184" },
+  { id: "cyber",       label: "Cyber",       value: "#FF4C4C", rgb: "255 76 76"   },
+  { id: "engineering", label: "Engineering", value: "#4C9EFF", rgb: "76 158 255"  },
+  { id: "violet",      label: "Violet",      value: "#B794F6", rgb: "183 148 246" },
+  { id: "amber",       label: "Amber",       value: "#F6E05E", rgb: "246 224 94"  },
 ] as const;
 
 export type ThemeWipe = { id: number; toLight: boolean };
@@ -78,6 +78,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [cursorAccent, setCursorAccentState] = useState(true);
   const [ambientFx, setAmbientFxState] = useState(true);
   const wipeIdRef = useRef(0);
+  const pendingModeRef = useRef<"light" | "dark" | "system">("dark");
 
   useEffect(() => {
     try {
@@ -226,43 +227,64 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    const preset = ACCENT_PRESETS.find((p) => p.id === accentPreset);
-    if (preset) {
-      document.documentElement.style.setProperty("--highlight", preset.value);
-      document.documentElement.style.setProperty("--accent", preset.value);
+    const el = document.documentElement;
+    // Neon visual mode overrides accent — apply neon colors inline so they win over CSS classes
+    if (visualMode === "neon" || themePack === "neon") {
+      el.style.setProperty("--highlight", "#9fd6ff");
+      el.style.setProperty("--accent", "#3be7ff");
+      el.style.setProperty("--rgb-highlight", "159 214 255");
+      el.style.setProperty("--rgb-accent", "59 231 255");
+    } else {
+      const preset = ACCENT_PRESETS.find((p) => p.id === accentPreset);
+      if (preset) {
+        el.style.setProperty("--highlight", preset.value);
+        el.style.setProperty("--accent", preset.value);
+        el.style.setProperty("--rgb-highlight", preset.rgb);
+        el.style.setProperty("--rgb-accent", preset.rgb);
+      }
     }
     try {
       localStorage.setItem(ACCENT_STORAGE, accentPreset);
     } catch {
       /* ignore */
     }
-  }, [accentPreset, hydrated]);
+  }, [accentPreset, hydrated, visualMode, themePack]);
 
   const toggleLight = useCallback(() => {
-    if (themeMode === "system") {
-      const next = !window.matchMedia("(prefers-color-scheme: light)").matches;
-      setThemeModeState(next ? "light" : "dark");
-      return;
-    }
+    const nextLight = !light;
+    pendingModeRef.current = nextLight ? "light" : "dark";
+    document.documentElement.classList.add("theme-wiping");
     wipeIdRef.current += 1;
-    setWipe({ id: wipeIdRef.current, toLight: !light });
-  }, [light, themeMode]);
+    setWipe({ id: wipeIdRef.current, toLight: nextLight });
+  }, [light]);
 
   const commitLight = useCallback((next: boolean) => {
     setLight(next);
-    setThemeModeState(next ? "light" : "dark");
+    setThemeModeState(pendingModeRef.current !== "system" ? (next ? "light" : "dark") : "system");
   }, []);
 
-  const clearWipe = useCallback(() => setWipe(null), []);
+  const clearWipe = useCallback(() => {
+    setWipe(null);
+    document.documentElement.classList.remove("theme-wiping");
+  }, []);
 
   const setThemeMode = useCallback((mode: "light" | "dark" | "system") => {
+    pendingModeRef.current = mode;
     if (mode === "system") {
-      setThemeModeState(mode);
+      const systemLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+      if (systemLight !== light) {
+        document.documentElement.classList.add("theme-wiping");
+        wipeIdRef.current += 1;
+        setWipe({ id: wipeIdRef.current, toLight: systemLight });
+      } else {
+        setThemeModeState(mode);
+      }
       return;
     }
+    document.documentElement.classList.add("theme-wiping");
     wipeIdRef.current += 1;
     setWipe({ id: wipeIdRef.current, toLight: mode === "light" });
-  }, []);
+  }, [light]);
 
   const setAccentPreset = useCallback((id: string) => {
     setAccentPresetState(id);

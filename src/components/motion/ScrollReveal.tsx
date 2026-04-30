@@ -17,7 +17,7 @@ type Props = {
   delay?: number;
   /** Duration in seconds. Default: 0.7 */
   duration?: number;
-  /** Scroll position that triggers. Default: "top 90%" */
+  /** Scroll position that triggers. Default: "top 87%" */
   start?: string;
   /** Distance offset in px. Default: 32 */
   distance?: number;
@@ -37,7 +37,7 @@ export function ScrollReveal({
   from = "up",
   delay = 0,
   duration = 0.7,
-  start = "top 90%",
+  start = "top 87%",
   distance,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -55,14 +55,15 @@ export function ScrollReveal({
       if ("x" in fromVars) fromVars.x = from === "right" ? -distance : distance;
     }
 
-    gsap.set(el, { opacity: 1 });
+    gsap.set(el, fromVars);
 
-    const tween = gsap.from(el, {
-      ...fromVars,
+    const tween = gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      x: 0,
       duration,
       delay,
       ease: "power3.out",
-      immediateRender: false,
       clearProps: "transform,opacity",
       scrollTrigger: {
         trigger: el,
@@ -75,6 +76,7 @@ export function ScrollReveal({
     return () => {
       tween.scrollTrigger?.kill();
       tween.kill();
+      gsap.set(el, { clearProps: "all" });
     };
   }, [from, delay, duration, start, distance]);
 

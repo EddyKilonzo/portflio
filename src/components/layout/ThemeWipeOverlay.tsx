@@ -18,6 +18,13 @@ export function ThemeWipeOverlay() {
     const el = elRef.current;
     const { toLight } = wipe;
 
+    // Skip animation for users who prefer reduced motion — commit immediately.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      commitLight(toLight);
+      clearWipe();
+      return;
+    }
+
     gsap.killTweensOf(el);
     gsap.set(el, {
       opacity: 1,

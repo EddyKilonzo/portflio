@@ -5,8 +5,14 @@ import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { profile } from "@/content/portfolio";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { MagneticAnchor, MagneticButton } from "@/components/ui/MagneticButton";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
+import dynamic from "next/dynamic";
+
+const GlobeScene = dynamic(
+  () => import("@/components/hero/HeroScene").then((m) => m.HeroScene),
+  { ssr: false },
+);
 
 type HeatDay = { date: string; count: number; level: number };
 
@@ -75,6 +81,8 @@ export function IntegrationsSection() {
   const [rss, setRss] = useState<{ id: string; title: string }[]>([]);
   const [tick, setTick] = useState(0);
   const tickerLen = profile.learningTicker.length || 1;
+  // Static ref for the globe — no scroll-camera effect needed here
+  const globeScrollRef = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -159,6 +167,11 @@ export function IntegrationsSection() {
       data-section="integrations"
       className="relative overflow-hidden py-20 section-bg"
     >
+      {/* Globe scene — moved here from hero, transparent background */}
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.18]">
+        <GlobeScene scrollProgressRef={globeScrollRef} lowEnd={false} reducedMotion={false} />
+      </div>
+
       <DecorNetwork />
 
       <ParallaxDrift

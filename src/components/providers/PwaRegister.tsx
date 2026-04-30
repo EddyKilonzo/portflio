@@ -1,39 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { emitToast } from "@/lib/toast";
+import { useEffect } from "react";
 
 export function PwaRegister() {
-  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
-
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
+
+    if (process.env.NODE_ENV !== "production") {
+      // In development, remove previously registered SW/caches to avoid stale
+      // assets and chunk load failures after rebuilds.
+      void navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((reg) => {
+          void reg.unregister();
+        });
+      });
+      if ("caches" in window) {
+        void caches.keys().then((keys) => {
+          keys.forEach((key) => {
+            void caches.delete(key);
+          });
+        });
+      }
+      return;
+    }
+
     void navigator.serviceWorker.register("/sw.js");
   }, []);
 
-  useEffect(() => {
-    const onBeforeInstall = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      emitToast("App install available", "info");
-    };
-    window.addEventListener("beforeinstallprompt", onBeforeInstall);
-    return () => window.removeEventListener("beforeinstallprompt", onBeforeInstall);
-  }, []);
-
-  if (!deferredPrompt) return null;
-
-  return (
-    <button
-      type="button"
-      className="fixed bottom-4 right-4 z-[10021] rounded-full border border-accent/60 bg-bg/90 px-3 py-1 font-mono text-xs text-accent"
-      onClick={async () => {
-        const promptEvent = deferredPrompt as Event & { prompt?: () => Promise<void> };
-        await promptEvent.prompt?.();
-        setDeferredPrompt(null);
-      }}
-    >
-      Install App
-    </button>
-  );
+  return null;
 }

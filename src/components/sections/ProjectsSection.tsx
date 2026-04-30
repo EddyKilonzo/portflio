@@ -105,8 +105,16 @@ export function ProjectsSection() {
 
   useEffect(() => {
     if (typeof window === "undefined" || !hasHydratedFiltersRef.current) return;
+
+    // Don't pollute a clean URL with the default state on first render
+    const existingParams = new URLSearchParams(window.location.search);
+    const urlHasFilters = existingParams.has("tab") || existingParams.has("q") || existingParams.has("tech") || existingParams.has("cat") || existingParams.has("diff");
+    const isAtDefaults = activeTab === "engineering" && !query.trim() && !techFilters.length && !categoryFilters.length && difficultyFilter === "all";
+    if (isAtDefaults && !urlHasFilters) return;
+
     const params = new URLSearchParams(window.location.search);
-    params.set("tab", activeTab);
+    if (activeTab !== "engineering") params.set("tab", activeTab);
+    else params.delete("tab");
     if (query.trim()) params.set("q", query.trim());
     else params.delete("q");
     if (techFilters.length) params.set("tech", techFilters.join(","));
@@ -813,7 +821,7 @@ function ProjectTrack({
   comparedIds: string[];
 }) {
   return (
-    <section className="space-y-4">
+    <section id="project-track" className="space-y-4">
       <div data-aos="fade-right">
         <h3 className="font-display text-3xl text-highlight">{title}</h3>
         <p className="mt-1 max-w-2xl font-sans text-sm text-highlight/65">{subtitle}</p>

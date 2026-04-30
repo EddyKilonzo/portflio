@@ -68,13 +68,14 @@ export function HeroScene({
     const w = mount.clientWidth;
     const h = mount.clientHeight;
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(BG);
+    // No scene.background — transparent canvas so the page shows through
 
     const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 100);
     camera.position.z = 6;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: !le, alpha: false });
+    const renderer = new THREE.WebGLRenderer({ antialias: !le, alpha: true });
     renderer.setSize(w, h);
+    renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, le ? 1 : 2));
     mount.appendChild(renderer.domElement);
 

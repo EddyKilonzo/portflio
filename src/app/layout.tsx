@@ -1,4 +1,5 @@
 import { AppProviders } from "@/components/providers/AppProviders";
+import { projects, profile } from "@/content/portfolio";
 import type { Metadata } from "next";
 import { JetBrains_Mono, Space_Grotesk, Syne } from "next/font/google";
 import "./globals.css";
@@ -88,27 +89,27 @@ export default function RootLayout({
               "@graph": [
                 {
                   "@type": "Person",
-                  name: "Eddy Max Kilonzo",
+                  name: profile.name,
                   url: "https://eddymax.dev",
-                  jobTitle: "Software Engineer",
+                  email: profile.email,
+                  jobTitle: "Software Engineer & Cybersecurity Specialist",
+                  description: profile.subtitle,
                   sameAs: [
-                    "https://github.com/EddyKilonzo",
-                    "https://www.linkedin.com/in/eddy-kilonzo-",
+                    profile.social.github,
+                    profile.social.linkedin,
+                    profile.social.twitter,
                   ],
                 },
                 {
                   "@type": "ItemList",
                   name: "Portfolio Projects",
-                  itemListElement: [
-                    { "@type": "ListItem", position: 1, name: "Sentinel SIEM Playground" },
-                    { "@type": "ListItem", position: 2, name: "Mesh API Gateway" },
-                    { "@type": "ListItem", position: 3, name: "Aurora Portfolio Engine" },
-                  ],
-                },
-                {
-                  "@type": "EducationalOccupationalCredential",
-                  name: "CompTIA Security+",
-                  recognizedBy: { "@type": "Organization", name: "CompTIA" },
+                  itemListElement: projects.map((p, i) => ({
+                    "@type": "ListItem",
+                    position: i + 1,
+                    name: p.title,
+                    description: p.shortDescription,
+                    url: p.liveUrl ?? `https://eddymax.dev/#projects`,
+                  })),
                 },
               ],
             }),

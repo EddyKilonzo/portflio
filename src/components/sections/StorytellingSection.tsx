@@ -76,15 +76,19 @@ export function StorytellingSection() {
       <DecorNetwork />
       <div data-story-pin className="relative z-10 mx-auto max-w-6xl px-6">
         <div className="glass-card rounded-2xl p-6 md:p-8">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">Story flow</p>
-          <h2 className="mt-3 font-display text-3xl text-highlight md:text-4xl">
-            Guided narrative block
-          </h2>
+          <div data-aos="fade-up">
+            <p className="font-mono text-xs uppercase tracking-[0.2em] text-accent">Story flow</p>
+            <h2 className="mt-3 font-display text-3xl text-highlight md:text-4xl">
+              Guided narrative block
+            </h2>
+          </div>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             {beats.map((beat, idx) => (
               <article
                 key={beat.title}
                 data-story-beat
+                data-aos="fade-up"
+                data-aos-delay={80 + idx * 90}
                 className={`rounded-xl border p-4 transition-all ${
                   idx === activeBeat
                     ? "border-accent/60 bg-surface/25"
