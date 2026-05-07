@@ -59,9 +59,13 @@ export function NarrativeChapters() {
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
   }, []);
 
+  const onHero = active === "hero";
+
   return (
     <div className="pointer-events-none fixed left-2 top-20 z-[9997] hidden lg:left-3 lg:top-24 lg:block xl:left-4 xl:top-24" aria-hidden>
-      <div className="rounded-xl border border-highlight/20 bg-bg/70 px-3 py-2 backdrop-blur">
+      <div
+        className={`rounded-xl border border-highlight/20 bg-bg/70 px-3 py-2 backdrop-blur transition-opacity duration-500 ${onHero ? "opacity-0" : "opacity-100"}`}
+      >
         <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-highlight/60">
           Narrative Chapters
         </p>
@@ -69,7 +73,7 @@ export function NarrativeChapters() {
           {chapters.map((chapter) => (
             <div key={chapter.id} className="flex items-center gap-2">
               <span
-                className={`h-2 w-2 rounded-full ${chapter.id === active ? "bg-accent shadow-[0_0_10px_rgba(168,217,184,0.6)]" : "bg-highlight/30"}`}
+                className={`h-2 w-2 rounded-full ${chapter.id === active ? "bg-accent shadow-[0_0_10px_rgba(34,197,94,0.5)]" : "bg-highlight/30"}`}
               />
               <span className="font-mono text-[10px] text-highlight/70">{chapter.label}</span>
             </div>

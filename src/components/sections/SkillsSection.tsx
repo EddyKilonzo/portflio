@@ -378,10 +378,14 @@ export function SkillsSection() {
         if (!shouldReduce) {
           gsap.set(heading, { y: 18, opacity: 0 });
           gsap.set(graphs,  { y: 14, opacity: 0 });
-          gsap.set(bars,    { y: 12, opacity: 0, scale: 0.95 });
+          gsap.set(bars,    { y: 12, opacity: 0 });
         }
         const tl = gsap.timeline({
-          onComplete: () => all.forEach((el) => (el.style.willChange = "auto")),
+          onComplete: () => {
+            all.forEach((el) => (el.style.willChange = "auto"));
+            // Clear GSAP inline transforms from cards so CSS hover states work correctly
+            gsap.set(bars, { clearProps: "transform,y,opacity" });
+          },
         });
         const base = {
           duration: motionTokens.duration.base,
@@ -395,7 +399,7 @@ export function SkillsSection() {
           )
           .to(
             bars,
-            { y: 0, opacity: 1, scale: 1, ...base, stagger: shouldReduce ? 0 : 0.025 },
+            { y: 0, opacity: 1, ...base, stagger: shouldReduce ? 0 : 0.025 },
             "-=0.1",
           );
       },
@@ -413,7 +417,7 @@ export function SkillsSection() {
       once: true,
       onEnter: () => {
         gsap.to(bars, {
-          width: (i, el) => `${el.getAttribute("data-level")}%`,
+          scaleX: (i, el) => Number(el.getAttribute("data-level")) / 100,
           duration: 1.0,
           ease: "power3.out",
           stagger: 0.055,
@@ -439,7 +443,7 @@ export function SkillsSection() {
       ref={sectionRef}
       id="skills"
       data-section="skills"
-      className="relative overflow-hidden py-24 section-bg"
+      className="relative overflow-x-hidden py-24 section-bg"
       style={
         { "--section-tint": "rgba(76, 158, 255, 0.05)" } as React.CSSProperties
       }
@@ -597,8 +601,8 @@ export function SkillsSection() {
                 <div
                   data-bar
                   data-level={s.level}
-                  className={`h-full rounded-full ${s.group === "software" ? "bg-gradient-to-r from-eng/60 to-accent" : "bg-gradient-to-r from-cyber/60 to-orange-400/80"}`}
-                  style={{ width: "0%" }}
+                  className={`h-full w-full origin-left rounded-full ${s.group === "software" ? "bg-gradient-to-r from-eng/60 to-accent" : "bg-gradient-to-r from-cyber/60 to-orange-400/80"}`}
+                  style={{ transform: "scaleX(0)" }}
                 />
               </div>
               <p className="mt-2 font-mono text-[9px] text-highlight/35">click to explore →</p>

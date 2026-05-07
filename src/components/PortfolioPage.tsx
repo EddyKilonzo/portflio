@@ -22,6 +22,9 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ToastViewport } from "@/components/ui/ToastViewport";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { StickySectionRail } from "@/components/layout/StickySectionRail";
+import { NarrativeChapters } from "@/components/layout/NarrativeChapters";
+import { CardSpotlight } from "@/components/ui/CardSpotlight";
 
 // --- Dynamic Imports for Sections ---
 
@@ -292,6 +295,9 @@ export function PortfolioPage() {
         {enhancementsReady ? <MotionQaOverlay /> : null}
         {enhancementsReady ? <EasterTerminal /> : null}
         {enhancementsReady ? <Screensaver /> : null}
+        {bootDone ? <StickySectionRail /> : null}
+        {bootDone ? <NarrativeChapters /> : null}
+        {bootDone ? <CardSpotlight /> : null}
 
         <main id="main-content" className="pt-14">
           <ErrorBoundary label="Hero">

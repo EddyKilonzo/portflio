@@ -8,12 +8,12 @@
 @property --highlight {
   syntax: "<color>";
   inherits: true;
-  initial-value: #27ae60;
+  initial-value: #16a34a;
 }
 @property --accent {
   syntax: "<color>";
   inherits: true;
-  initial-value: #27ae60;
+  initial-value: #16a34a;
 }
 @property --bg {
   syntax: "<color>";
@@ -31,10 +31,10 @@
   --bg: #0d1f1a;
   --surface: #1e4a3a;
   --surface-mid: #286c51;
-  --highlight: #a8d9b8;
+  --highlight: #16a34a;
   --cyber: #ff4c4c;
   --eng: #4c9eff;
-  --accent: #a8d9b8;
+  --accent: #16a34a;
   --section-tint: rgba(46, 122, 90, 0.02);
   --background: var(--bg);
   --foreground: var(--highlight);
@@ -43,8 +43,8 @@
   --rgb-bg:          13 31 26;
   --rgb-surface:     30 74 58;
   --rgb-surface-mid: 40 108 81;
-  --rgb-highlight:   168 217 184;
-  --rgb-accent:      168 217 184;
+  --rgb-highlight:   22 163 74;
+  --rgb-accent:      22 163 74;
   --mi-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --mi-fast: 160ms;
   --mi-base: 260ms;
@@ -71,16 +71,16 @@ html.light {
   --bg: #f0f7f3;
   --surface: #d4e8dc;
   --surface-mid: #2e7a5a;
-  --highlight: #0d1f1a;
-  --accent: #2e7a5a;
-  --foreground: #0d1f1a;
+  --highlight: #14532d;
+  --accent: #14532d;
+  --foreground: #14532d;
   --section-tint: rgba(46, 122, 90, 0.04);
 
   /* Raw RGB overrides */
   --rgb-bg:          240 247 243;
   --rgb-surface:     212 232 220;
-  --rgb-highlight:   13 31 26;
-  --rgb-accent:      46 122 90;
+  --rgb-highlight:   20 83 45;
+  --rgb-accent:      20 83 45;
 }
 
 html,
@@ -227,11 +227,7 @@ html.mode-reduced-motion *::after {
   scroll-behavior: auto !important;
 }
 
-html.motion-balanced *,
-html.motion-balanced *::before,
-html.motion-balanced *::after {
-  transition-duration: 0.14s !important;
-}
+/* motion-balanced: keep natural transition durations — no override needed */
 
 html.motion-minimal *,
 html.motion-minimal *::before,
@@ -393,7 +389,14 @@ html.light .page-fx::after {
 /* Glass card (tinted, never white) */
 @layer components {
   .glass-card {
-    background: rgba(30, 74, 58, 0.15);
+    --sg-x: -9999px;
+    --sg-y: -9999px;
+    background-color: rgba(30, 74, 58, 0.15);
+    background-image: radial-gradient(
+      300px circle at var(--sg-x) var(--sg-y),
+      rgba(22, 163, 74, 0.09),
+      transparent 60%
+    );
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(168, 217, 184, 0.12);
@@ -404,7 +407,12 @@ html.light .page-fx::after {
   }
 
   html.light .glass-card {
-    background: rgba(255, 255, 255, 0.72);
+    background-color: rgba(255, 255, 255, 0.72);
+    background-image: radial-gradient(
+      300px circle at var(--sg-x) var(--sg-y),
+      rgba(20, 83, 45, 0.07),
+      transparent 60%
+    );
     border: 1px solid rgba(46, 122, 90, 0.18);
     box-shadow: rgba(50, 50, 93, 0.2) 0px 40px 80px -24px,
       rgba(0, 0, 0, 0.16) 0px 24px 44px -28px,
@@ -778,6 +786,24 @@ h2.glitch-hover[data-aos].aos-animate {
   .cv-print {
     border: 1px solid #ccc;
     box-shadow: none;
+  }
+}
+
+/* Aurora glow — featured stat cards in Cyber section */
+@keyframes aurora-glow {
+  0%   { box-shadow: 0 0 12px rgba(22, 163, 74, 0.35),  0 0 32px rgba(22, 163, 74, 0.12); }
+  33%  { box-shadow: 0 0 16px rgba(76, 158, 255, 0.35), 0 0 40px rgba(76, 158, 255, 0.12); }
+  66%  { box-shadow: 0 0 14px rgba(183, 148, 246, 0.35),0 0 36px rgba(183, 148, 246, 0.12); }
+  100% { box-shadow: 0 0 12px rgba(22, 163, 74, 0.35),  0 0 32px rgba(22, 163, 74, 0.12); }
+}
+
+.aurora-glow {
+  animation: aurora-glow 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-glow {
+    animation: none;
   }
 }
 

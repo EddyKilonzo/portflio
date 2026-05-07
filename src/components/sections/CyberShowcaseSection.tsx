@@ -1,9 +1,11 @@
 "use client";
 
 import { CyberOrbit } from "@/components/cyber/CyberOrbit";
+import { MatrixRain } from "@/components/cyber/MatrixRain";
 import { cveLog, profile } from "@/content/portfolio";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { MagneticAnchor } from "@/components/ui/MagneticButton";
+import { CountUp } from "@/components/ui/CountUp";
 import dynamic from "next/dynamic";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
@@ -60,13 +62,6 @@ export function CyberShowcaseSection() {
   const sectionRef = useSectionReveal(3);
   const total = profile.bugBounty.totalFindings;
 
-  const stats = [
-    { label: "Bug Findings", value: String(total)              },
-    { label: "HTB Rank",     value: profile.ctf.htbRank        },
-    { label: "THM Rank",     value: profile.ctf.thmRank        },
-    { label: "CTF Solved",   value: String(profile.ctf.solved) },
-  ];
-
   return (
     <section
       ref={sectionRef}
@@ -75,6 +70,7 @@ export function CyberShowcaseSection() {
       className="relative overflow-hidden py-24 section-bg"
       style={{ "--section-tint": "rgba(255, 76, 76, 0.05)" } as React.CSSProperties}
     >
+      <MatrixRain className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-[0.18]" />
       <SectionNumber n="05" sectionId="cyber" />
       <DecorNetwork />
 
@@ -102,17 +98,46 @@ export function CyberShowcaseSection() {
 
         {/* Stat row */}
         <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {stats.map((s, i) => (
-            <div
-              key={s.label}
-              className="glass-card rounded-2xl p-5 text-center"
-              data-aos="zoom-in"
-              data-aos-delay={i * 70}
-            >
-              <p className="font-display text-3xl text-highlight">{s.value}</p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-highlight/50">{s.label}</p>
-            </div>
-          ))}
+          {/* Bug Findings — numeric CountUp, aurora glow */}
+          <div
+            className="glass-card aurora-glow rounded-2xl p-5 text-center"
+            data-aos="zoom-in"
+            data-aos-delay={0}
+          >
+            <p className="font-display text-3xl text-highlight">
+              <CountUp target={total} />
+            </p>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-highlight/50">Bug Findings</p>
+          </div>
+          {/* HTB Rank — string, no countup */}
+          <div
+            className="glass-card rounded-2xl p-5 text-center"
+            data-aos="zoom-in"
+            data-aos-delay={70}
+          >
+            <p className="font-display text-3xl text-highlight">{profile.ctf.htbRank}</p>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-highlight/50">HTB Rank</p>
+          </div>
+          {/* THM Rank — string, no countup */}
+          <div
+            className="glass-card rounded-2xl p-5 text-center"
+            data-aos="zoom-in"
+            data-aos-delay={140}
+          >
+            <p className="font-display text-3xl text-highlight">{profile.ctf.thmRank}</p>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-highlight/50">THM Rank</p>
+          </div>
+          {/* CTF Solved — numeric CountUp, aurora glow */}
+          <div
+            className="glass-card aurora-glow rounded-2xl p-5 text-center"
+            data-aos="zoom-in"
+            data-aos-delay={210}
+          >
+            <p className="font-display text-3xl text-highlight">
+              <CountUp target={profile.ctf.solved} />
+            </p>
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-highlight/50">CTF Solved</p>
+          </div>
         </div>
 
         {/* Bug bounty + CVE grid */}
@@ -214,10 +239,14 @@ export function CyberShowcaseSection() {
           </div>
         </div>
 
-        {/* Embedded terminal */}
+        {/* Interactive terminal — full-width showcase */}
         <div data-aos="fade-up" data-aos-delay="100">
-          <p className="mb-2 font-mono text-xs text-highlight/50">Embedded Terminal</p>
-          <div className="glass-card overflow-hidden rounded-2xl">
+          <div className="mb-3 flex items-center gap-3">
+            <div className="h-px flex-1 bg-highlight/10" />
+            <span className="font-mono text-[10px] uppercase tracking-widest text-highlight/40">Interactive shell</span>
+            <div className="h-px flex-1 bg-highlight/10" />
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-highlight/15 shadow-[0_0_60px_rgba(22,163,74,0.08)]">
             <CyberDemo />
           </div>
         </div>

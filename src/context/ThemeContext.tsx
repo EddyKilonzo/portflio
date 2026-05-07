@@ -23,11 +23,11 @@ const CURSOR_ACCENT_STORAGE = "portfolio-cursor-accent-v1";
 const AMBIENT_FX_STORAGE = "portfolio-ambient-fx-v1";
 
 export const ACCENT_PRESETS = [
-  { id: "forest",      label: "Forest",      value: "#A8D9B8", rgb: "168 217 184" },
-  { id: "cyber",       label: "Cyber",       value: "#FF4C4C", rgb: "255 76 76"   },
-  { id: "engineering", label: "Engineering", value: "#4C9EFF", rgb: "76 158 255"  },
-  { id: "violet",      label: "Violet",      value: "#B794F6", rgb: "183 148 246" },
-  { id: "amber",       label: "Amber",       value: "#F6E05E", rgb: "246 224 94"  },
+  { id: "forest",      label: "Forest",      value: "#16A34A", rgb: "22 163 74",   lightValue: "#14532D", lightRgb: "20 83 45"   },
+  { id: "cyber",       label: "Cyber",       value: "#FF4C4C", rgb: "255 76 76",   lightValue: "#991B1B", lightRgb: "153 27 27"  },
+  { id: "engineering", label: "Engineering", value: "#4C9EFF", rgb: "76 158 255",  lightValue: "#1E3A8A", lightRgb: "30 58 138"  },
+  { id: "violet",      label: "Violet",      value: "#B794F6", rgb: "183 148 246", lightValue: "#4C1D95", lightRgb: "76 29 149"  },
+  { id: "amber",       label: "Amber",       value: "#F6E05E", rgb: "246 224 94",  lightValue: "#78350F", lightRgb: "120 53 15"  },
 ] as const;
 
 export type ThemeWipe = { id: number; toLight: boolean };
@@ -237,10 +237,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       const preset = ACCENT_PRESETS.find((p) => p.id === accentPreset);
       if (preset) {
-        el.style.setProperty("--highlight", preset.value);
-        el.style.setProperty("--accent", preset.value);
-        el.style.setProperty("--rgb-highlight", preset.rgb);
-        el.style.setProperty("--rgb-accent", preset.rgb);
+        if (light) {
+          // Light mode: use a dark variant of the accent for readable primary text,
+          // vivid accent only for decorative elements (borders, buttons).
+          el.style.setProperty("--highlight", preset.lightValue);
+          el.style.setProperty("--rgb-highlight", preset.lightRgb);
+          el.style.setProperty("--accent", preset.lightValue);
+          el.style.setProperty("--rgb-accent", preset.lightRgb);
+        } else {
+          el.style.setProperty("--highlight", preset.value);
+          el.style.setProperty("--accent", preset.value);
+          el.style.setProperty("--rgb-highlight", preset.rgb);
+          el.style.setProperty("--rgb-accent", preset.rgb);
+        }
       }
     }
     try {
@@ -248,7 +257,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       /* ignore */
     }
-  }, [accentPreset, hydrated, visualMode, themePack]);
+  }, [accentPreset, hydrated, visualMode, themePack, light]);
 
   const toggleLight = useCallback(() => {
     const nextLight = !light;
