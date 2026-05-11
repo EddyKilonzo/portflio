@@ -252,7 +252,7 @@ export function VideoModal({ project, open, onClose }: Props) {
               {project.tech.map((t) => (
                 <span
                   key={t}
-                  className="rounded-full border border-white/55 px-2 py-0.5 font-mono text-[10px] text-white"
+                  className="rounded-full border border-highlight/25 bg-surface/15 px-2 py-0.5 font-mono text-[10px] text-highlight/75"
                 >
                   {t}
                 </span>

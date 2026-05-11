@@ -378,16 +378,7 @@ export function ProjectsSection() {
             className="mt-5 font-mono text-xs text-highlight"
           />
 
-          <div className="mt-10 space-y-6">
-            <div className="flex flex-wrap items-center gap-2" data-project-step="meta">
-              <span className="font-mono text-[11px] text-highlight/55">Saved presets:</span>
-              <button type="button" className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/80" onClick={() => applyPreset("cyber")}>
-                Cyber Focus
-              </button>
-              <button type="button" className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/80" onClick={() => applyPreset("developer")}>
-                Developer Focus
-              </button>
-            </div>
+          <div className="mt-10 space-y-4">
             <div className="flex flex-wrap gap-2" data-project-step="meta">
               {(["engineering", "web", "cyber"] as const).map((role) => (
                 <button
@@ -411,25 +402,25 @@ export function ProjectsSection() {
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search projects (title, description, tech, skills)..."
+                placeholder="Search by title, tech, or skill..."
                 className="w-full max-w-sm rounded-lg border border-highlight/20 bg-surface/20 px-3 py-2 font-mono text-xs text-highlight outline-none"
               />
-              <span className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/70">
-                Active filters: {activeFilterCount}
-              </span>
-              <button
-                type="button"
-                onClick={clearAllFilters}
-                className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/80 hover:border-highlight/40"
-              >
-                Clear all
-              </button>
+              {(query.trim() || techFilters.length > 0) ? (
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="rounded-full border border-highlight/20 px-3 py-1 font-mono text-[10px] text-highlight/80 hover:border-highlight/40"
+                >
+                  Clear
+                </button>
+              ) : null}
+            </div>
+            <div className="flex flex-wrap items-center gap-2" data-project-step="meta">
               <button
                 type="button"
                 onClick={() => {
                   setTechFilters([]);
                   trackEvent("projects_tech_reset");
-                  emitToast("Tech filters reset", "info");
                 }}
                 className={`rounded-full border px-3 py-1 font-mono text-[10px] ${
                   techFilters.length === 0
@@ -437,7 +428,7 @@ export function ProjectsSection() {
                     : "border-highlight/20 text-highlight/70"
                 }`}
               >
-                All Tech
+                All
               </button>
               {techChips.map((chip) => (
                 <button
@@ -454,69 +445,6 @@ export function ProjectsSection() {
                 </button>
               ))}
             </div>
-            <div className="flex flex-wrap items-center gap-2" data-project-step="meta">
-              <button
-                type="button"
-                onClick={() => {
-                  setCategoryFilters([]);
-                  trackEvent("projects_category_reset");
-                  emitToast("Category filters reset", "info");
-                }}
-                className={`rounded-full border px-3 py-1 font-mono text-[10px] ${
-                  categoryFilters.length === 0
-                    ? "border-accent bg-surface/30 text-accent"
-                    : "border-highlight/20 text-highlight/70"
-                }`}
-              >
-                All Categories
-              </button>
-              {categoryChips.map((chip) => (
-                <button
-                  key={chip}
-                  type="button"
-                  onClick={() => toggleCategoryFilter(chip)}
-                  className={`rounded-full border px-3 py-1 font-mono text-[10px] ${
-                    categoryFilters.includes(chip)
-                      ? "border-accent bg-surface/30 text-accent"
-                      : "border-highlight/20 text-highlight/70"
-                  }`}
-                >
-                  {chip}
-                </button>
-              ))}
-              <span className="w-full" />
-              <button
-                type="button"
-                onClick={() => {
-                  setDifficultyFilter("all");
-                  trackEvent("projects_difficulty_change", { difficulty: "all" });
-                }}
-                className={`rounded-full border px-3 py-1 font-mono text-[10px] ${
-                  difficultyFilter === "all"
-                    ? "border-accent bg-surface/30 text-accent"
-                    : "border-highlight/20 text-highlight/70"
-                }`}
-              >
-                All Levels
-              </button>
-              {(["beginner", "intermediate", "advanced"] as const).map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => {
-                    setDifficultyFilter(d);
-                    trackEvent("projects_difficulty_change", { difficulty: d });
-                  }}
-                  className={`rounded-full border px-3 py-1 font-mono text-[10px] ${
-                    difficultyFilter === d
-                      ? "border-accent bg-surface/30 text-accent"
-                      : "border-highlight/20 text-highlight/70"
-                  }`}
-                >
-                  {difficultyLabel[d]}
-                </button>
-              ))}
-            </div>
 
             {!filtered.length ? (
               <div className="glass-card rounded-2xl p-6 font-mono text-sm text-highlight/70">
@@ -528,7 +456,13 @@ export function ProjectsSection() {
                 title={roleMeta[activeTab].title}
                 subtitle={roleMeta[activeTab].subtitle}
                 onWatch={(p) => setVideoProjectId(p.id)}
-                onLive={(p) => setDemoProjectId(p.id)}
+                onLive={(p) => {
+                  if (p.liveUrl) {
+                    window.open(p.liveUrl, "_blank", "noopener,noreferrer");
+                  } else {
+                    setDemoProjectId(p.id);
+                  }
+                }}
                 onCode={(p) => setCodeProjectId(p.id)}
                 onCaseStudy={(p) => {
                   setCaseProjectId(p.id);

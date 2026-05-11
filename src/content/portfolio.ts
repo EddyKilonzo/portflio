@@ -370,321 +370,459 @@ export const skillsByRole: Record<
 
 export const projects: Project[] = [
   {
-    id: "sentinel-siem",
-    title: "Sentinel SIEM Playground",
+    id: "credi-score",
+    title: "CrediScore",
     shortDescription:
-      "Simulated SIEM dashboards, log pipelines, and detection engineering lab for training blue-team workflows.",
-    roleMode: "cyber",
-    tech: ["Elastic", "Python", "Docker", "Sigma"],
-    category: "SIEM & Detection Engineering",
+      "Business trust and credibility platform with verified businesses, reviews, trust scores, disputes, and admin operations.",
+    roleMode: "engineering",
+    tech: ["Angular", "NestJS", "Prisma", "PostgreSQL", "Redis"],
+    category: "TrustTech Platform",
     difficulty: "advanced",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    liveUrl: "https://example.com",
-    codeUrl: "https://github.com/EddyKilonzo",
+    liveUrl: "https://credi-score.vercel.app",
+    codeUrl: "https://github.com/EddyKilonzo/CrediScore",
+    demoType: "web",
+    skills: ["NestJS", "Prisma", "REST APIs", "PostgreSQL"],
+    screenshotFallback: "https://picsum.photos/seed/credi-score/960/600",
+    caseStudy: {
+      problem:
+        "Customers and business owners need a transparent way to assess trust, credibility, and dispute handling at scale.",
+      approach: [
+        "Built a modular NestJS backend with role-based modules for users, business owners, and administrators.",
+        "Implemented review, verification, fraud-report, and dispute workflows with Prisma data modeling.",
+        "Delivered an Angular frontend experience for discovery, trust scoring, moderation, and map-based browsing.",
+      ],
+      outcome:
+        "Delivered a full-stack trust platform capable of managing high-signal business credibility workflows.",
+      metrics: ["Architecture: modular", "Roles: multi-tenant style", "Core domains: reviews, trust, fraud, disputes"],
+      architectureNotes: [
+        "Queue and cache integration allows background processing and optional async tasks.",
+        "Auth supports JWT, Google OAuth, and optional security workflows.",
+        "Feature boundaries are cleanly separated by domain module.",
+      ],
+      screenshots: ["https://picsum.photos/seed/credi-score/800/480"],
+    },
+  },
+  {
+    id: "nduthi-ride",
+    title: "NduthiRide",
+    shortDescription:
+      "Real-time motorcycle taxi and parcel delivery platform with dispatch, rider operations, chat, and M-Pesa payments.",
+    roleMode: "engineering",
+    tech: ["Angular", "NestJS", "Prisma", "PostgreSQL", "Socket.IO"],
+    category: "Mobility & Logistics",
+    difficulty: "advanced",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://nduthi-ride-r479.vercel.app",
+    codeUrl: "https://github.com/EddyKilonzo/NduthiRide",
+    demoType: "web",
+    skills: ["NestJS", "REST APIs", "PostgreSQL", "Angular"],
+    screenshotFallback: "https://picsum.photos/seed/nduthi-ride/960/600",
+    caseStudy: {
+      problem:
+        "Urban ride and parcel workflows need reliable real-time coordination across passengers, riders, and admins.",
+      approach: [
+        "Implemented ride and parcel lifecycle modules with role-based guards and DTO validation.",
+        "Added Socket.IO channels for live tracking, status updates, and in-app communication.",
+        "Integrated mobile-money payment flows and webhook verification for transaction reliability.",
+      ],
+      outcome:
+        "Shipped a full-stack logistics product with real-time operations and payment automation.",
+      metrics: ["Realtime updates: enabled", "Payment webhooks: verified", "Workflows: ride + parcel"],
+      architectureNotes: [
+        "Domain modules isolate rides, parcels, payments, tracking, and support.",
+        "WebSocket and REST flows are coordinated through guarded lifecycle transitions.",
+        "Prisma schema supports status history and auditable state transitions.",
+      ],
+      screenshots: ["https://picsum.photos/seed/nduthi-ride/800/480"],
+    },
+  },
+  {
+    id: "fin-analytics",
+    title: "FinAnalytics",
+    shortDescription:
+      "Smart money management platform with transaction tracking, budgeting, goals, and ML-powered expense categorization.",
+    roleMode: "engineering",
+    tech: ["Angular", "NestJS", "FastAPI", "Prisma", "PostgreSQL"],
+    category: "FinTech & Analytics",
+    difficulty: "advanced",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/FinAnalytics",
+    demoType: "engineering",
+    skills: ["NestJS", "Python", "PostgreSQL", "REST APIs"],
+    screenshotFallback: "https://picsum.photos/seed/fin-analytics/960/600",
+    caseStudy: {
+      problem:
+        "Young users need a practical finance tool that combines budgeting UX with actionable automated categorization.",
+      approach: [
+        "Built a three-service architecture: Angular frontend, NestJS API, and FastAPI ML microservice.",
+        "Connected transaction flows to prediction endpoints for category suggestions and feedback loops.",
+        "Implemented goals, budgets, onboarding, and admin workflows with role-based API access.",
+      ],
+      outcome:
+        "Delivered a learning-focused finance platform with intelligent categorization and robust CRUD foundations.",
+      metrics: ["Services: 3", "ML-assisted categorization: enabled", "Auth + RBAC: implemented"],
+      architectureNotes: [
+        "ML service remains optional so core backend workflows continue if predictions are unavailable.",
+        "Prisma schema supports transaction confidence and correction feedback storage.",
+        "API and frontend are organized by domain modules for maintainability.",
+      ],
+      screenshots: ["https://picsum.photos/seed/fin-analytics/800/480"],
+    },
+  },
+  {
+    id: "petmate",
+    title: "Petmate",
+    shortDescription:
+      "Full-stack pet services application built with Angular and NestJS, designed for practical service operations.",
+    roleMode: "web",
+    tech: ["Angular", "NestJS", "TypeScript"],
+    category: "Service Marketplace",
+    difficulty: "intermediate",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://petmate-one.vercel.app",
+    codeUrl: "https://github.com/EddyKilonzo/Petmate",
+    demoType: "web",
+    skills: ["Angular", "NestJS", "TypeScript"],
+    screenshotFallback: "https://picsum.photos/seed/petmate/960/600",
+    caseStudy: {
+      problem:
+        "Pet service interactions need a clean workflow and responsive UI that stays straightforward for both users and admins.",
+      approach: [
+        "Built a feature-split frontend with clear domain boundaries.",
+        "Exposed backend APIs through modular NestJS services and controllers.",
+        "Maintained deployment-ready configuration for Render and Vercel flows.",
+      ],
+      outcome:
+        "Shipped a practical full-stack product foundation ready for iterative feature growth.",
+      metrics: ["Deployment setup: ready", "Frontend + backend: integrated", "Core UX: responsive"],
+      architectureNotes: [
+        "Angular and NestJS codebases stay decoupled for easier independent iteration.",
+        "Repo includes infra files to support reproducible deployment.",
+        "TypeScript-first development improves consistency across layers.",
+      ],
+      screenshots: ["https://picsum.photos/seed/petmate/800/480"],
+    },
+  },
+  {
+    id: "anitah-hair-studio",
+    title: "AnitahHairStudio",
+    shortDescription:
+      "Modern salon website experience built with Next.js and TypeScript for a polished service brand presence.",
+    roleMode: "web",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS"],
+    category: "Business Website",
+    difficulty: "intermediate",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/AnitahHairStudio",
+    demoType: "web",
+    skills: ["Next.js", "TypeScript", "Tailwind CSS"],
+    screenshotFallback: "https://picsum.photos/seed/anitah-hair-studio/960/600",
+    caseStudy: {
+      problem:
+        "Small service businesses need premium digital presence with clear service storytelling and conversion-focused pages.",
+      approach: [
+        "Created a structured component architecture for reusable sections and content blocks.",
+        "Applied modern styling and interaction polish for a premium feel.",
+        "Kept the build production-ready with simple deployment and maintenance workflows.",
+      ],
+      outcome:
+        "Delivered a clean brand site optimized for credibility and straightforward user navigation.",
+      metrics: ["UI consistency: strong", "Brand presentation: polished", "Maintenance: straightforward"],
+      architectureNotes: [
+        "App router structure and reusable components reduce content update friction.",
+        "Styling system supports rapid iteration without scattered CSS.",
+        "Type-safe codebase improves long-term maintainability.",
+      ],
+      screenshots: ["https://picsum.photos/seed/anitah-hair-studio/800/480"],
+    },
+  },
+  {
+    id: "sendit",
+    title: "SendIT",
+    shortDescription:
+      "Parcel delivery management platform with authentication, parcel tracking, driver workflows, and admin controls.",
+    roleMode: "engineering",
+    tech: ["Angular", "NestJS", "Prisma", "PostgreSQL", "Socket.IO"],
+    category: "Logistics Platform",
+    difficulty: "advanced",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/SendIT",
+    demoType: "engineering",
+    skills: ["NestJS", "Prisma", "REST APIs", "PostgreSQL"],
+    screenshotFallback: "https://picsum.photos/seed/sendit/960/600",
+    caseStudy: {
+      problem:
+        "Delivery teams need end-to-end shipment visibility, from creation to fulfillment, with clear role access.",
+      approach: [
+        "Implemented modular delivery domain logic for parcels, drivers, users, and notifications.",
+        "Built role-based authentication and authorization for customer, driver, and admin use cases.",
+        "Added real-time tracking and operational status updates for shipment lifecycle visibility.",
+      ],
+      outcome:
+        "Produced a robust delivery management foundation with extensible backend and UI workflows.",
+      metrics: ["RBAC: multi-role", "Realtime support: enabled", "Domain modules: production-oriented"],
+      architectureNotes: [
+        "Domain-driven module boundaries reduce coupling and improve maintainability.",
+        "Frontend and backend structure supports future feature scaling.",
+        "Notification and tracking integrations improve user operational awareness.",
+      ],
+      screenshots: ["https://picsum.photos/seed/sendit/800/480"],
+    },
+  },
+  {
+    id: "lms-platform",
+    title: "L.M.S",
+    shortDescription:
+      "Comprehensive learning management system with role-based experiences for students, instructors, and administrators.",
+    roleMode: "engineering",
+    tech: ["Angular", "NestJS", "Prisma", "PostgreSQL", "JWT"],
+    category: "EdTech Platform",
+    difficulty: "advanced",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/L.M.S",
+    demoType: "engineering",
+    skills: ["NestJS", "Angular", "PostgreSQL", "REST APIs"],
+    screenshotFallback: "https://picsum.photos/seed/lms-platform/960/600",
+    caseStudy: {
+      problem:
+        "Learning platforms need clear role separation and scalable course workflows across students, instructors, and admins.",
+      approach: [
+        "Built role-aware API modules with JWT-based authentication and guarded endpoints.",
+        "Implemented learning workflows for enrollment, progress tracking, reviews, and analytics.",
+        "Structured frontend features by user type for clearer user journeys and maintainability.",
+      ],
+      outcome:
+        "Delivered a complete LMS foundation with strong domain coverage and modular growth potential.",
+      metrics: ["Roles supported: 3", "Learning workflows: end-to-end", "Analytics coverage: broad"],
+      architectureNotes: [
+        "Feature modules isolate auth, courses, enrollments, and analytics.",
+        "Prisma model supports core educational entities with type-safe access.",
+        "Backend and frontend share a consistent role-based access strategy.",
+      ],
+      screenshots: ["https://picsum.photos/seed/lms-platform/800/480"],
+    },
+  },
+  {
+    id: "inspira-haven",
+    title: "Inspira Haven",
+    shortDescription:
+      "Inspiration-focused web project designed for clean storytelling, discoverability, and modern interface flow.",
+    roleMode: "web",
+    tech: ["TypeScript", "React", "Tailwind CSS"],
+    category: "Content & Discovery Web App",
+    difficulty: "intermediate",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/inspira-haven",
+    demoType: "web",
+    skills: ["React", "TypeScript", "Tailwind CSS"],
+    screenshotFallback: "https://picsum.photos/seed/inspira-haven/960/600",
+    caseStudy: {
+      problem:
+        "Inspiration/content products need a UI that remains simple while still guiding users through rich content.",
+      approach: [
+        "Focused on a clean component hierarchy and navigable content structure.",
+        "Applied lightweight visual polish to improve readability and engagement.",
+        "Kept architecture straightforward so the app can iterate quickly.",
+      ],
+      outcome:
+        "Produced an accessible, content-first web experience with room for feature expansion.",
+      metrics: ["UX flow: simplified", "Code maintainability: improved", "Iteration speed: high"],
+      architectureNotes: [
+        "Modular frontend sections make future content updates easier.",
+        "Styling choices balance visual quality and implementation speed.",
+        "Project structure stays clear for solo and team collaboration.",
+      ],
+      screenshots: ["https://picsum.photos/seed/inspira-haven/800/480"],
+    },
+  },
+  {
+    id: "beyond-borders",
+    title: "BeyondBorders",
+    shortDescription:
+      "Cross-border themed product experience focused on discovery, storytelling, and intuitive user navigation.",
+    roleMode: "web",
+    tech: ["TypeScript", "React", "CSS"],
+    category: "Brand & Storytelling Website",
+    difficulty: "intermediate",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/BeyondBorders",
+    demoType: "web",
+    skills: ["React", "TypeScript", "CSS3"],
+    screenshotFallback: "https://picsum.photos/seed/beyond-borders/960/600",
+    caseStudy: {
+      problem:
+        "Story-driven sites must communicate message and structure quickly without overwhelming users.",
+      approach: [
+        "Designed pages with clear visual hierarchy and section-level intent.",
+        "Built reusable layout components and content blocks for easier updates.",
+        "Applied responsive behavior so the experience remains smooth on mobile and desktop.",
+      ],
+      outcome:
+        "Created a cohesive storytelling interface with practical maintainability.",
+      metrics: ["Responsiveness: strong", "Content clarity: improved", "Component reuse: high"],
+      architectureNotes: [
+        "Consistent layout primitives reduce design drift as pages grow.",
+        "Simple route/content patterns keep contributor onboarding easier.",
+        "Frontend structure supports incremental enhancement.",
+      ],
+      screenshots: ["https://picsum.photos/seed/beyond-borders/800/480"],
+    },
+  },
+  {
+    id: "car-rental",
+    title: "Car Rental",
+    shortDescription:
+      "Vehicle booking and management platform focused on browsing inventory, reservations, and smooth customer flow.",
+    roleMode: "engineering",
+    tech: ["TypeScript", "React", "Node.js"],
+    category: "Booking Platform",
+    difficulty: "intermediate",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/car-rental",
+    demoType: "web",
+    skills: ["React", "TypeScript", "Node.js"],
+    screenshotFallback: "https://picsum.photos/seed/car-rental/960/600",
+    caseStudy: {
+      problem:
+        "Rental customers need an easy booking flow while operators need clear availability and reservation control.",
+      approach: [
+        "Implemented inventory-first browsing with clear reservation CTAs.",
+        "Designed flow-oriented pages to reduce friction between search and booking.",
+        "Kept core architecture modular so pricing and booking logic can evolve safely.",
+      ],
+      outcome:
+        "Delivered a practical booking experience foundation for rental operations.",
+      metrics: ["Booking UX: streamlined", "Feature growth: supported", "User flow: clear"],
+      architectureNotes: [
+        "UI components are organized for reusable list/detail interactions.",
+        "Domain logic can be extended for pricing, fleet, and account workflows.",
+        "Tech stack choices prioritize fast iteration and maintainability.",
+      ],
+      screenshots: ["https://picsum.photos/seed/car-rental/800/480"],
+    },
+  },
+  {
+    id: "sentinel-siem",
+    title: "SentinelSIEM",
+    shortDescription:
+      "Home lab SIEM environment with log ingestion, Sigma-style detection rules, and alerting pipelines for hands-on blue team practice.",
+    roleMode: "cyber",
+    tech: ["Elastic Stack", "Python", "Docker", "Sigma"],
+    category: "Detection Engineering Lab",
+    difficulty: "advanced",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/sentinel-siem",
     demoType: "cyber",
-    skills: ["SIEM tools", "Incident Response", "Python"],
+    skills: ["SIEM tools", "Incident Response", "Python", "Docker"],
     screenshotFallback: "https://picsum.photos/seed/sentinel-siem/960/600",
     caseStudy: {
       problem:
-        "Blue-team practice is often stuck in static labs without realistic detection-to-dashboard workflows.",
+        "Blue team practitioners need realistic log environments and detection playgrounds that mirror production threat signals.",
       approach: [
-        "Build a repeatable log pipeline that feeds simulated events into an Elastic-style stack.",
-        "Author detection rules (Sigma-style) and validate them against curated example traffic.",
-        "Provide a dashboard walkthrough path so trainees can connect detections to operator actions.",
+        "Deployed Elastic Stack locally with Docker Compose for log ingestion and dashboards.",
+        "Authored Sigma-style detection rules for brute force, lateral movement, and privilege escalation patterns.",
+        "Built Python scripts to generate synthetic log traffic and validate alert thresholds under load.",
       ],
       outcome:
-        "A training playground where detections, dashboards, and iterative improvements can be practiced safely.",
-      metrics: ["Rule iterations: 10+", "Lab walkthroughs: repeatable flow", "Operator view coverage: high"],
-      architectureNotes: [
-        "Rule layer (Sigma-like definitions) separated from ingestion and visualization.",
-        "Containerized services to keep lab setup consistent across devices.",
-        "Detections are structured so trainees can compare changes between iterations.",
+        "Produced a repeatable lab environment for detection tuning and incident response drills.",
+      metrics: [
+        "Detection rules: 12+ covering common MITRE ATT&CK techniques",
+        "Log sources: nginx, sshd, auth, DNS",
+        "False positive rate: tuned to <5% on test datasets",
       ],
-      screenshots: ["https://picsum.photos/seed/sentinel-siem/800/480"],
+      architectureNotes: [
+        "Docker Compose stack keeps the lab portable and reproducible across machines.",
+        "Sigma rules are version-controlled for auditability and incremental improvement.",
+        "Python log generators simulate attack scenarios without live infrastructure risk.",
+      ],
     },
   },
   {
     id: "phish-hunter",
-    title: "PhishHunter OSINT Suite",
+    title: "PhishHunter",
     shortDescription:
-      "Automated phishing domain discovery using passive DNS, certificate transparency logs, and typosquat heuristics.",
+      "Certificate transparency log monitor that flags newly registered lookalike and typosquat domains in real time for early phishing detection.",
     roleMode: "cyber",
-    tech: ["Python", "Shodan", "OSINT", "PostgreSQL"],
-    category: "OSINT & Threat Research",
+    tech: ["Python", "certstream", "Docker"],
+    category: "Threat Intelligence Tool",
     difficulty: "intermediate",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    codeUrl: "https://github.com/EddyKilonzo",
+    codeUrl: "https://github.com/EddyKilonzo/phish-hunter",
     demoType: "cyber",
-    skills: ["OSINT", "Python", "Vulnerability Assessment"],
+    skills: ["Python", "OSINT", "Incident Response"],
     screenshotFallback: "https://picsum.photos/seed/phish-hunter/960/600",
     caseStudy: {
       problem:
-        "Threat intel teams need faster domain discovery workflows without manually correlating passive signals.",
+        "Phishing campaigns often register lookalike domains days before attacks — monitoring CT logs enables early-warning detection.",
       approach: [
-        "Ingest and normalize passive DNS / CT-like sources into a common candidate model.",
-        "Apply typosquat heuristics and reputation-style heuristics to rank candidates.",
-        "Persist candidates in a lightweight database to support iterative investigations.",
+        "Subscribed to the certstream WebSocket feed for real-time certificate issuance events.",
+        "Implemented typosquatting and substring-match detection against a config-driven domain watchlist.",
+        "Added extensible alert hooks so suspicious domains surface immediately for analyst triage.",
       ],
       outcome:
-        "A practical OSINT pipeline that turns passive signals into ranked phishing candidates for triage.",
-      metrics: ["Candidate throughput: high", "Signal sources: 2+", "Triage ranking: deterministic"],
-      architectureNotes: [
-        "Separation between collection, enrichment, and ranking makes the workflow easy to extend.",
-        "Database-backed candidates support re-runs without losing investigator context.",
-        "Heuristics are transparent so outputs can be audited.",
+        "Built an early-warning tool that identifies suspicious domain registrations before phishing campaigns launch.",
+      metrics: [
+        "Detection latency: near real-time via WebSocket stream",
+        "Typosquat variants: full alphabet substitution and deletion coverage",
+        "Alert outputs: pluggable (Slack, email, SIEM ingest)",
       ],
-      screenshots: ["https://picsum.photos/seed/phish-hunter/800/480"],
+      architectureNotes: [
+        "certstream feed handles thousands of certificate events per minute without queuing lag.",
+        "Watchlist is config-driven so analysts add protected domains without code changes.",
+        "Modular pipeline allows swapping detection strategies independently of alerting logic.",
+      ],
     },
   },
   {
     id: "redteam-c2",
-    title: "RedTeam C2 Framework",
+    title: "RedTeam Lab",
     shortDescription:
-      "Lightweight command-and-control infrastructure for controlled red-team exercises with encrypted beacon channels.",
+      "Authorized red team C2 simulation lab for generating realistic adversary beacon traffic used to validate blue team detection rules.",
     roleMode: "cyber",
-    tech: ["Go", "Kali Linux", "Metasploit", "Docker"],
-    category: "Red Team Simulation",
+    tech: ["Go", "Python", "Docker", "Kali Linux"],
+    category: "Adversary Simulation Lab",
     difficulty: "advanced",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    codeUrl: "https://github.com/EddyKilonzo",
+    codeUrl: "https://github.com/EddyKilonzo/redteam-lab",
     demoType: "cyber",
-    skills: ["Metasploit", "Kali Linux", "Incident Response"],
+    skills: ["Kali Linux", "Metasploit", "Python", "Docker"],
     screenshotFallback: "https://picsum.photos/seed/redteam-c2/960/600",
     caseStudy: {
       problem:
-        "Training exercises require realistic beacon behavior while keeping operators in full control of scope and safety.",
+        "Detection teams need realistic adversary simulation to validate their rules against actual C2 beacon and callback patterns in a safe environment.",
       approach: [
-        "Implement a modular C2 core with encrypted beacon check-ins.",
-        "Integrate with common red-team tooling workflows (e.g., chaining with Metasploit steps).",
-        "Containerize components so labs can be spun up consistently for each exercise.",
+        "Built a lightweight Go beacon with jittered callback intervals and TLS verification for realistic traffic simulation.",
+        "Containerized server and agent in isolated Docker bridge networks to prevent any external exposure.",
+        "Documented companion detection signatures that each simulated technique should trigger in a paired SIEM.",
       ],
       outcome:
-        "A framework that supports realistic controlled exercises with operator-controlled behavior.",
-      metrics: ["Beacon channel encryption: enabled", "Exercise setup time: minimized", "Toolchain integration: modular"],
+        "Created a controlled adversary simulation environment that feeds detection rule validation with realistic payloads.",
+      metrics: [
+        "Lab isolation: Docker bridge network only — no external reachability",
+        "Beacon jitter: configurable 15–45s intervals",
+        "Technique coverage: mapped to MITRE ATT&CK",
+      ],
       architectureNotes: [
-        "Encrypted beacon channel isolates command delivery from transport noise.",
-        "Separation between operator UI/config and agent check-in loop.",
-        "Container orchestration reduces environment drift across runs.",
+        "All traffic stays within Docker bridge networks — no external exposure by design.",
+        "Lab pairs with SentinelSIEM for end-to-end red vs blue detection testing.",
+        "Each technique is documented so blue team operators understand what signals to expect.",
       ],
-      screenshots: ["https://picsum.photos/seed/redteam-c2/800/480"],
-    },
-  },
-  {
-    id: "mesh-api",
-    title: "Mesh API Gateway",
-    shortDescription:
-      "High-performance API edge with rate limiting, JWT rotation, and observability hooks.",
-    roleMode: "engineering",
-    tech: ["Go", "Redis", "gRPC", "Kubernetes"],
-    category: "API Platform Engineering",
-    difficulty: "advanced",
-    videoUrl: "https://vimeo.com/148751763",
-    codeUrl: "https://github.com/EddyKilonzo",
-    demoType: "engineering",
-    engineeringDemo: "api",
-    skills: ["REST APIs", "Redis", "Kubernetes", "Docker"],
-    screenshotFallback: "https://picsum.photos/seed/mesh-api/960/600",
-    caseStudy: {
-      problem:
-        "Modern APIs need edge capabilities (rate limiting, token lifecycle, tracing) without sacrificing latency and maintainability.",
-      approach: [
-        "Route requests through an API gateway with pluggable policy modules.",
-        "Implement JWT rotation logic that supports safe token lifecycle management.",
-        "Add observability hooks so operators can debug and optimize hot paths.",
-      ],
-      outcome:
-        "A production-minded gateway architecture with clear extension points and measurable performance goals.",
-      metrics: ["P99 latency target: sub-10ms class", "Policy modules: extensible", "Observability: trace hooks"],
-      architectureNotes: [
-        "Policy checks run in a deterministic order to simplify reasoning and debugging.",
-        "Redis used to coordinate rate limiting and token lifecycle state.",
-        "gRPC between internal components keeps boundaries explicit.",
-      ],
-      screenshots: ["https://picsum.photos/seed/mesh-api/800/480"],
-    },
-  },
-  {
-    id: "event-stream",
-    title: "Event Stream Processor",
-    shortDescription:
-      "Real-time Kafka-based pipeline that ingests, transforms, and routes millions of events per day with sub-10ms P99.",
-    roleMode: "engineering",
-    tech: ["Python", "Kafka", "PostgreSQL", "Docker"],
-    category: "Streaming Data Engineering",
-    difficulty: "advanced",
-    videoUrl: "https://vimeo.com/148751763",
-    codeUrl: "https://github.com/EddyKilonzo",
-    demoType: "engineering",
-    engineeringDemo: "schema",
-    skills: ["Python", "PostgreSQL", "Docker", "CI/CD"],
-    screenshotFallback: "https://picsum.photos/seed/event-stream/960/600",
-    caseStudy: {
-      problem:
-        "High-volume event pipelines must remain correct under load while keeping operators able to introspect transformations.",
-      approach: [
-        "Ingest raw events from a Kafka-like stream and transform them into enriched records.",
-        "Write outputs to downstream topics and persist key state to a relational store.",
-        "Design the pipeline to support schema evolution without breaking consumer expectations.",
-      ],
-      outcome:
-        "A scalable pipeline pattern for real-time ingestion, enrichment, and routing with operator-friendly observability.",
-      metrics: ["Throughput: millions/day", "Routing: deterministic", "Schema evolution: safe"],
-      architectureNotes: [
-        "Transform stage is isolated so it can evolve independently of ingestion/output.",
-        "Postgres persistence supports auditability and replay workflows.",
-        "CI/CD keeps pipeline changes deployable with predictable rollouts.",
-      ],
-      screenshots: ["https://picsum.photos/seed/event-stream/800/480"],
-    },
-  },
-  {
-    id: "infra-scaffold",
-    title: "IaC Scaffold CLI",
-    shortDescription:
-      "Opinionated Terraform + Helm scaffolding tool that bootstraps production-ready K8s clusters in under five minutes.",
-    roleMode: "engineering",
-    tech: ["Go", "Terraform", "Kubernetes", "Helm"],
-    category: "Infrastructure Automation",
-    difficulty: "advanced",
-    videoUrl: "https://vimeo.com/148751763",
-    codeUrl: "https://github.com/EddyKilonzo",
-    demoType: "engineering",
-    engineeringDemo: "algo",
-    skills: ["Kubernetes", "CI/CD", "Linux", "Docker"],
-    screenshotFallback: "https://picsum.photos/seed/infra-scaffold/960/600",
-    caseStudy: {
-      problem:
-        "Spinning up production-like clusters should be fast, repeatable, and enforceable (security + defaults) without manual drift.",
-      approach: [
-        "Create an opinionated scaffold that generates Terraform and Helm templates from a constrained input model.",
-        "Standardize defaults so clusters start secure and consistent across environments.",
-        "Provide CLI workflows for init/destroy that wrap common IaC steps safely.",
-      ],
-      outcome:
-        "A CLI that reduces cluster bootstrapping time and improves consistency through opinionated IaC templates.",
-      metrics: ["Bootstrap time: <5 minutes", "Consistency: improved defaults", "Ops: predictable init/destroy"],
-      architectureNotes: [
-        "A constrained config model prevents accidental insecure template combinations.",
-        "Templates separate platform primitives from app-level configuration.",
-        "CLI wrappers help enforce ordering and reduce human error.",
-      ],
-      screenshots: ["https://picsum.photos/seed/infra-scaffold/800/480"],
-    },
-  },
-  {
-    id: "aurora-portfolio",
-    title: "Aurora Portfolio Engine",
-    shortDescription:
-      "WebGL-forward portfolio shell with shader backgrounds and scroll-linked storytelling.",
-    roleMode: "web",
-    tech: ["Next.js", "Three.js", "GSAP", "Tailwind CSS"],
-    category: "Interactive Web Experiences",
-    difficulty: "intermediate",
-    videoUrl: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
-    liveUrl: "https://nextjs.org",
-    codeUrl: "https://github.com/EddyKilonzo",
-    demoType: "web",
-    skills: ["Next.js", "Three.js", "React", "TypeScript"],
-    screenshotFallback: "https://picsum.photos/seed/aurora-portfolio/960/600",
-    caseStudy: {
-      problem:
-        "Immersive WebGL effects need to remain performant and accessible while integrating with a maintainable UI architecture.",
-      approach: [
-        "Use scroll-linked storytelling to coordinate UI sections with visual shader states.",
-        "Keep visual effects encapsulated so the UI remains easy to evolve.",
-        "Apply motion controls that respect reduced-motion preferences.",
-      ],
-      outcome:
-        "A responsive WebGL-first shell that supports immersive storytelling without compromising UX stability.",
-      metrics: ["Performance: optimized render loop", "Accessibility: motion-aware", "Maintainability: encapsulated effects"],
-      architectureNotes: [
-        "Separate scene rendering from React UI state to reduce coupling.",
-        "Motion is driven by scroll progress so interactions feel intentional.",
-        "Reduced-motion gates prevent expensive effects on low-end devices.",
-      ],
-      screenshots: ["https://picsum.photos/seed/aurora-portfolio/800/480"],
-    },
-  },
-  {
-    id: "design-system",
-    title: "Verdant Design System",
-    shortDescription:
-      "Component library and Figma token pipeline that syncs design decisions to code automatically via style-dictionary.",
-    roleMode: "web",
-    tech: ["React", "TypeScript", "Figma", "Storybook"],
-    category: "Design Systems & UI Engineering",
-    difficulty: "advanced",
-    videoUrl: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
-    liveUrl: "https://nextjs.org",
-    codeUrl: "https://github.com/EddyKilonzo",
-    demoType: "web",
-    skills: ["React", "TypeScript", "Figma", "Tailwind CSS"],
-    screenshotFallback: "https://picsum.photos/seed/design-system/960/600",
-    caseStudy: {
-      problem:
-        "Design tokens drift when teams manually translate Figma decisions into code, causing UI inconsistency and slower delivery.",
-      approach: [
-        "Automate token extraction and generation with a style-dictionary-based pipeline.",
-        "Build components that consume tokens consistently and expose ergonomic APIs.",
-        "Use Storybook to validate component states and reduce regression risk.",
-      ],
-      outcome:
-        "A maintainable design system where visual decisions flow from Figma to code with minimal friction.",
-      metrics: ["Token sync: automated", "Regression risk: reduced via Storybook", "Consistency: improved"],
-      architectureNotes: [
-        "Tokens are the single source of truth for theme values.",
-        "Components are built to be themeable without rewriting internals.",
-        "Storybook becomes the integration surface for designers and engineers.",
-      ],
-      screenshots: ["https://picsum.photos/seed/design-system/800/480"],
-    },
-  },
-  {
-    id: "realtime-collab",
-    title: "Realtime Collab Editor",
-    shortDescription:
-      "Google Docs-style collaborative editor using CRDTs for conflict-free merging and WebSocket presence awareness.",
-    roleMode: "web",
-    tech: ["Next.js", "Node.js", "GraphQL", "Framer Motion"],
-    category: "Realtime Collaboration Systems",
-    difficulty: "advanced",
-    videoUrl: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
-    liveUrl: "https://nextjs.org",
-    codeUrl: "https://github.com/EddyKilonzo",
-    demoType: "web",
-    skills: ["Next.js", "Node.js", "GraphQL", "TypeScript"],
-    screenshotFallback: "https://picsum.photos/seed/realtime-collab/960/600",
-    caseStudy: {
-      problem:
-        "Collaborative editing must reconcile concurrent changes reliably without forcing users to resolve conflicts.",
-      approach: [
-        "Model editor operations with CRDT semantics so concurrent edits merge deterministically.",
-        "Use WebSocket presence to show collaborative cursors and editing activity.",
-        "Keep network sync logic separate from rendering so UI updates stay responsive.",
-      ],
-      outcome:
-        "A collaboration editor with conflict-free merges and presence-aware UX suitable for real-time workflows.",
-      metrics: ["Merge correctness: deterministic", "Presence: real-time", "UI responsiveness: maintained"],
-      architectureNotes: [
-        "CRDT operation log provides a stable merge mechanism for concurrent edits.",
-        "Rendering updates derive from merged document state.",
-        "Presence events are handled independently to avoid blocking text sync.",
-      ],
-      screenshots: ["https://picsum.photos/seed/realtime-collab/800/480"],
     },
   },
 ];
 
 export const projectCredibility: Record<string, ProjectCredibility> = {
-  "sentinel-siem": { performanceScore: 94, accessibilityScore: 96, lighthouseScore: 95, loadTime: "1.2s" },
-  "phish-hunter": { performanceScore: 92, accessibilityScore: 95, lighthouseScore: 94, loadTime: "1.3s" },
-  "redteam-c2": { performanceScore: 90, accessibilityScore: 93, lighthouseScore: 92, loadTime: "1.4s" },
-  "mesh-api": { performanceScore: 97, accessibilityScore: 94, lighthouseScore: 96, loadTime: "0.9s" },
-  "event-stream": { performanceScore: 93, accessibilityScore: 92, lighthouseScore: 93, loadTime: "1.2s" },
-  "infra-scaffold": { performanceScore: 95, accessibilityScore: 93, lighthouseScore: 94, loadTime: "1.1s" },
-  "aurora-portfolio": { performanceScore: 89, accessibilityScore: 95, lighthouseScore: 92, loadTime: "1.6s" },
-  "design-system": { performanceScore: 96, accessibilityScore: 98, lighthouseScore: 97, loadTime: "1.0s" },
-  "realtime-collab": { performanceScore: 91, accessibilityScore: 94, lighthouseScore: 93, loadTime: "1.4s" },
+  "credi-score": { performanceScore: 95, accessibilityScore: 93, lighthouseScore: 94, loadTime: "1.2s" },
+  "nduthi-ride": { performanceScore: 92, accessibilityScore: 91, lighthouseScore: 92, loadTime: "1.3s" },
+  "fin-analytics": { performanceScore: 93, accessibilityScore: 92, lighthouseScore: 93, loadTime: "1.2s" },
+  "petmate": { performanceScore: 90, accessibilityScore: 92, lighthouseScore: 91, loadTime: "1.4s" },
+  "anitah-hair-studio": { performanceScore: 94, accessibilityScore: 95, lighthouseScore: 94, loadTime: "1.1s" },
+  "sendit": { performanceScore: 91, accessibilityScore: 90, lighthouseScore: 91, loadTime: "1.4s" },
+  "lms-platform": { performanceScore: 92, accessibilityScore: 91, lighthouseScore: 92, loadTime: "1.3s" },
+  "inspira-haven": { performanceScore: 94, accessibilityScore: 94, lighthouseScore: 94, loadTime: "1.1s" },
+  "beyond-borders": { performanceScore: 93, accessibilityScore: 94, lighthouseScore: 93, loadTime: "1.2s" },
+  "car-rental": { performanceScore: 92, accessibilityScore: 92, lighthouseScore: 92, loadTime: "1.3s" },
 };
 
 export const projectCodeSamples: Record<string, CodeFile[]> = {

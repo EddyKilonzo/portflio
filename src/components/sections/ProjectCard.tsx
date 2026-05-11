@@ -101,7 +101,7 @@ export function ProjectCard({
   return (
     <div
       ref={cardRef}
-      className="project-card mi-interactive glass-card group relative w-[min(100vw-3rem,380px)] shrink-0 rounded-2xl p-6 transition-shadow duration-300 will-change-transform"
+      className="project-card mi-interactive glass-card group relative w-full rounded-2xl p-6 transition-shadow duration-300 will-change-transform"
       style={{
         boxShadow:
           "0 12px 40px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.35), 0 1px 0 rgba(168,217,184,0.1)",
@@ -117,6 +117,9 @@ export function ProjectCard({
         {project.roleMode} · {mode}
       </div>
       <h3 className="font-display text-2xl text-highlight">{project.title}</h3>
+      <p className="mt-0.5 font-mono text-[10px] text-highlight/45">
+        <span className="opacity-70">//</span> {project.category}
+      </p>
       <p className="mt-2 font-sans text-sm text-highlight/75">
         {project.shortDescription}
       </p>
@@ -124,7 +127,7 @@ export function ProjectCard({
         {project.tech.map((t) => (
           <span
             key={t}
-            className="rounded-full border border-white/55 bg-surface/20 px-2 py-0.5 font-mono text-[10px] text-white"
+            className="rounded-full border border-highlight/25 bg-surface/15 px-2 py-0.5 font-mono text-[10px] text-highlight/75"
           >
             {t}
           </span>
@@ -168,15 +171,17 @@ export function ProjectCard({
             Case Study
           </MagneticButton>
         ) : null}
-        <MagneticButton className="btn-ghost flex-1 text-xs" onClick={onWatch}>
-          Watch Demo
-        </MagneticButton>
         <MagneticButton className="btn-ghost flex-1 text-xs" onClick={onLive}>
-          Live Demo
+          {project.liveUrl ? "Visit Site ↗" : "Live Demo"}
         </MagneticButton>
-        <MagneticButton className="btn-ghost flex-1 text-xs" onClick={onCode}>
-          View Code
-        </MagneticButton>
+        {project.codeUrl ? (
+          <MagneticButton
+            className="btn-ghost flex-1 text-xs"
+            onClick={() => window.open(project.codeUrl, "_blank", "noopener,noreferrer")}
+          >
+            View Code ↗
+          </MagneticButton>
+        ) : null}
       </div>
     </div>
   );
