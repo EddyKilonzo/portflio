@@ -9,7 +9,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const roleBadge: Record<string, string> = {
   cyber: "bg-cyber/20 text-cyber border-cyber/40",
   engineering: "bg-eng/20 text-eng border-eng/40",
-  web: "bg-highlight/15 text-highlight border-highlight/30",
+  web: "bg-eng/20 text-eng border-eng/40",
+};
+const roleDisplayLabel: Record<string, string> = {
+  cyber: "CyberSec",
+  engineering: "Developer",
+  web: "Developer",
 };
 
 type Props = {
@@ -114,7 +119,7 @@ export function ProjectCard({
       <div
         className={`mb-3 inline-block rounded-full border px-2 py-0.5 font-mono text-[10px] ${roleBadge[project.roleMode]}`}
       >
-        {project.roleMode} · {mode}
+        {roleDisplayLabel[project.roleMode] ?? project.roleMode}
       </div>
       <h3 className="font-display text-2xl text-highlight">{project.title}</h3>
       <p className="mt-0.5 font-mono text-[10px] text-highlight/45">

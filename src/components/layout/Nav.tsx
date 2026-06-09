@@ -19,7 +19,9 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const { light, toggleLight, themeMode, setThemeMode } = useTheme();
-  const activeSection = useActiveSection(sectionLinks.map((s) => s.id));
+  const activeSection = useActiveSection(
+    sectionLinks.filter((s) => s.showInTopNav).map((s) => s.id),
+  );
   const quickTargets = useMemo(
     () => [
       ...sectionLinks.map((s) => ({
@@ -239,12 +241,12 @@ export function Nav() {
             </button>
             <button
               type="button"
-              onClick={() => setThemeMode(themeMode === "system" ? "dark" : themeMode === "dark" ? "light" : "system")}
+              onClick={() => setThemeMode(light ? "dark" : "light")}
               className="mi-interactive ml-2 rounded border border-highlight/15 px-2.5 py-1 font-mono text-[11px] text-accent/80 transition-colors hover:border-highlight/30 hover:text-accent"
-              aria-label="Cycle theme mode"
-              title={`Theme: ${themeMode} — click to cycle`}
+              aria-label="Toggle theme"
+              title={`Theme: ${light ? "Light" : "Dark"} — click to toggle`}
             >
-              {themeMode === "system" ? "⊙ Auto" : light ? "☀ Light" : "☾ Dark"}
+              {light ? "☀ Light" : "☾ Dark"}
             </button>
             <button
               type="button"

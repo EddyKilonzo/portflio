@@ -24,7 +24,7 @@ export function PdfModal({ pdfUrl, title, isOpen, onClose }: Props) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div className="glass-card w-full max-w-5xl h-[90vh] flex flex-col rounded-2xl overflow-hidden border border-highlight/15">
@@ -41,14 +41,14 @@ export function PdfModal({ pdfUrl, title, isOpen, onClose }: Props) {
               rel="noopener noreferrer"
               className="glass-pill text-[11px] text-highlight/60 hover:text-highlight"
             >
-              ↗ Open
+              ↗ Open in Tab
             </a>
             <a
               href={pdfUrl}
               download
               className="glass-pill text-[11px] text-highlight/60 hover:text-highlight"
             >
-              ↓ PDF
+              ↓ Download
             </a>
             <button
               onClick={onClose}
@@ -60,13 +60,38 @@ export function PdfModal({ pdfUrl, title, isOpen, onClose }: Props) {
           </div>
         </div>
 
-        {/* PDF iframe */}
-        <iframe
-          src={pdfUrl}
+        {/* PDF object — better cross-browser support than iframe for PDFs */}
+        <object
+          data={pdfUrl}
+          type="application/pdf"
           className="flex-1 w-full"
           title={title}
-          sandbox="allow-scripts allow-same-origin"
-        />
+        >
+          {/* Fallback when browser blocks inline PDF (e.g. Chrome on some OS configs) */}
+          <div className="flex flex-1 h-full flex-col items-center justify-center gap-5 p-8 text-center">
+            <span className="font-mono text-4xl text-highlight/20">◎</span>
+            <p className="font-mono text-sm text-highlight/50">
+              Your browser blocked the inline PDF preview.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl border border-accent/40 bg-accent/10 px-5 py-2.5 font-mono text-sm text-accent transition-colors hover:bg-accent/15"
+              >
+                ↗ Open PDF in new tab
+              </a>
+              <a
+                href={pdfUrl}
+                download
+                className="rounded-xl border border-highlight/20 px-5 py-2.5 font-mono text-sm text-highlight/70 transition-colors hover:border-highlight/40"
+              >
+                ↓ Download PDF
+              </a>
+            </div>
+          </div>
+        </object>
       </div>
     </div>
   );

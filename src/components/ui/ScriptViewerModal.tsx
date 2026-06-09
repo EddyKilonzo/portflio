@@ -5,19 +5,21 @@ import { useEffect, useRef, useState } from "react";
 interface Props {
   filename: string;
   title: string;
+  language?: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function ScriptViewerModal({ filename, title, isOpen, onClose }: Props) {
-  const [code, setCode] = useState<string | null>(null);
+export function ScriptViewerModal({ filename, title, language = "python", isOpen, onClose }: Props) {
+  const [rawCode, setRawCode] = useState<string | null>(null);
+  const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
-    if (code !== null) return;
+    if (rawCode !== null) return;
     setLoading(true);
     setError(false);
     fetch(`/projects_docs/${filename}`)
@@ -25,9 +27,26 @@ export function ScriptViewerModal({ filename, title, isOpen, onClose }: Props) {
         if (!r.ok) throw new Error("not found");
         return r.text();
       })
-      .then((text) => { setCode(text); setLoading(false); })
+      .then(async (text) => {
+        setRawCode(text);
+        // Fetch syntax-highlighted HTML from the server API
+        try {
+          const res = await fetch("/api/highlight", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: text, lang: language }),
+          });
+          if (res.ok) {
+            const data = (await res.json()) as { html: string | null };
+            if (data.html) setHighlightedHtml(data.html);
+          }
+        } catch {
+          // fallback to plain text
+        }
+        setLoading(false);
+      })
       .catch(() => { setError(true); setLoading(false); });
-  }, [isOpen, filename, code]);
+  }, [isOpen, filename, rawCode, language]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -45,14 +64,20 @@ export function ScriptViewerModal({ filename, title, isOpen, onClose }: Props) {
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div className="glass-card w-full max-w-4xl max-h-[88vh] flex flex-col rounded-2xl overflow-hidden border border-highlight/15">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-3 px-5 py-3.5 border-b border-highlight/10 shrink-0">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="text-cyber text-sm">⌨</span>
-            <h3 className="font-display text-base text-highlight truncate">{title}</h3>
-            <span className="hidden sm:inline font-mono text-[10px] text-highlight/40 shrink-0">{filename}</span>
+        {/* Header — IDE-style title bar */}
+        <div className="flex items-center justify-between gap-3 px-5 py-3 border-b border-highlight/10 shrink-0 bg-[#0d1117]/60">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex gap-1.5">
+              <span className="h-3 w-3 rounded-full bg-red-500/80" />
+              <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
+              <span className="h-3 w-3 rounded-full bg-green-500/80" />
+            </div>
+            <span className="font-mono text-[11px] text-highlight/50">{filename}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <span className="hidden sm:inline rounded-full border border-yellow-400/30 bg-yellow-400/8 px-2 py-0.5 font-mono text-[10px] text-yellow-400/80 capitalize">
+              {language}
+            </span>
             <a
               href={`/projects_docs/${filename}`}
               download={filename}
@@ -71,7 +96,7 @@ export function ScriptViewerModal({ filename, title, isOpen, onClose }: Props) {
         </div>
 
         {/* Body */}
-        <div className="overflow-y-auto flex-1">
+        <div className="overflow-y-auto flex-1 bg-[#0d1117]">
           {loading && (
             <div className="flex items-center justify-center py-16 text-highlight/40 font-mono text-sm">
               Loading {filename}…
@@ -82,9 +107,15 @@ export function ScriptViewerModal({ filename, title, isOpen, onClose }: Props) {
               Could not load file. Try the download link above.
             </div>
           )}
-          {code !== null && !error && (
-            <pre className="p-5 font-mono text-[12px] leading-relaxed text-highlight/80 overflow-x-auto whitespace-pre">
-              <code>{code}</code>
+          {rawCode !== null && !error && highlightedHtml && (
+            <div
+              className="shiki-wrap text-[13px] leading-relaxed p-5 overflow-x-auto"
+              dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+            />
+          )}
+          {rawCode !== null && !error && !highlightedHtml && (
+            <pre className="p-5 font-mono text-[13px] leading-relaxed text-[#e6edf3] overflow-x-auto whitespace-pre">
+              <code>{rawCode}</code>
             </pre>
           )}
         </div>

@@ -12,21 +12,26 @@ import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 gsap.registerPlugin(ScrollTrigger);
 
 const accentBorder: Record<string, string> = {
-  cyber: "border-l-cyber shadow-[inset_4px_0_0_0_#FF4C4C]",
-  engineering: "border-l-eng shadow-[inset_4px_0_0_0_#4C9EFF]",
-  web: "border-l-highlight shadow-[inset_4px_0_0_0_#A8D9B8]",
+  cyber: "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
+  engineering: "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
+  web: "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
 };
 
 const accentDot: Record<string, string> = {
-  cyber: "bg-cyber",
-  engineering: "bg-eng",
-  web: "bg-highlight",
+  cyber: "bg-accent",
+  engineering: "bg-accent",
+  web: "bg-accent",
 };
 
 const accentLabel: Record<string, string> = {
-  cyber: "text-red-400 border-red-400/30",
-  engineering: "text-blue-400 border-blue-400/30",
+  cyber: "text-accent border-accent/30",
+  engineering: "text-accent border-accent/30",
   web: "text-accent border-accent/30",
+};
+
+const companyLogo: Record<string, string> = {
+  "attache-teach2give": "/logos/teach2give.png",
+  "trainee-eldohub":    "/logos/eldohub.jfif",
 };
 
 export function ExperienceSection() {
@@ -108,7 +113,7 @@ function ExpCard({
   const visible = expanded ? responsibilities : responsibilities.slice(0, COLLAPSED_COUNT);
   const hasMore = responsibilities.length > COLLAPSED_COUNT;
   const yearLabel = ex.duration.split("—")[0]?.trim() ?? ex.duration;
-  const roleTag = ex.accent === "cyber" ? "Security" : ex.accent === "engineering" ? "Engineering" : "Web";
+  const roleTag = ex.accent === "cyber" ? "CyberSec" : "Developer";
 
   return (
     <article
@@ -129,16 +134,27 @@ function ExpCard({
         className={`glass-card w-full rounded-2xl border-l-4 p-6 transition-all duration-300 hover:border-l-[5px] hover:shadow-lg ${accentBorder[ex.accent]}`}
       >
         <header className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0 flex-1">
             <h3 className="font-display text-xl text-highlight">{ex.title}</h3>
             <p className="font-mono text-sm text-accent">{ex.company}</p>
             <p className="mt-0.5 font-mono text-xs text-highlight/45">
               {ex.duration} · {ex.location}
             </p>
           </div>
-          <span className={`shrink-0 self-start rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${accentLabel[ex.accent]}`}>
-            {roleTag}
-          </span>
+          <div className="flex shrink-0 items-start gap-3">
+            <span className={`self-start rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${accentLabel[ex.accent]}`}>
+              {roleTag}
+            </span>
+            {companyLogo[ex.id] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={companyLogo[ex.id]}
+                alt={`${ex.company} logo`}
+                className="h-24 w-24 shrink-0 rounded-xl object-contain bg-white/10 p-2"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            )}
+          </div>
         </header>
 
         <ul className="mt-4 space-y-2">

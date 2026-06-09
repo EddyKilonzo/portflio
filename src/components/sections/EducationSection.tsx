@@ -135,15 +135,28 @@ export function EducationSection() {
             data-aos="fade-up"
             className="glass-card mt-8 rounded-2xl border-t-2 border-accent p-6"
           >
-            <h3 className="font-display text-3xl text-highlight will-change-transform">
-              {item.degree}
-            </h3>
-            <p className="font-mono text-sm text-accent">{item.institution}</p>
-            <p className="mt-2 font-mono text-xs text-highlight/60">
-              {item.year}
-              {item.gpa ? ` · GPA ${item.gpa}` : ""}
-              {item.honors ? ` · ${item.honors}` : ""}
-            </p>
+            <div className="flex items-start gap-4">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-display text-3xl text-highlight will-change-transform">
+                  {item.degree}
+                </h3>
+                <p className="font-mono text-sm text-accent">{item.institution}</p>
+                <p className="mt-1 font-mono text-xs text-highlight/60">
+                  {item.year}
+                  {item.gpa ? ` · GPA ${item.gpa}` : ""}
+                  {item.honors ? ` · ${item.honors}` : ""}
+                </p>
+              </div>
+              {item.logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.logoUrl}
+                  alt={`${item.institution} logo`}
+                  className="h-36 w-36 shrink-0 rounded-xl object-contain bg-white/10 p-2 ml-auto"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+              )}
+            </div>
             {coursework.length ? (
               <>
                 <p className="mt-4 font-mono text-xs text-highlight/50">

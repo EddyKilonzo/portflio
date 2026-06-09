@@ -6,7 +6,7 @@ import type { RoleMode } from "@/content/portfolio";
 const ACCENTS: Record<RoleMode, string> = {
   cyber: "#FF4C4C",
   engineering: "#4C9EFF",
-  web: "#A8D9B8",
+  web: "#4C9EFF",  // web maps to developer — same accent
 };
 
 type RoleCtx = {
@@ -18,7 +18,7 @@ type RoleCtx = {
 const Ctx = createContext<RoleCtx | null>(null);
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = useState<RoleMode>("web");
+  const [mode, setMode] = useState<RoleMode>("engineering");
 
   useEffect(() => {
     document.documentElement.style.setProperty("--accent", ACCENTS[mode]);

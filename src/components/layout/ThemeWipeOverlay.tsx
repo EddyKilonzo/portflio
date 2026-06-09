@@ -38,16 +38,16 @@ export function ThemeWipeOverlay() {
 
     tl.to(el, {
       clipPath: "inset(0 0% 0 0)",
-      duration: 0.5,
-      ease: "power2.inOut",
+      duration: 0.42,
+      ease: "expo.inOut",
     }).call(() => {
       commitLight(toLight);
     });
 
     tl.to(el, {
       opacity: 0,
-      duration: 0.24,
-      ease: "power2.out",
+      duration: 0.32,
+      ease: "expo.out",
       onComplete: () => {
         gsap.set(el, {
           clearProps: "clipPath,backgroundColor,zIndex",

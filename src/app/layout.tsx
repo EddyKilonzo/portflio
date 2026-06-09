@@ -1,4 +1,5 @@
 import { AppProviders } from "@/components/providers/AppProviders";
+import { PageLoader } from "@/components/layout/PageLoader";
 import { projects, profile } from "@/content/portfolio";
 import type { Metadata } from "next";
 import { JetBrains_Mono, Space_Grotesk, Syne } from "next/font/google";
@@ -115,6 +116,7 @@ export default function RootLayout({
             }),
           }}
         />
+        <PageLoader />
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

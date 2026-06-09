@@ -13,7 +13,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 const INTRO_LINE =
-  "I build secure, scalable digital experiences across cyber, software, and web.";
+  "Software engineer turned cybersecurity analyst — I know how systems are built, and I am learning every day how to defend them.";
 
 type Props = {
   scrollProgressRef: React.MutableRefObject<number>;
@@ -362,10 +362,8 @@ export function HeroSection({
   const frameInner = light
     ? "border-black/10 bg-[linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.01))]"
     : "border-highlight/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.01))]";
-  const silhouetteBg = light
-    ? "bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(6,21,18,0.18))]"
-    : "bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(0,0,0,0.34))]";
   const ringBorder = light ? "border-black/12" : "border-highlight/10";
+  const bottomFade = light ? "from-[#e8f2ec]" : "from-[#080d16]";
   const ctaBar = light
     ? "border-black/12 bg-white/55"
     : "border-highlight/12 bg-black/45";
@@ -478,9 +476,9 @@ export function HeroSection({
                     EMK
                   </span>
                   <div>
-                    <p className="font-display text-3xl font-semibold leading-none">Security-First Builder</p>
+                    <p className="font-display text-3xl font-semibold leading-none">Cybersecurity Analyst</p>
                     <p className={`font-sans text-lg ${mutedText}`}>
-                      Web Engineering · Cybersecurity · Product Design
+                      Security Monitoring · Incident Response · Blue Team
                     </p>
                   </div>
                 </div>
@@ -571,14 +569,26 @@ export function HeroSection({
                   <MagneticButton
                     className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide ${
                       light
-                        ? "border-[#2e7a5a]/40 bg-[#2e7a5a]/10 text-[#1f6b4d]"
-                        : "border-surfaceMid/50 bg-surface/25 text-highlight"
+                        ? "border-red-600/40 bg-red-600/10 text-red-700"
+                        : "border-cyber/50 bg-cyber/15 text-cyber"
                     }`}
                     onClick={() =>
-                      document.getElementById("cyber")?.scrollIntoView({ behavior: "smooth" })
+                      document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
                     }
                   >
-                    Cyber Sec
+                    SOC / Blue Team
+                  </MagneticButton>
+                  <MagneticButton
+                    className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide ${
+                      light
+                        ? "border-orange-600/35 bg-orange-500/10 text-orange-700"
+                        : "border-orange-400/45 bg-orange-400/15 text-orange-300"
+                    }`}
+                    onClick={() =>
+                      document.getElementById("now")?.scrollIntoView({ behavior: "smooth" })
+                    }
+                  >
+                    Home Lab
                   </MagneticButton>
                   <MagneticButton
                     className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide ${
@@ -590,27 +600,15 @@ export function HeroSection({
                       document.getElementById("experience")?.scrollIntoView({ behavior: "smooth" })
                     }
                   >
-                    Soft Eng
-                  </MagneticButton>
-                  <MagneticButton
-                    className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide ${
-                      light
-                        ? "border-[#5e47d6]/35 bg-[#7a68ff]/10 text-[#5e47d6]"
-                        : "border-[#7f74ff]/55 bg-[#7a68ff]/15 text-[#bdb6ff]"
-                    }`}
-                    onClick={() =>
-                      document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
-                    }
-                  >
-                    Web Dev
+                    Experience
                   </MagneticButton>
                 </div>
 
                 <div ref={pillarsRef} className="mt-7 grid max-w-2xl grid-cols-1 gap-2 sm:grid-cols-3">
                   {[
-                    ["Threat Modeling", "Secure-by-design architecture and risk-first planning."],
-                    ["API Engineering", "Reliable backend services with observability and scale."],
-                    ["Creative Frontend", "Fast, interactive interfaces with polished motion."],
+                    ["Security Monitoring", "Watching SIEM dashboards, spotting unusual activity, and investigating alerts before they become incidents."],
+                    ["Threat Detection", "Building detection rules mapped to real attacker techniques so threats get caught early."],
+                    ["Incident Response", "Following structured IR steps — identify, contain, fix, and document — practised in a home lab environment."],
                   ].map(([title, body]) => (
                     <div
                       key={title}
@@ -671,41 +669,55 @@ export function HeroSection({
               >
               <div
                 ref={photoCardRef}
-                className={`hero-person-frame relative h-[420px] sm:h-[540px] w-full max-w-[470px] overflow-hidden rounded-[28px] border transition-colors duration-500 ${frameInner.split(" ")[0]} ${frameBg}`}
+                className={`hero-person-frame relative w-full overflow-hidden rounded-[28px] border transition-colors duration-500
+                  h-[360px] max-w-[340px]
+                  sm:h-[480px] sm:max-w-[420px]
+                  md:h-[520px] md:max-w-[450px]
+                  lg:h-[560px] lg:max-w-[470px]
+                  ${frameInner.split(" ")[0]} ${frameBg}`}
               >
+                {/* Atmospheric glow behind the person */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-8">
+                  <div className="h-48 w-48 rounded-full bg-cyber/20 blur-3xl" />
+                </div>
+                <div className="pointer-events-none absolute inset-x-0 bottom-16 flex justify-center">
+                  <div className="h-28 w-36 rounded-full bg-accent/10 blur-2xl" />
+                </div>
+
+                {/* Portrait — background removed, full figure */}
+                <div ref={photoImgWrapRef} className="hero-photo-wrap absolute inset-0">
+                  <Image
+                    src="/DSC_2418-removebg-preview.png"
+                    alt={`${profile.name} portrait`}
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 80vw, (max-width: 1024px) 44vw, 470px"
+                    className="object-contain object-bottom drop-shadow-[0_0_32px_rgba(168,217,184,0.18)]"
+                  />
+                </div>
+
+                {/* Bottom fade — blends feet into card background */}
                 <div
-                  className={`absolute inset-x-10 bottom-0 top-20 rounded-t-[220px] border ${frameInner}`}
+                  className={`pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t to-transparent ${bottomFade}`}
                 />
-                <div className="absolute inset-x-0 bottom-0 flex justify-center">
-                  <div
-                    ref={photoImgWrapRef}
-                    className="hero-photo-wrap relative h-[94%] w-[88%] -translate-y-5 overflow-hidden rounded-t-[220px] border border-white/10 md:-translate-y-7"
-                  >
-                    <Image
-                      src="https://avatars.githubusercontent.com/EddyKilonzo?v=4"
-                      alt={`${profile.name} portrait`}
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 90vw, 470px"
-                      className="h-full w-full object-cover object-top saturate-110 contrast-105"
-                    />
-                    <div
-                      className={`hero-silhouette absolute inset-0 rounded-t-[220px] ${silhouetteBg}`}
-                    />
-                    <div ref={photoOverlayRef} className="absolute inset-x-0 bottom-0 z-[2] px-5 pb-5">
-                      <div className="rounded-lg border border-white/12 bg-black/45 px-3 py-2.5 backdrop-blur-[1px]">
-                        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-highlight/90 [text-shadow:0_1px_4px_rgba(0,0,0,0.75)]">
-                          signature project
-                        </p>
-                        <p className="mt-1 font-sans text-base text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.85)]">
-                          Building secure systems with cinematic interfaces.
-                        </p>
-                      </div>
+
+                {/* Status overlay */}
+                <div ref={photoOverlayRef} className="absolute bottom-3 left-3 right-3 z-[2]">
+                  <div className="rounded-xl border border-white/12 bg-black/55 px-3.5 py-2.5 backdrop-blur-sm">
+                    <div className="mb-0.5 flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyber" />
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-highlight/85">
+                        Open to SOC Analyst roles
+                      </p>
                     </div>
+                    <p className="font-sans text-sm text-white/80">
+                      Detecting threats. Defending systems.
+                    </p>
                   </div>
                 </div>
               </div>
-              <div className="mt-3 w-full max-w-[470px]">
+
+              <div className="mt-3 w-full max-w-[340px] sm:max-w-[420px] md:max-w-[450px] lg:max-w-[470px]">
                 <div
                   ref={ctaRef}
                   className={`hero-cta-dock grid grid-cols-[1fr_auto] items-center gap-2 rounded-2xl border p-2 backdrop-blur-md ${ctaBar}`}
@@ -798,14 +810,8 @@ export function HeroSection({
           animation: bob-y 8s ease-in-out infinite;
         }
 
-        .hero-silhouette {
-          box-shadow:
-            0 0 50px rgba(22, 26, 42, 0.5),
-            inset 0 18px 26px rgba(255, 255, 255, 0.04);
-        }
-
         .hero-photo-wrap {
-          animation: portrait-breathe 6.2s ease-in-out infinite;
+          animation: portrait-breathe 7s ease-in-out infinite;
         }
 
         .hero-cta-dock {
@@ -852,10 +858,10 @@ export function HeroSection({
         @keyframes portrait-breathe {
           0%,
           100% {
-            transform: translateY(-20px) scale(1);
+            transform: scale(1);
           }
           50% {
-            transform: translateY(-32px) scale(1.035);
+            transform: scale(1.025);
           }
         }
 

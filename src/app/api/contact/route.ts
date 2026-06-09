@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
 function validate(body: unknown): string | null {
   if (!body || typeof body !== "object") return "Invalid request body.";
   const b = body as Record<string, unknown>;
@@ -46,14 +55,14 @@ export async function POST(req: NextRequest) {
 
   const html = `
     <h2>New contact from EMK Portfolio</h2>
-    <p><strong>Name:</strong> ${name}</p>
-    <p><strong>Email:</strong> ${email}</p>
-    <p><strong>Project type:</strong> ${projectType ?? "—"}</p>
-    <p><strong>Budget:</strong> ${budget ?? "—"}</p>
-    <p><strong>Timeline:</strong> ${timeline ?? "—"}</p>
+    <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+    <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+    <p><strong>Project type:</strong> ${escapeHtml(projectType ?? "—")}</p>
+    <p><strong>Budget:</strong> ${escapeHtml(budget ?? "—")}</p>
+    <p><strong>Timeline:</strong> ${escapeHtml(timeline ?? "—")}</p>
     <hr/>
     <p><strong>Message:</strong></p>
-    <p style="white-space:pre-wrap">${message}</p>
+    <p style="white-space:pre-wrap">${escapeHtml(message)}</p>
   `;
 
   try {

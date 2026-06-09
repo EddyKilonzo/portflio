@@ -8,7 +8,6 @@ import {
 } from "@/content/portfolio";
 import { useRole } from "@/context/RoleContext";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { animate } from "animejs";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
@@ -22,9 +21,8 @@ const RoleParticles = dynamic(
 );
 
 const modes: { id: RoleMode; label: string; icon: string }[] = [
-  { id: "cyber",       label: "Cybersecurity",   icon: "🛡" },
-  { id: "engineering", label: "Software Engineering", icon: "⚙" },
-  { id: "web",         label: "Web Development",  icon: "✦" },
+  { id: "engineering", label: "Developer",       icon: "⚙" },
+  { id: "cyber",       label: "CyberSec",        icon: "🛡" },
 ];
 
 /** Per-role accent colors */
@@ -63,7 +61,7 @@ const roleTheme: Record<RoleMode, {
     tagText:   "#4c9eff",
     border:    "rgba(76,158,255,0.25)",
     badgeBg:   "rgba(76,158,255,0.08)",
-  },
+  }, // web maps visually to engineering (developer track)
 };
 
 const roleInsights: Record<
@@ -109,64 +107,64 @@ const roleInsights: Record<
     ],
   },
   engineering: {
-    focus: "APIs, backend reliability, and delivery pipelines for high-availability products.",
-    impact: "Lower latency, stronger observability, and safer release workflows.",
-    stack: ["Python", "APIs", "Cloud Services", "Data Stores", "CI/CD"],
-    mission: "Ship resilient systems that hold up under scale and change.",
+    focus: "Full-stack product engineering — from React UIs and design systems to NestJS APIs, event-driven backends, and cloud delivery pipelines.",
+    impact: "Shipped 10+ production applications across fintech, logistics, edtech, and SaaS — from solo builds to collaborative delivery.",
+    stack: ["React", "Next.js", "Angular", "NestJS", "PostgreSQL", "Docker", "CI/CD"],
+    mission: "Build products that hold up under scale, feel polished to use, and stay maintainable over time.",
     stats: [
+      { label: "Apps shipped",    value: "10+" },
+      { label: "Perf score avg",  value: "92"  },
       { label: "Services built",  value: "8+"  },
-      { label: "Latency cut",     value: "60%" },
-      { label: "Pipeline runs",   value: "500+" },
     ],
     pillars: [
       {
-        title: "API Reliability",
-        detail: "Design contracts, retries, and failure boundaries that keep services stable under load.",
-        metric: "Higher uptime",
+        title: "Frontend Craft",
+        detail: "Build React/Angular UIs with clean component architecture, strong accessibility, and motion-aware interactions.",
+        metric: "Polished user journeys",
+        jumpTo: "projects",
+      },
+      {
+        title: "Backend Reliability",
+        detail: "Design NestJS APIs with clear domain boundaries, type-safe Prisma data layers, and observable failure handling.",
+        metric: "Stable production systems",
         jumpTo: "projects",
       },
       {
         title: "Delivery Velocity",
-        detail: "Use CI/CD guardrails and progressive release strategies to ship faster with confidence.",
-        metric: "Safer releases",
+        detail: "CI/CD guardrails, Docker-first environments, and progressive release patterns to ship confidently and frequently.",
+        metric: "Faster, safer releases",
         jumpTo: "experience",
-      },
-      {
-        title: "Observability",
-        detail: "Instrument traces, logs, and SLO-driven alerts to cut debugging time in production.",
-        metric: "Shorter MTTR",
-        jumpTo: "reports",
       },
     ],
   },
   web: {
-    focus: "Frontend architecture, interaction quality, and performance-first UX.",
-    impact: "Faster interfaces with clearer journeys and stronger user trust.",
-    stack: ["React", "Design Systems", "Motion", "Accessibility"],
-    mission: "Make complex products feel intuitive without sacrificing speed.",
+    focus: "Full-stack product engineering — from React UIs and design systems to NestJS APIs, event-driven backends, and cloud delivery pipelines.",
+    impact: "Shipped 10+ production applications across fintech, logistics, edtech, and SaaS — from solo builds to collaborative delivery.",
+    stack: ["React", "Next.js", "Angular", "NestJS", "PostgreSQL", "Docker", "CI/CD"],
+    mission: "Build products that hold up under scale, feel polished to use, and stay maintainable over time.",
     stats: [
       { label: "Apps shipped",    value: "10+" },
       { label: "Perf score avg",  value: "92"  },
-      { label: "Components built","value": "150+" },
+      { label: "Services built",  value: "8+"  },
     ],
     pillars: [
       {
-        title: "Interaction Design",
-        detail: "Craft meaningful UI feedback loops so users always understand the next step.",
-        metric: "Clearer user flows",
+        title: "Frontend Craft",
+        detail: "Build React/Angular UIs with clean component architecture, strong accessibility, and motion-aware interactions.",
+        metric: "Polished user journeys",
         jumpTo: "projects",
       },
       {
-        title: "Performance",
-        detail: "Optimize render paths and bundle strategy to maintain speed across devices.",
-        metric: "Faster page feel",
-        jumpTo: "skills",
+        title: "Backend Reliability",
+        detail: "Design NestJS APIs with clear domain boundaries, type-safe Prisma data layers, and observable failure handling.",
+        metric: "Stable production systems",
+        jumpTo: "projects",
       },
       {
-        title: "Accessible UI",
-        detail: "Build keyboard- and screen-reader-friendly components from the start.",
-        metric: "Inclusive experiences",
-        jumpTo: "contact",
+        title: "Delivery Velocity",
+        detail: "CI/CD guardrails, Docker-first environments, and progressive release patterns to ship confidently and frequently.",
+        metric: "Faster, safer releases",
+        jumpTo: "experience",
       },
     ],
   },
@@ -290,7 +288,7 @@ export function RoleSwitcherSection() {
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <ScrollReveal from="up">
+        <div data-aos="fade-up">
           <SplittingHeading
             as="h2"
             text="Role switcher"
@@ -300,11 +298,10 @@ export function RoleSwitcherSection() {
             One operator, three lenses — flip the stack to see how I show up across
             security, systems, and the web.
           </p>
-        </ScrollReveal>
+        </div>
 
         {/* Mobile tabs */}
-        <ScrollReveal from="up" delay={0.1}>
-          <div className="mb-8 flex flex-wrap gap-2 lg:hidden">
+        <div className="mb-8 flex flex-wrap gap-2 lg:hidden" data-aos="fade-up" data-aos-delay="80">
             {modes.map((m) => {
               const t = roleTheme[m.id];
               const active = mode === m.id;
@@ -332,8 +329,7 @@ export function RoleSwitcherSection() {
                 </button>
               );
             })}
-          </div>
-        </ScrollReveal>
+        </div>
 
         <div className="grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)] lg:items-start">
           {/* Desktop mini sidebar tabs */}
@@ -370,7 +366,7 @@ export function RoleSwitcherSection() {
           <div>
             <div className="grid gap-8 lg:grid-cols-2">
               {/* ── LEFT PANEL: Identity + Interactive ── */}
-              <ScrollReveal from="left" delay={0.15}>
+              <div data-aos="fade-right" data-aos-delay="150">
                 <div
                   className="glass-card mi-interactive relative min-h-[340px] overflow-hidden rounded-2xl p-6"
                   style={{
@@ -510,11 +506,11 @@ export function RoleSwitcherSection() {
                     </div>
                   </div>
                 </div>
-              </ScrollReveal>
+              </div>
 
               {/* ── RIGHT PANEL: Skills + Impact + Projects ── */}
               <div ref={panelRef} className="will-change-transform space-y-4">
-                <ScrollReveal from="right" delay={0.2}>
+                <div data-aos="fade-left" data-aos-delay="200">
                   <div
                     className="glass-card mi-interactive rounded-2xl p-6"
                     style={{ borderColor: `${theme.border}60` }}
@@ -533,9 +529,9 @@ export function RoleSwitcherSection() {
                       ))}
                     </div>
                   </div>
-                </ScrollReveal>
+                </div>
 
-                <ScrollReveal from="right" delay={0.28}>
+                <div data-aos="fade-left" data-aos-delay="280">
                   <div
                     className="glass-card mi-interactive rounded-2xl p-5"
                     style={{ borderColor: `${theme.border}60` }}
@@ -572,13 +568,13 @@ export function RoleSwitcherSection() {
                       </div>
                     </div>
                   </div>
-                </ScrollReveal>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <ScrollReveal from="up" delay={0.38}>
+        <div data-aos="fade-up" data-aos-delay="380">
           <div
             className="mt-6 glass-card rounded-2xl p-5"
             style={{ borderColor: `${theme.border}60` }}
@@ -613,7 +609,7 @@ export function RoleSwitcherSection() {
               ))}
             </div>
           </div>
-        </ScrollReveal>
+        </div>
       </div>
     </section>
   );

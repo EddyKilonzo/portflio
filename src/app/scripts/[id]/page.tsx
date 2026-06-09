@@ -2,17 +2,20 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { scripts } from "@/content/portfolio";
 import { CodeBlock } from "@/components/ui/CodeBlock";
+import { BackButton } from "@/components/ui/BackButton";
+import { decodeProjectId, encodeProjectId } from "@/lib/projectId";
 import fs from "fs";
 import path from "path";
 
 type Props = { params: { id: string } };
 
 export function generateStaticParams() {
-  return scripts.map((s) => ({ id: s.id }));
+  return scripts.map((s) => ({ id: encodeProjectId(s.id) }));
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-  const script = scripts.find((s) => s.id === params.id);
+  const realId = decodeProjectId(params.id);
+  const script = scripts.find((s) => s.id === realId) ?? scripts.find((s) => s.id === params.id);
   if (!script) return {};
   return {
     title: `${script.title} — Security Script`,
@@ -38,7 +41,8 @@ const diffBadge: Record<string, string> = {
 };
 
 export default async function ScriptDetailPage({ params }: Props) {
-  const script = scripts.find((s) => s.id === params.id);
+  const realId = decodeProjectId(params.id);
+  const script = scripts.find((s) => s.id === realId) ?? scripts.find((s) => s.id === params.id);
   if (!script) notFound();
 
   // Load full source from public/projects_docs at build time
@@ -60,9 +64,7 @@ export default async function ScriptDetailPage({ params }: Props) {
 
         {/* Back nav */}
         <nav className="flex flex-wrap items-center gap-3">
-          <a href="/?module=cybersec&cybertab=scripts#projects" className="glass-pill inline-block text-highlight/80 hover:text-highlight">
-            ← Back to Scripts
-          </a>
+          <BackButton label="← Back to Scripts" />
           {prev && (
             <a href={`/scripts/${prev.id}`} className="glass-pill text-highlight/60 hover:text-highlight">
               ← {prev.title}
@@ -182,9 +184,7 @@ export default async function ScriptDetailPage({ params }: Props) {
 
         {/* Footer nav */}
         <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6">
-          <a href="/?module=cybersec&cybertab=scripts#projects" className="glass-pill text-highlight/70 hover:text-highlight">
-            ← All Scripts
-          </a>
+          <BackButton label="← All Scripts" />
           {prev && (
             <a href={`/scripts/${prev.id}`} className="glass-pill text-highlight/60 hover:text-highlight">
               ← {prev.title}

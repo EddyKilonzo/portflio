@@ -4,7 +4,7 @@ import { cvVariants } from "@/content/portfolio";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const variant = searchParams.get("variant") as keyof typeof cvVariants | null;
-  const selected = variant && cvVariants[variant] ? variant : "developer";
+  const selected: keyof typeof cvVariants = variant && cvVariants[variant] ? variant : "cyber";
   const body = cvVariants[selected];
 
   return new NextResponse(body, {

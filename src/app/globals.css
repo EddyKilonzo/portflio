@@ -8,7 +8,7 @@
 @property --highlight {
   syntax: "<color>";
   inherits: true;
-  initial-value: #16a34a;
+  initial-value: #d8ece0;
 }
 @property --accent {
   syntax: "<color>";
@@ -31,10 +31,11 @@
   --bg: #0d1f1a;
   --surface: #1e4a3a;
   --surface-mid: #286c51;
-  --highlight: #16a34a;
+  /* In dark mode, highlight = near-white text; accent = green brand color */
+  --highlight: #d8ece0;
   --cyber: #ff4c4c;
   --eng: #4c9eff;
-  --accent: #16a34a;
+  --accent: #0d8a3d;
   --section-tint: rgba(46, 122, 90, 0.02);
   --background: var(--bg);
   --foreground: var(--highlight);
@@ -43,8 +44,8 @@
   --rgb-bg:          13 31 26;
   --rgb-surface:     30 74 58;
   --rgb-surface-mid: 40 108 81;
-  --rgb-highlight:   22 163 74;
-  --rgb-accent:      22 163 74;
+  --rgb-highlight:   216 236 224;
+  --rgb-accent:      13 138 61;
   --mi-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --mi-fast: 160ms;
   --mi-base: 260ms;
@@ -71,16 +72,16 @@ html.light {
   --bg: #f0f7f3;
   --surface: #d4e8dc;
   --surface-mid: #2e7a5a;
-  --highlight: #14532d;
-  --accent: #14532d;
-  --foreground: #14532d;
+  --highlight: #0a3d1f;
+  --accent: #0a3d1f;
+  --foreground: #0a3d1f;
   --section-tint: rgba(46, 122, 90, 0.04);
 
   /* Raw RGB overrides */
   --rgb-bg:          240 247 243;
   --rgb-surface:     212 232 220;
-  --rgb-highlight:   20 83 45;
-  --rgb-accent:      20 83 45;
+  --rgb-highlight:   10 61 31;
+  --rgb-accent:      10 61 31;
 }
 
 html,
@@ -684,6 +685,18 @@ a, button, [role="button"] {
 html.light .theme-wipe-toggle {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
+
+/* Shiki syntax highlight output — reset background so the modal bg shows through */
+.shiki-wrap .shiki,
+.shiki-wrap pre.shiki {
+  background: transparent !important;
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+  overflow-x: auto;
+}
+.shiki-wrap code { background: transparent !important; }
 
 /* AOS — larger initial offsets for more dramatic entries */
 [data-aos="fade-up"]        { transform: translate3d(0,  56px, 0); }

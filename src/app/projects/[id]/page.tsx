@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { projects, projectCredibility } from "@/content/portfolio";
+import { projects, projectCredibility, projectCodeSamples } from "@/content/portfolio";
+import { CodeBlock } from "@/components/ui/CodeBlock";
+import { AosInit } from "@/components/ui/AosInit";
 
 type Props = { params: { id: string } };
 
@@ -23,83 +25,192 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ProjectCaseStudyPage({ params }: Props) {
+const roleBadge: Record<string, string> = {
+  engineering: "border-eng/40 bg-eng/10 text-eng",
+  web: "border-blue-400/40 bg-blue-400/10 text-blue-300",
+  cyber: "border-cyber/40 bg-cyber/10 text-cyber",
+};
+const difficultyBadge: Record<string, string> = {
+  beginner: "border-green-400/40 text-green-300",
+  intermediate: "border-yellow-400/40 text-yellow-200",
+  advanced: "border-red-400/40 text-red-300",
+};
+
+export default async function ProjectCaseStudyPage({ params }: Props) {
   const project = projects.find((p) => p.id === params.id);
   if (!project) notFound();
   const cred = projectCredibility[project.id];
+  const codeSamples = projectCodeSamples[project.id] ?? [];
+  const moduleHref = project.roleMode === "cyber"
+    ? "/?module=cybersec#projects"
+    : "/?module=developer#projects";
 
   return (
-    <main className="section-bg min-h-screen px-6 py-20">
-      <article className="mx-auto max-w-4xl space-y-6">
-        <a href="/#projects" className="glass-pill inline-block text-highlight/80">
-          Back to projects
-        </a>
-        <header className="glass-card rounded-2xl p-6">
-          <h1 className="font-display text-4xl text-highlight">{project.title}</h1>
-          <p className="mt-2 text-highlight/80">{project.shortDescription}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
+    <main className="section-bg min-h-screen px-4 py-20 md:px-6">
+      <AosInit />
+      <article className="mx-auto max-w-4xl space-y-8">
+
+        {/* Back */}
+        <nav className="flex flex-wrap items-center gap-3" data-aos="fade-down">
+          <a href={moduleHref} className="glass-pill inline-block text-highlight/80 hover:text-highlight">
+            ← Back to {project.roleMode === "cyber" ? "CyberSec" : "Developer"} projects
+          </a>
+          {project.codeUrl && (
+            <a href={project.codeUrl} target="_blank" rel="noopener noreferrer"
+              className="glass-pill inline-block text-highlight/80 hover:text-highlight">
+              GitHub ↗
+            </a>
+          )}
+          {project.liveUrl && (
+            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+              className="glass-pill border-accent/30 text-accent inline-block hover:border-accent/60">
+              Live Demo ↗
+            </a>
+          )}
+        </nav>
+
+        {/* Header */}
+        <header className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] capitalize ${roleBadge[project.roleMode] ?? ""}`}>
+                  {project.roleMode}
+                </span>
+                <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[11px] capitalize ${difficultyBadge[project.difficulty] ?? ""}`}>
+                  {project.difficulty}
+                </span>
+                <span className="rounded-full border border-highlight/15 px-2.5 py-0.5 font-mono text-[11px] text-highlight/50">
+                  {project.category}
+                </span>
+              </div>
+              <h1 className="mt-3 font-display text-3xl text-highlight md:text-4xl">{project.title}</h1>
+              <p className="mt-2 max-w-2xl text-highlight/75 leading-relaxed">{project.shortDescription}</p>
+            </div>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
             {project.tech.map((t) => (
-              <span key={t} className="glass-pill text-highlight/80">
-                {t}
-              </span>
+              <span key={t} className="glass-pill text-highlight/80">{t}</span>
             ))}
           </div>
         </header>
 
-        <section className="glass-card rounded-2xl p-6">
-          <h2 className="font-display text-2xl text-highlight">Problem</h2>
-          <p className="mt-2 text-highlight/80">{project.caseStudy.problem}</p>
-        </section>
+        {/* Problem */}
+        <Section icon="⊘" title="Problem" delay={100}>
+          <p className="leading-relaxed text-highlight/80">{project.caseStudy.problem}</p>
+        </Section>
 
-        <section className="glass-card rounded-2xl p-6">
-          <h2 className="font-display text-2xl text-highlight">Approach</h2>
-          <ul className="mt-3 list-disc space-y-2 pl-5 text-highlight/80">
-            {project.caseStudy.approach.map((item) => (
-              <li key={item}>{item}</li>
+        {/* Approach */}
+        <Section icon="⟡" title="Approach" delay={150}>
+          <ol className="space-y-4">
+            {project.caseStudy.approach.map((step, i) => (
+              <li key={step} className="flex gap-4">
+                <span className="mt-0.5 shrink-0 font-mono text-[11px] text-accent/70 w-5">{String(i + 1).padStart(2, "0")}</span>
+                <p className="text-highlight/80 leading-relaxed">{step}</p>
+              </li>
             ))}
-          </ul>
-        </section>
+          </ol>
+        </Section>
 
-        <section className="glass-card rounded-2xl p-6">
-          <h2 className="font-display text-2xl text-highlight">Results</h2>
-          <p className="mt-2 text-highlight/80">{project.caseStudy.outcome}</p>
+        {/* Code samples */}
+        {codeSamples.length > 0 && (
+          <Section icon="⌨" title="Code" delay={200}>
+            <div className="space-y-4">
+              {codeSamples.map((file) => (
+                <div key={file.path}>
+                  <CodeBlock code={file.content} lang={file.language} filename={file.path} />
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {/* Results */}
+        <Section icon="◈" title="Results & Outcome" delay={200}>
+          <p className="leading-relaxed text-highlight/80">{project.caseStudy.outcome}</p>
           {project.caseStudy.metrics?.length ? (
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-highlight/75">
+            <ul className="mt-5 grid gap-2 sm:grid-cols-2">
               {project.caseStudy.metrics.map((m) => (
-                <li key={m}>{m}</li>
+                <li key={m} className="flex items-start gap-2 rounded-xl border border-highlight/10 bg-surface/10 px-4 py-3">
+                  <span className="mt-0.5 text-accent">✓</span>
+                  <span className="font-mono text-xs text-highlight/75">{m}</span>
+                </li>
               ))}
             </ul>
           ) : null}
-        </section>
+        </Section>
 
-        <section className="glass-card rounded-2xl p-6">
-          <h2 className="font-display text-2xl text-highlight">Lessons learned</h2>
-          <ul className="mt-3 list-disc space-y-2 pl-5 text-highlight/80">
-            {(project.caseStudy.lessonsLearned?.length
-              ? project.caseStudy.lessonsLearned
-              : [
-                  "Scope architecture early so quality attributes are explicit.",
-                  "Instrument outcomes with clear metrics to guide iteration.",
-                  "Keep implementation modular to reduce maintenance cost.",
-                ]
-            ).map((lesson) => (
-              <li key={lesson}>{lesson}</li>
-            ))}
-          </ul>
-        </section>
-
-        {cred ? (
-          <section className="glass-card rounded-2xl p-6">
-            <h2 className="font-display text-2xl text-highlight">Quality metrics</h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-4">
-              <div className="glass-pill text-center">Perf {cred.performanceScore}</div>
-              <div className="glass-pill text-center">A11y {cred.accessibilityScore}</div>
-              <div className="glass-pill text-center">Lighthouse {cred.lighthouseScore}</div>
-              <div className="glass-pill text-center">Load {cred.loadTime}</div>
-            </div>
-          </section>
+        {/* Architecture */}
+        {project.caseStudy.architectureNotes?.length ? (
+          <Section icon="⬡" title="Architecture Notes" delay={200}>
+            <ul className="space-y-3">
+              {project.caseStudy.architectureNotes.map((n) => (
+                <li key={n} className="flex items-start gap-3 border-l-2 border-highlight/15 pl-4">
+                  <p className="text-sm text-highlight/75 leading-relaxed">{n}</p>
+                </li>
+              ))}
+            </ul>
+          </Section>
         ) : null}
+
+        {/* Lessons learned */}
+        {project.caseStudy.lessonsLearned?.length ? (
+          <Section icon="◉" title="Lessons Learned" delay={200}>
+            <ul className="space-y-4">
+              {project.caseStudy.lessonsLearned.map((l, i) => (
+                <li key={l} className="flex gap-4 rounded-xl border border-highlight/10 bg-surface/10 p-4">
+                  <span className="shrink-0 font-mono text-sm text-accent/60">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="text-sm text-highlight/80 leading-relaxed">{l}</p>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        ) : null}
+
+        {/* Quality metrics (web projects) */}
+        {cred ? (
+          <Section icon="◑" title="Quality Metrics" delay={200}>
+            <div className="grid gap-3 sm:grid-cols-4">
+              {[
+                { label: "Performance", value: cred.performanceScore },
+                { label: "Accessibility", value: cred.accessibilityScore },
+                { label: "Lighthouse", value: cred.lighthouseScore },
+                { label: "Load time", value: cred.loadTime },
+              ].map(({ label, value }) => (
+                <div key={label} className="rounded-xl border border-highlight/10 bg-surface/10 p-4 text-center">
+                  <p className="font-display text-2xl text-highlight">{value}</p>
+                  <p className="mt-1 font-mono text-[10px] text-highlight/50">{label}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        ) : null}
+
+        {/* Footer nav */}
+        <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6">
+          <a href={moduleHref} className="glass-pill text-highlight/70 hover:text-highlight">
+            ← All Projects
+          </a>
+          {project.codeUrl && (
+            <a href={project.codeUrl} target="_blank" rel="noopener noreferrer"
+              className="glass-pill border-accent/30 text-accent hover:border-accent/60">
+              View on GitHub ↗
+            </a>
+          )}
+        </footer>
       </article>
     </main>
+  );
+}
+
+function Section({ icon, title, children, delay = 0 }: { icon: string; title: string; children: React.ReactNode; delay?: number }) {
+  return (
+    <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up" data-aos-delay={delay}>
+      <h2 className="mb-4 flex items-center gap-2 font-display text-xl text-highlight">
+        <span className="text-accent">{icon}</span>
+        {title}
+      </h2>
+      {children}
+    </section>
   );
 }

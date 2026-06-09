@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 const LINES = [
   "Initializing secure connection...",
-  "Loading modules: [cybersec] [engineering] [webdev]",
+  "Loading modules: [developer] [cybersec]",
   "Mounting encrypted filesystem...",
   "Verifying identity...",
   "Establishing session...",

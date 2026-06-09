@@ -23,7 +23,7 @@ const CURSOR_ACCENT_STORAGE = "portfolio-cursor-accent-v1";
 const AMBIENT_FX_STORAGE = "portfolio-ambient-fx-v1";
 
 export const ACCENT_PRESETS = [
-  { id: "forest",      label: "Forest",      value: "#16A34A", rgb: "22 163 74",   lightValue: "#14532D", lightRgb: "20 83 45"   },
+  { id: "forest",      label: "Forest",      value: "#0D8A3D", rgb: "13 138 61",   lightValue: "#0A3D1F", lightRgb: "10 61 31"  },
   { id: "cyber",       label: "Cyber",       value: "#FF4C4C", rgb: "255 76 76",   lightValue: "#991B1B", lightRgb: "153 27 27"  },
   { id: "engineering", label: "Engineering", value: "#4C9EFF", rgb: "76 158 255",  lightValue: "#1E3A8A", lightRgb: "30 58 138"  },
   { id: "violet",      label: "Violet",      value: "#B794F6", rgb: "183 148 246", lightValue: "#4C1D95", lightRgb: "76 29 149"  },
@@ -64,8 +64,8 @@ type ThemeCtx = {
 const Ctx = createContext<ThemeCtx | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [themeMode, setThemeModeState] = useState<"light" | "dark" | "system">("system");
-  const [light, setLight] = useState(false);
+  const [themeMode, setThemeModeState] = useState<"light" | "dark" | "system">("light");
+  const [light, setLight] = useState(true);
   const [accentPreset, setAccentPresetState] = useState<string>("forest");
   const [hydrated, setHydrated] = useState(false);
   const [wipe, setWipe] = useState<ThemeWipe | null>(null);
@@ -78,7 +78,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [cursorAccent, setCursorAccentState] = useState(true);
   const [ambientFx, setAmbientFxState] = useState(true);
   const wipeIdRef = useRef(0);
-  const pendingModeRef = useRef<"light" | "dark" | "system">("dark");
+  const pendingModeRef = useRef<"light" | "dark" | "system">("light");
 
   useEffect(() => {
     try {
@@ -93,7 +93,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const ml = localStorage.getItem(MOTION_LEVEL_STORAGE);
       const ca = localStorage.getItem(CURSOR_ACCENT_STORAGE);
       const af = localStorage.getItem(AMBIENT_FX_STORAGE);
-      if (storedMode === "light" || storedMode === "dark" || storedMode === "system") {
+      if (storedMode === "light" || storedMode === "dark") {
         setThemeModeState(storedMode);
       } else if (t === "light" || t === "dark") {
         setThemeModeState(t);
@@ -238,16 +238,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const preset = ACCENT_PRESETS.find((p) => p.id === accentPreset);
       if (preset) {
         if (light) {
-          // Light mode: use a dark variant of the accent for readable primary text,
-          // vivid accent only for decorative elements (borders, buttons).
+          // Light mode: dark variant of accent for both text and accents (readable on light bg).
           el.style.setProperty("--highlight", preset.lightValue);
           el.style.setProperty("--rgb-highlight", preset.lightRgb);
           el.style.setProperty("--accent", preset.lightValue);
           el.style.setProperty("--rgb-accent", preset.lightRgb);
         } else {
-          el.style.setProperty("--highlight", preset.value);
+          // Dark mode: text stays near-white (--highlight from CSS), only accent gets the brand color.
+          el.style.removeProperty("--highlight");
+          el.style.removeProperty("--rgb-highlight");
           el.style.setProperty("--accent", preset.value);
-          el.style.setProperty("--rgb-highlight", preset.rgb);
           el.style.setProperty("--rgb-accent", preset.rgb);
         }
       }

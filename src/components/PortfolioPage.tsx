@@ -6,7 +6,8 @@ import { Footer } from "@/components/layout/Footer";
 import { Nav } from "@/components/layout/Nav";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SkipLink } from "@/components/layout/SkipLink";
-import { WaveBackground } from "@/components/layout/WaveBackground";
+// WaveBackground is dynamically imported (ssr:false) to prevent hydration mismatch
+// caused by ambientFx reading localStorage on client vs default true on server.
 import { SectionDivider } from "@/components/sections/SectionDivider";
 import {
   getDeviceProfile,
@@ -25,6 +26,11 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { StickySectionRail } from "@/components/layout/StickySectionRail";
 import { NarrativeChapters } from "@/components/layout/NarrativeChapters";
 import { CardSpotlight } from "@/components/ui/CardSpotlight";
+
+const WaveBackground = dynamic(
+  () => import("@/components/layout/WaveBackground").then((m) => m.WaveBackground),
+  { ssr: false, loading: () => null },
+);
 
 // --- Dynamic Imports for Sections ---
 
@@ -48,14 +54,6 @@ const ProjectsSection = dynamic(
   () => import("@/components/sections/ProjectsSection").then((m) => m.ProjectsSection),
   { ssr: false }
 );
-const CyberShowcaseSection = dynamic(
-  () => import("@/components/sections/CyberShowcaseSection").then((m) => m.CyberShowcaseSection),
-  { ssr: false }
-);
-const ReportViewerSection = dynamic(
-  () => import("@/components/sections/ReportViewerSection").then((m) => m.ReportViewerSection),
-  { ssr: false }
-);
 const EducationSection = dynamic(
   () => import("@/components/sections/EducationSection").then((m) => m.EducationSection),
   { ssr: false }
@@ -64,16 +62,12 @@ const BadgesSection = dynamic(
   () => import("@/components/sections/BadgesSection").then((m) => m.BadgesSection),
   { ssr: false }
 );
-const CertificationsSection = dynamic(
-  () => import("@/components/sections/CertificationsSection").then((m) => m.CertificationsSection),
-  { ssr: false }
-);
 const ExperienceSection = dynamic(
   () => import("@/components/sections/ExperienceSection").then((m) => m.ExperienceSection),
   { ssr: false }
 );
-const IntegrationsSection = dynamic(
-  () => import("@/components/sections/IntegrationsSection").then((m) => m.IntegrationsSection),
+const BlogSection = dynamic(
+  () => import("@/components/sections/BlogSection").then((m) => m.BlogSection),
   { ssr: false }
 );
 const CVSection = dynamic(
@@ -88,16 +82,8 @@ const BookingSection = dynamic(
   () => import("@/components/sections/BookingSection").then((m) => m.BookingSection),
   { ssr: false }
 );
-const TrustSection = dynamic(
-  () => import("@/components/sections/TrustSection").then((m) => m.TrustSection),
-  { ssr: false }
-);
 const ContactSection = dynamic(
   () => import("@/components/sections/ContactSection").then((m) => m.ContactSection),
-  { ssr: false }
-);
-const TestimonialsSection = dynamic(
-  () => import("@/components/sections/TestimonialsSection").then((m) => m.TestimonialsSection),
   { ssr: false }
 );
 const FaqSection = dynamic(
@@ -117,10 +103,6 @@ const CommandPalette = dynamic(
 );
 const CustomCursor = dynamic(
   () => import("@/components/layout/CustomCursor").then((m) => m.CustomCursor),
-  { ssr: false, loading: () => null },
-);
-const ContextMenu = dynamic(
-  () => import("@/components/layout/ContextMenu").then((m) => m.ContextMenu),
   { ssr: false, loading: () => null },
 );
 const SectionPrefetchCues = dynamic(
@@ -153,9 +135,13 @@ gsap.registerPlugin(ScrollTrigger);
 export function PortfolioPage() {
   const reducedMotion = useReducedMotion();
   const { ambientFx, cursorAccent } = useTheme();
-  const [bootDone, setBootDone] = useState(reducedMotion);
+  const [bootDone, setBootDone] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try { return sessionStorage.getItem("portfolio-booted") === "1"; } catch { return false; }
+  });
   const [hasScrolled, setHasScrolled] = useState(false);
   const [enhancementsReady, setEnhancementsReady] = useState(false);
+  const [lowEnd, setLowEnd] = useState(false);
   const heroScrollRef = useRef(0);
   const layer1 = useRef<HTMLDivElement>(null);
   const layer2 = useRef<HTMLDivElement>(null);
@@ -163,8 +149,14 @@ export function PortfolioPage() {
 
   const onFirstScroll = useCallback(() => setHasScrolled(true), []);
 
-  const lowEnd =
-    typeof window !== "undefined" ? getDeviceProfile().lowEnd : false;
+  // Sync client-only values after hydration to avoid server/client mismatch
+  useEffect(() => {
+    setLowEnd(getDeviceProfile().lowEnd);
+    if (reducedMotion || sessionStorage.getItem("portfolio-booted") === "1") {
+      setBootDone(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!bootDone) return;
@@ -179,13 +171,24 @@ export function PortfolioPage() {
       anchorPlacement: "top-bottom",
     });
 
-    // Refresh AOS and ScrollTrigger once the boot sequence is finished
-    // and the main content is rendered.
-    const id = window.setTimeout(() => {
-      ScrollTrigger.refresh();
+    // Initial refresh after sections mount
+    const id1 = window.setTimeout(() => { ScrollTrigger.refresh(); AOS.refresh(); }, 400);
+    // Second pass for lazy-loaded sections
+    const id2 = window.setTimeout(() => { AOS.refresh(); }, 1200);
+
+    // Re-trigger AOS on first scroll for any lazily-revealed elements
+    let refreshed = false;
+    const onScroll = () => {
+      if (refreshed) return;
+      refreshed = true;
       AOS.refresh();
-    }, 150);
-    return () => window.clearTimeout(id);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.clearTimeout(id1);
+      window.clearTimeout(id2);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [bootDone]);
 
   useEffect(() => {
@@ -242,8 +245,23 @@ export function PortfolioPage() {
 
   useEffect(() => {
     if (!bootDone) return;
-    // Land users at top after boot without hash mutation jumps.
-    window.scrollTo(0, 0);
+    const hash = window.location.hash.replace("#", "");
+    if (hash) {
+      const tryScroll = (attempts = 0) => {
+        const el = document.getElementById(hash);
+        if (el) {
+          // Small offset so the nav doesn't overlap the section heading
+          const y = el.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+        } else if (attempts < 16) {
+          setTimeout(() => tryScroll(attempts + 1), 100);
+        }
+      };
+      // If already booted (return navigation) start immediately; else wait for content mount
+      setTimeout(() => tryScroll(), 80);
+    } else {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    }
   }, [bootDone]);
 
   return (
@@ -252,7 +270,7 @@ export function PortfolioPage() {
       {!bootDone ? (
         <BootSequence
           reducedMotion={reducedMotion}
-          onDone={() => setBootDone(true)}
+          onDone={() => { try { sessionStorage.setItem("portfolio-booted", "1"); } catch {} setBootDone(true); }}
         />
       ) : null}
 
@@ -289,7 +307,6 @@ export function PortfolioPage() {
         {enhancementsReady ? <MobileQuickActions /> : null}
         {enhancementsReady ? <CommandPalette /> : null}
         {enhancementsReady && cursorAccent ? <CustomCursor /> : null}
-        {enhancementsReady ? <ContextMenu /> : null}
         {enhancementsReady ? <SectionPrefetchCues /> : null}
         <ToastViewport />
         {enhancementsReady ? <MotionQaOverlay /> : null}
@@ -312,6 +329,10 @@ export function PortfolioPage() {
           </ErrorBoundary>
           <SectionDivider />
           <ErrorBoundary label="About"><AboutSection /></ErrorBoundary>
+          <SectionDivider />
+          <LazySection skeletonCards={2}>
+            <ErrorBoundary label="Education"><EducationSection /></ErrorBoundary>
+          </LazySection>
           <SectionDivider variant="wave" />
           <ErrorBoundary label="Now"><NowSection /></ErrorBoundary>
           <SectionDivider variant="wave" />
@@ -325,28 +346,12 @@ export function PortfolioPage() {
             <ErrorBoundary label="Experience"><ExperienceSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
-          <LazySection skeletonCards={2}>
-            <ErrorBoundary label="Cyber"><CyberShowcaseSection /></ErrorBoundary>
-          </LazySection>
-          <SectionDivider />
-          <LazySection skeletonCards={2}>
-            <ErrorBoundary label="Reports"><ReportViewerSection /></ErrorBoundary>
-          </LazySection>
-          <SectionDivider />
-          <LazySection skeletonCards={2}>
-            <ErrorBoundary label="Education"><EducationSection /></ErrorBoundary>
-          </LazySection>
-          <SectionDivider variant="wave" />
           <LazySection skeletonCards={3}>
             <ErrorBoundary label="Badges"><BadgesSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={3}>
-            <ErrorBoundary label="Certs"><CertificationsSection /></ErrorBoundary>
-          </LazySection>
-          <SectionDivider />
-          <LazySection skeletonCards={3}>
-            <ErrorBoundary label="Integrations"><IntegrationsSection /></ErrorBoundary>
+            <ErrorBoundary label="Blog"><BlogSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={2}>
@@ -360,21 +365,13 @@ export function PortfolioPage() {
           <LazySection skeletonCards={2}>
             <ErrorBoundary label="Booking"><BookingSection /></ErrorBoundary>
           </LazySection>
-          <SectionDivider />
+          <SectionDivider variant="wave" />
           <LazySection skeletonCards={2}>
-            <ErrorBoundary label="Trust"><TrustSection /></ErrorBoundary>
+            <ErrorBoundary label="FAQ"><FaqSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
           <LazySection skeletonCards={2}>
             <ErrorBoundary label="Contact"><ContactSection /></ErrorBoundary>
-          </LazySection>
-          <SectionDivider variant="wave" />
-          <LazySection skeletonCards={2}>
-            <ErrorBoundary label="Testimonials"><TestimonialsSection /></ErrorBoundary>
-          </LazySection>
-          <SectionDivider />
-          <LazySection skeletonCards={2}>
-            <ErrorBoundary label="FAQ"><FaqSection /></ErrorBoundary>
           </LazySection>
         </main>
         <Footer />

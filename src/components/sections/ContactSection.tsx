@@ -106,33 +106,14 @@ export function ContactSection() {
     return null;
   };
 
-  const submit = async () => {
+  const submit = () => {
     const validationErr = getValidationError();
     if (validationErr) { setSendError(validationErr); return; }
 
     setSendError(null);
-    setSending(true);
 
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message, projectType, budget, timeline }),
-      });
-      const data = await res.json() as { ok?: boolean; error?: string };
-
-      if (!res.ok || !data.ok) {
-        setSendError(data.error ?? "Something went wrong. Please email directly.");
-        setSending(false);
-        return;
-      }
-    } catch {
-      setSendError("Network error. Please try emailing directly.");
-      setSending(false);
-      return;
-    }
-
-    setSending(false);
+    const waText = `Hi Eddy! Portfolio contact.\n\nName: ${name}\nEmail: ${email}\nProject: ${projectType} | Budget: ${budget} | Timeline: ${timeline}\n\nMessage:\n${message}`;
+    const waUrl = `https://wa.me/${profile.social.whatsapp}?text=${encodeURIComponent(waText)}`;
 
     const el = planeRef.current;
     if (el) {
@@ -146,9 +127,8 @@ export function ContactSection() {
         ease: "in(4)",
       });
     }
-    setSent(true);
-    setSentModalOpen(true);
-    trackEvent("contact_submit", {
+
+    trackEvent("contact_submit_whatsapp", {
       hasName: Boolean(name),
       hasEmail: Boolean(email),
       messageLength: message.length,
@@ -156,6 +136,9 @@ export function ContactSection() {
       budget,
       timeline,
     });
+
+    setSent(true);
+    window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -222,7 +205,7 @@ export function ContactSection() {
             ) : null}
             {sent ? (
               <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-emerald-300">
-                Message received. I&apos;ll reply shortly.
+                WhatsApp opened — your message is pre-filled. Send it there!
               </div>
             ) : null}
           </div>
@@ -334,22 +317,78 @@ export function ContactSection() {
               ) : null}
               <MagneticButton
                 className="btn-ghost hotspot-magnetic w-full"
-                disabled={!message.trim() || sending}
-                onClick={() => { setStepIdx(3); void submit(); }}
+                disabled={!message.trim()}
+                onClick={() => { setStepIdx(3); submit(); }}
               >
-                {sending ? "Sending…" : "Send"}
+                Send via WhatsApp
               </MagneticButton>
+              <div className="flex items-center gap-3 py-1">
+                <span className="h-px flex-1 bg-highlight/10" />
+                <span className="font-mono text-[10px] text-highlight/35">or</span>
+                <span className="h-px flex-1 bg-highlight/10" />
+              </div>
+              <a
+                href={`https://wa.me/${profile.social.whatsapp}?text=${encodeURIComponent("Hi Eddy! I found your portfolio and would love to connect.")}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => trackEvent("contact_whatsapp_direct")}
+                className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 py-2.5 font-mono text-sm text-emerald-400 transition-all hover:border-emerald-500/60 hover:bg-emerald-500/15"
+              >
+                <SocialIcon label="WhatsApp" />
+                Chat on WhatsApp
+              </a>
             </>
           ) : null}
         </div>
 
-        <div className="mt-8 flex flex-row flex-wrap justify-center gap-3 print:hidden">
+        {/* Direct contact profiles */}
+        <div className="mt-8 space-y-3">
+          <p className="font-mono text-xs uppercase tracking-widest text-highlight/40">Contact me through</p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <a
+              href={`https://wa.me/254703526520?text=${encodeURIComponent("Hi Eddy! I found your portfolio and would love to connect.")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/8 px-4 py-3 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/12"
+            >
+              <SocialIcon label="WhatsApp" />
+              <div>
+                <p className="font-mono text-xs text-emerald-300">WhatsApp</p>
+                <p className="font-mono text-[11px] text-highlight/50">+254 703 526 520</p>
+              </div>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/eddy-kilonzo-/"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 rounded-xl border border-blue-400/30 bg-blue-400/8 px-4 py-3 transition-all hover:border-blue-400/50 hover:bg-blue-400/12"
+            >
+              <SocialIcon label="LinkedIn" />
+              <div>
+                <p className="font-mono text-xs text-blue-300">LinkedIn</p>
+                <p className="font-mono text-[11px] text-highlight/50">eddy-kilonzo</p>
+              </div>
+            </a>
+            <a
+              href="mailto:eddymax3715@gmail.com"
+              className="flex items-center gap-3 rounded-xl border border-highlight/20 bg-surface/10 px-4 py-3 transition-all hover:border-highlight/35 hover:bg-surface/20"
+            >
+              <SocialIcon label="Email" />
+              <div>
+                <p className="font-mono text-xs text-highlight/70">Email</p>
+                <p className="font-mono text-[11px] text-highlight/50">eddymax3715@gmail.com</p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-row flex-wrap justify-center gap-3 print:hidden">
           {(
             [
               ["GitHub", profile.social.github],
               ["LinkedIn", profile.social.linkedin],
               ["X", profile.social.twitter],
-              ["WhatsApp", `https://wa.me/${profile.social.whatsapp}?text=${encodeURIComponent("Hi Eddy! I found your portfolio and would love to connect. I'm interested in working together on a project.")}`],
+              ["WhatsApp", `https://wa.me/${profile.social.whatsapp}?text=${encodeURIComponent("Hi Eddy! I found your portfolio and would love to connect.")}`],
               ["HTB", profile.social.htb],
               ["THM", profile.social.thm],
               ["Email", `mailto:${profile.email}`],
