@@ -105,6 +105,64 @@ body {
   }
 }
 
+/* 404 page glitch animation */
+.glitch-404 {
+  position: relative;
+  animation: glitch-flicker 4s ease-in-out infinite;
+}
+
+.glitch-404::before,
+.glitch-404::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0 25%, 100% 25%, 100% 55%, 0 55%);
+}
+
+.glitch-404::before {
+  color: var(--cyber);
+  animation: glitch-shift-a 4s ease-in-out infinite;
+  opacity: 0;
+}
+
+.glitch-404::after {
+  color: var(--eng);
+  animation: glitch-shift-b 4s ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes glitch-flicker {
+  0%, 88%, 100% { opacity: 1; }
+  90% { opacity: 0.92; }
+  92% { opacity: 1; }
+  94% { opacity: 0.88; }
+  96% { opacity: 1; }
+}
+
+@keyframes glitch-shift-a {
+  0%, 88%, 100% { opacity: 0; transform: translateX(0); }
+  90% { opacity: 0.7; transform: translateX(-3px); clip-path: polygon(0 15%, 100% 15%, 100% 45%, 0 45%); }
+  93% { opacity: 0; }
+}
+
+@keyframes glitch-shift-b {
+  0%, 88%, 100% { opacity: 0; transform: translateX(0); }
+  91% { opacity: 0.5; transform: translateX(3px); clip-path: polygon(0 55%, 100% 55%, 100% 75%, 0 75%); }
+  94% { opacity: 0; }
+}
+
+/* 404 page scan line */
+.scan-line-404 {
+  animation: scan-sweep 3s linear infinite;
+}
+
+@keyframes scan-sweep {
+  from { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  to { transform: translateY(100vh); opacity: 0; }
+}
+
 main section[data-prefetch-state="ready"]::before {
   content: "";
   position: absolute;
@@ -408,16 +466,23 @@ html.light .page-fx::after {
   }
 
   html.light .glass-card {
-    background-color: rgba(255, 255, 255, 0.72);
+    background-color: rgba(255, 255, 255, 0.82);
     background-image: radial-gradient(
       300px circle at var(--sg-x) var(--sg-y),
       rgba(20, 83, 45, 0.07),
       transparent 60%
     );
-    border: 1px solid rgba(46, 122, 90, 0.18);
+    border: 1px solid rgba(46, 122, 90, 0.22);
     box-shadow: rgba(50, 50, 93, 0.2) 0px 40px 80px -24px,
       rgba(0, 0, 0, 0.16) 0px 24px 44px -28px,
       rgba(10, 37, 64, 0.2) 0px -2px 6px 0px inset;
+  }
+
+  /* Light mode: glass-pill needs visible border and darker text contrast */
+  html.light .glass-pill {
+    border-color: rgba(10, 61, 31, 0.22);
+    background: rgba(10, 61, 31, 0.07);
+    color: #0a3d1f;
   }
 
   html.light .glass-card:hover {
@@ -730,6 +795,25 @@ h2.glitch-hover[data-aos].aos-animate {
 @keyframes rail-jump-hint {
   0%   { opacity: 0.9; transform: scale(1); }
   100% { opacity: 0;   transform: scale(2.8); }
+}
+
+/* Dial entry: slides up from below-right */
+@keyframes dial-entry {
+  0%   { opacity: 0; transform: translate(40px, 40px) scale(0.7); }
+  60%  { opacity: 1; transform: translate(-4px, -4px) scale(1.03); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1); }
+}
+
+/* Dial idle glow pulse on the indicator */
+@keyframes dial-indicator-pulse {
+  0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 3px rgba(255,255,255,0.4)); }
+  50%       { opacity: 1;   filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)); }
+}
+
+/* Dial active-dot ring expand */
+@keyframes dial-dot-ring {
+  0%   { transform: translate(-50%,-50%) scale(1); opacity: 0.5; }
+  100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
 }
 
 /* Skeleton shimmer keyframe */

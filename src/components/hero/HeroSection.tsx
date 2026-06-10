@@ -544,26 +544,6 @@ export function HeroSection({
                 >
                   {introLineText}
                 </p>
-                <div
-                  className={`mt-4 grid max-w-2xl grid-cols-2 gap-2 rounded-xl border p-3 md:grid-cols-4 ${
-                    light ? "border-black/12 bg-white/45" : "border-highlight/15 bg-black/25"
-                  }`}
-                >
-                  {[
-                    ["GitHub Repos", "91+"],
-                    ["Followers", "37+"],
-                    ["Profile Stars", "133+"],
-                    ["Updated", "Apr 2026"],
-                  ].map(([k, v]) => (
-                    <div
-                      key={k}
-                      className="flex items-center justify-between rounded-md border border-highlight/10 px-3 py-2"
-                    >
-                      <p className="font-mono text-[10px] text-highlight/65">{k}</p>
-                      <p className={`font-display text-lg leading-none ${headText}`}>{v}</p>
-                    </div>
-                  ))}
-                </div>
 
                 <div ref={chipsRef} className="mt-5 flex flex-wrap gap-2">
                   <MagneticButton

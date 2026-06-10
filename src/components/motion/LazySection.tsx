@@ -61,7 +61,11 @@ export function LazySection({
   }, [visible]);
 
   return (
-    <div ref={ref} className={className} style={!visible ? { minHeight: "32rem" } : undefined}>
+    <div
+      ref={ref}
+      className={className}
+      style={!visible ? { minHeight: "32rem", overflowAnchor: "none" } : { overflowAnchor: "none" }}
+    >
       {visible ? children : <SectionSkeleton cards={skeletonCards} />}
     </div>
   );

@@ -13,7 +13,17 @@
       "Bash(pkill -f \"next dev\")",
       "Bash(echo \"PID: $!\")",
       "Bash(node -e \"const {projects} = require\\('./src/content/portfolio.ts'\\); console.log\\('total:', projects.length\\)\")",
-      "Bash(npx tsx *)"
+      "Bash(npx tsx *)",
+      "Bash(dir \"C:\\\\Users\\\\Admin\\\\Documents\\\\Projects\\\\portfolio\\\\src\\\\app\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); deps={**d.get\\('dependencies',{}\\),**d.get\\('devDependencies',{}\\)}; [print\\(k\\) for k in sorted\\(deps.keys\\(\\)\\)]\")",
+      "Bash(timeout 12)",
+      "PowerShell(Get-Process *)",
+      "Bash(powershell *)",
+      "Bash(git stash *)",
+      "Bash(dir C:\\\\Users\\\\Admin\\\\Documents\\\\Projects\\\\portfolio\\\\public\\\\projects_docs *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

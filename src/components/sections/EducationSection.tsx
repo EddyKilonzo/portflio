@@ -44,7 +44,7 @@ export function EducationSection() {
       data-section="education"
       className="relative overflow-hidden py-24 section-bg"
     >
-      <SectionNumber n="07" sectionId="education" />
+      <SectionNumber n="02" sectionId="education" />
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">

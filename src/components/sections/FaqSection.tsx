@@ -16,7 +16,7 @@ export function FaqSection() {
       data-section="faq"
       className="relative overflow-hidden py-24 section-bg"
     >
-      <SectionNumber n="15" sectionId="faq" />
+      <SectionNumber n="12" sectionId="faq" />
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">

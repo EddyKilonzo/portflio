@@ -30,7 +30,7 @@ export function BookingSection() {
       data-section="booking"
       className="relative overflow-hidden py-24 section-bg"
     >
-      <SectionNumber n="17" sectionId="booking" />
+      <SectionNumber n="11" sectionId="booking" />
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">

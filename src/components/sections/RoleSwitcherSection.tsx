@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
+import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { SplittingHeading } from "@/components/ui/SplittingHeading";
 
 const RoleParticles = dynamic(
@@ -21,14 +22,12 @@ const RoleParticles = dynamic(
 );
 
 const modes: { id: RoleMode; label: string; icon: string }[] = [
-  { id: "engineering", label: "Developer",       icon: "⚙" },
-  { id: "cyber",       label: "CyberSec",        icon: "🛡" },
+  { id: "engineering", label: "Developer", icon: "⚙" },
+  { id: "cyber",       label: "CyberSec",  icon: "🛡" },
 ];
 
-/** Per-role accent colors */
 const roleTheme: Record<RoleMode, {
   accent: string;
-  accentRgb: string;
   glow: string;
   tag: string;
   tagText: string;
@@ -36,36 +35,33 @@ const roleTheme: Record<RoleMode, {
   badgeBg: string;
 }> = {
   cyber: {
-    accent:    "#ff4c4c",
-    accentRgb: "255 76 76",
-    glow:      "rgba(255,76,76,0.18)",
-    tag:       "rgba(255,76,76,0.12)",
-    tagText:   "#ff4c4c",
-    border:    "rgba(255,76,76,0.25)",
-    badgeBg:   "rgba(255,76,76,0.08)",
+    accent:  "#ff4c4c",
+    glow:    "rgba(255,76,76,0.18)",
+    tag:     "rgba(255,76,76,0.12)",
+    tagText: "#ff4c4c",
+    border:  "rgba(255,76,76,0.25)",
+    badgeBg: "rgba(255,76,76,0.08)",
   },
   engineering: {
-    accent:    "#2e7a5a",
-    accentRgb: "46 122 90",
-    glow:      "rgba(46,122,90,0.2)",
-    tag:       "rgba(46,122,90,0.12)",
-    tagText:   "#a8d9b8",
-    border:    "rgba(46,122,90,0.3)",
-    badgeBg:   "rgba(46,122,90,0.08)",
+    accent:  "#2e7a5a",
+    glow:    "rgba(46,122,90,0.2)",
+    tag:     "rgba(46,122,90,0.12)",
+    tagText: "#a8d9b8",
+    border:  "rgba(46,122,90,0.3)",
+    badgeBg: "rgba(46,122,90,0.08)",
   },
   web: {
-    accent:    "#4c9eff",
-    accentRgb: "76 158 255",
-    glow:      "rgba(76,158,255,0.18)",
-    tag:       "rgba(76,158,255,0.12)",
-    tagText:   "#4c9eff",
-    border:    "rgba(76,158,255,0.25)",
-    badgeBg:   "rgba(76,158,255,0.08)",
-  }, // web maps visually to engineering (developer track)
+    accent:  "#4c9eff",
+    glow:    "rgba(76,158,255,0.18)",
+    tag:     "rgba(76,158,255,0.12)",
+    tagText: "#4c9eff",
+    border:  "rgba(76,158,255,0.25)",
+    badgeBg: "rgba(76,158,255,0.08)",
+  },
 };
 
 const roleInsights: Record<
-  RoleMode,
+  "cyber" | "engineering",
   {
     focus: string;
     impact: string;
@@ -112,40 +108,9 @@ const roleInsights: Record<
     stack: ["React", "Next.js", "Angular", "NestJS", "PostgreSQL", "Docker", "CI/CD"],
     mission: "Build products that hold up under scale, feel polished to use, and stay maintainable over time.",
     stats: [
-      { label: "Apps shipped",    value: "10+" },
-      { label: "Perf score avg",  value: "92"  },
-      { label: "Services built",  value: "8+"  },
-    ],
-    pillars: [
-      {
-        title: "Frontend Craft",
-        detail: "Build React/Angular UIs with clean component architecture, strong accessibility, and motion-aware interactions.",
-        metric: "Polished user journeys",
-        jumpTo: "projects",
-      },
-      {
-        title: "Backend Reliability",
-        detail: "Design NestJS APIs with clear domain boundaries, type-safe Prisma data layers, and observable failure handling.",
-        metric: "Stable production systems",
-        jumpTo: "projects",
-      },
-      {
-        title: "Delivery Velocity",
-        detail: "CI/CD guardrails, Docker-first environments, and progressive release patterns to ship confidently and frequently.",
-        metric: "Faster, safer releases",
-        jumpTo: "experience",
-      },
-    ],
-  },
-  web: {
-    focus: "Full-stack product engineering — from React UIs and design systems to NestJS APIs, event-driven backends, and cloud delivery pipelines.",
-    impact: "Shipped 10+ production applications across fintech, logistics, edtech, and SaaS — from solo builds to collaborative delivery.",
-    stack: ["React", "Next.js", "Angular", "NestJS", "PostgreSQL", "Docker", "CI/CD"],
-    mission: "Build products that hold up under scale, feel polished to use, and stay maintainable over time.",
-    stats: [
-      { label: "Apps shipped",    value: "10+" },
-      { label: "Perf score avg",  value: "92"  },
-      { label: "Services built",  value: "8+"  },
+      { label: "Apps shipped",   value: "10+" },
+      { label: "Perf score avg", value: "92"  },
+      { label: "Services built", value: "8+"  },
     ],
     pillars: [
       {
@@ -170,9 +135,7 @@ const roleInsights: Record<
   },
 };
 
-/** Animated skill bar */
 function SkillBar({ name, level, accent }: { name: string; level: number; accent: string }) {
-  const barRef = useRef<HTMLDivElement>(null);
   const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
@@ -189,7 +152,6 @@ function SkillBar({ name, level, accent }: { name: string; level: number; accent
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface/40">
         <div
-          ref={barRef}
           className="h-full rounded-full"
           style={{
             width: animated ? `${level}%` : "0%",
@@ -202,7 +164,6 @@ function SkillBar({ name, level, accent }: { name: string; level: number; accent
   );
 }
 
-/** Stat counter card */
 function StatCard({ label, value, accent, border }: { label: string; value: string; accent: string; border: string }) {
   return (
     <div
@@ -219,15 +180,19 @@ export function RoleSwitcherSection() {
   const sectionRef = useSectionReveal(0);
   const { mode, setMode } = useRole();
   const panelRef = useRef<HTMLDivElement>(null);
-  const [displayMode, setDisplayMode] = useState(mode);
+  const [displayMode, setDisplayMode] = useState<"cyber" | "engineering">(
+    mode === "cyber" ? "cyber" : "engineering",
+  );
   const [activePillarIdx, setActivePillarIdx] = useState(0);
-  const [hoveredPillar, setHoveredPillar] = useState<number | null>(null);
+  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
   const switching = useRef(false);
 
-  const theme = roleTheme[displayMode];
+  const theme = useMemo(() => roleTheme[displayMode], [displayMode]);
+  const insight = roleInsights[displayMode];
+  const activeMode = modes.find((x) => x.id === displayMode);
 
   useEffect(() => {
-    setDisplayMode(mode);
+    if (mode === "cyber" || mode === "engineering") setDisplayMode(mode);
   }, [mode]);
 
   const onSelect = useCallback((next: RoleMode) => {
@@ -242,7 +207,6 @@ export function RoleSwitcherSection() {
         ease: "in(3)",
         onComplete: () => {
           setMode(next);
-          setDisplayMode(next);
           requestAnimationFrame(() => {
             animate(el, {
               opacity: [0, 1],
@@ -260,21 +224,21 @@ export function RoleSwitcherSection() {
     }
   }, [mode, setMode]);
 
-  const skills = skillsByRole[displayMode].slice(0, 8);
-  const featured = projects.filter((p) => p.roleMode === displayMode).slice(0, 2);
-  const insight = roleInsights[displayMode];
+  useEffect(() => { setActivePillarIdx(0); }, [displayMode]);
+
+  const skills = useMemo(() => skillsByRole[displayMode].slice(0, 8), [displayMode]);
+  const featured = useMemo(
+    () => projects.filter((p) => p.roleMode === displayMode).slice(0, 2),
+    [displayMode],
+  );
   const activePillar = useMemo(
     () => insight.pillars[activePillarIdx] ?? insight.pillars[0],
     [insight.pillars, activePillarIdx],
   );
 
-  useEffect(() => {
-    setActivePillarIdx(0);
-  }, [displayMode]);
-
-  const jumpTo = (id: string) => {
+  const jumpTo = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  }, []);
 
   return (
     <section
@@ -284,55 +248,57 @@ export function RoleSwitcherSection() {
       className="relative overflow-hidden py-24 section-bg"
       style={{ "--section-tint": "rgba(46, 122, 90, 0.04)" } as React.CSSProperties}
     >
-      <SectionNumber n="02" sectionId="roles" />
+      <SectionNumber n="04" sectionId="roles" />
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
-        <div data-aos="fade-up">
-          <SplittingHeading
-            as="h2"
-            text="Role switcher"
-            className="splitting-chars mb-4 font-display text-4xl text-highlight md:text-5xl"
-          />
-          <p className="mb-10 max-w-2xl font-sans text-highlight/85">
-            One operator, three lenses — flip the stack to see how I show up across
-            security, systems, and the web.
-          </p>
-        </div>
+        <ParallaxDrift speed={0.1}>
+          <div data-aos="fade-up">
+            <SplittingHeading
+              as="h2"
+              text="Role switcher"
+              className="splitting-chars mb-4 font-display text-4xl text-highlight md:text-5xl"
+            />
+            <p className="mb-10 max-w-2xl font-sans text-highlight/85">
+              One operator, three lenses — flip the stack to see how I show up across
+              security, systems, and the web.
+            </p>
+          </div>
+        </ParallaxDrift>
 
         {/* Mobile tabs */}
         <div className="mb-8 flex flex-wrap gap-2 lg:hidden" data-aos="fade-up" data-aos-delay="80">
-            {modes.map((m) => {
-              const t = roleTheme[m.id];
-              const active = mode === m.id;
-              return (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => onSelect(m.id)}
-                  className="relative rounded-full px-5 py-2 font-mono text-xs font-semibold tracking-wide transition-all duration-300"
-                  style={{
-                    border: `1px solid ${active ? t.border : "rgba(168,217,184,0.35)"}`,
-                    background: active ? t.tag : "rgba(168,217,184,0.08)",
-                    color: active ? t.tagText : "var(--highlight)",
-                    boxShadow: active ? `0 0 14px ${t.glow}` : "0 1px 0 rgba(0,0,0,0.25)",
-                  }}
-                >
-                  <span className="mr-1.5">{m.icon}</span>
-                  {m.label}
-                  {active && (
-                    <span
-                      className="absolute -bottom-px left-1/2 h-px w-3/4 -translate-x-1/2 rounded-full"
-                      style={{ background: t.accent }}
-                    />
-                  )}
-                </button>
-              );
-            })}
+          {modes.map((m) => {
+            const t = roleTheme[m.id];
+            const active = mode === m.id;
+            return (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => onSelect(m.id)}
+                className="relative rounded-full px-5 py-2 font-mono text-xs font-semibold tracking-wide transition-all duration-300"
+                style={{
+                  border: `1px solid ${active ? t.border : "rgba(168,217,184,0.35)"}`,
+                  background: active ? t.tag : "rgba(168,217,184,0.08)",
+                  color: active ? t.tagText : "var(--highlight)",
+                  boxShadow: active ? `0 0 14px ${t.glow}` : "0 1px 0 rgba(0,0,0,0.25)",
+                }}
+              >
+                <span className="mr-1.5">{m.icon}</span>
+                {m.label}
+                {active && (
+                  <span
+                    className="absolute -bottom-px left-1/2 h-px w-3/4 -translate-x-1/2 rounded-full"
+                    style={{ background: t.accent }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)] lg:items-start">
-          {/* Desktop mini sidebar tabs */}
+          {/* Desktop sidebar tabs */}
           <aside className="hidden lg:block">
             <div
               className="sticky top-24 space-y-2 rounded-2xl border border-highlight/15 bg-bg/40 p-2 backdrop-blur-sm"
@@ -365,7 +331,7 @@ export function RoleSwitcherSection() {
 
           <div>
             <div className="grid gap-8 lg:grid-cols-2">
-              {/* ── LEFT PANEL: Identity + Interactive ── */}
+              {/* LEFT PANEL: Identity + Interactive */}
               <div data-aos="fade-right" data-aos-delay="150">
                 <div
                   className="glass-card mi-interactive relative min-h-[340px] overflow-hidden rounded-2xl p-6"
@@ -378,7 +344,6 @@ export function RoleSwitcherSection() {
                 >
                   <RoleParticles mode={displayMode} />
 
-                  {/* Themed radial glow */}
                   <div
                     className="pointer-events-none absolute inset-0"
                     style={{
@@ -394,7 +359,6 @@ export function RoleSwitcherSection() {
                         <p className="mono-label text-xs" style={{ color: theme.accent, opacity: 0.95 }}>
                           {"// identity"}
                         </p>
-                        {/* Live pulse badge */}
                         <span
                           className="mono-label flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px]"
                           style={{ background: theme.badgeBg, border: `1px solid ${theme.border}`, color: theme.tagText }}
@@ -414,8 +378,7 @@ export function RoleSwitcherSection() {
                         {profile.name}
                       </p>
                       <p className="mono-label mt-0.5 text-sm" style={{ color: theme.tagText }}>
-                        {modes.find((x) => x.id === displayMode)?.icon}{" "}
-                        {modes.find((x) => x.id === displayMode)?.label}
+                        {activeMode?.icon} {activeMode?.label}
                       </p>
                     </div>
 
@@ -463,23 +426,15 @@ export function RoleSwitcherSection() {
                       <div className="space-y-1.5">
                         {insight.pillars.map((pillar, idx) => {
                           const active = idx === activePillarIdx;
-                          const hovered = idx === hoveredPillar;
                           return (
                             <button
                               key={pillar.title}
                               type="button"
                               onClick={() => setActivePillarIdx(idx)}
-                              onMouseEnter={() => setHoveredPillar(idx)}
-                              onMouseLeave={() => setHoveredPillar(null)}
-                              className="w-full rounded-xl px-3 py-2 text-left transition-all duration-200"
+                              className="w-full rounded-xl px-3 py-2 text-left transition-all duration-200 hover:border-opacity-100"
                               style={{
-                                border: `1px solid ${active || hovered ? theme.border : "rgba(168,217,184,0.08)"}`,
-                                background:
-                                  active
-                                    ? theme.tag
-                                    : hovered
-                                      ? "rgba(255,255,255,0.95)"
-                                      : "rgba(255,255,255,0.88)",
+                                border: `1px solid ${active ? theme.border : "rgba(168,217,184,0.08)"}`,
+                                background: active ? theme.tag : "rgba(255,255,255,0.88)",
                               }}
                             >
                               <div className="flex items-center justify-between">
@@ -508,7 +463,7 @@ export function RoleSwitcherSection() {
                 </div>
               </div>
 
-              {/* ── RIGHT PANEL: Skills + Impact + Projects ── */}
+              {/* RIGHT PANEL: Skills + Impact */}
               <div ref={panelRef} className="will-change-transform space-y-4">
                 <div data-aos="fade-left" data-aos-delay="200">
                   <div
@@ -539,7 +494,6 @@ export function RoleSwitcherSection() {
                     <p className="mono-label mb-2 text-[11px] uppercase text-highlight/70">Impact</p>
                     <p className="font-sans text-sm leading-relaxed text-highlight/90">{insight.impact}</p>
 
-                    {/* Active pillar detail */}
                     <div
                       className="mt-4 rounded-xl p-3"
                       style={{ border: `1px solid ${theme.border}`, background: theme.tag }}
@@ -574,6 +528,7 @@ export function RoleSwitcherSection() {
           </div>
         </div>
 
+        {/* Featured work */}
         <div data-aos="fade-up" data-aos-delay="380">
           <div
             className="mt-6 glass-card rounded-2xl p-5"
@@ -581,32 +536,40 @@ export function RoleSwitcherSection() {
           >
             <p className="mono-label mb-3 text-[11px] uppercase text-highlight/70">Featured work</p>
             <div className="grid gap-3 md:grid-cols-2">
-              {featured.map((p) => (
-                <div
-                  key={p.id}
-                  className="group rounded-xl px-3 py-3 transition-all duration-200 hover:scale-[1.01]"
-                  style={{
-                    border: `1px solid rgba(168,217,184,0.08)`,
-                    background: "rgba(30,74,58,0.15)",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = theme.border;
-                    (e.currentTarget as HTMLDivElement).style.background = theme.tag;
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(168,217,184,0.08)";
-                    (e.currentTarget as HTMLDivElement).style.background = "rgba(30,74,58,0.15)";
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="mono-label text-[10px]" style={{ color: theme.accent }}>▸</span>
-                    <p className="text-sm text-highlight/90">{p.title}</p>
+              {featured.map((p) => {
+                const hovered = hoveredProjectId === p.id;
+                return (
+                  <div
+                    key={p.id}
+                    className="rounded-xl px-3 py-3 transition-all duration-200 hover:scale-[1.01]"
+                    style={{
+                      border: `1px solid ${hovered ? theme.border : "rgba(168,217,184,0.08)"}`,
+                      background: hovered ? theme.tag : "rgba(30,74,58,0.15)",
+                    }}
+                    onMouseEnter={() => setHoveredProjectId(p.id)}
+                    onMouseLeave={() => setHoveredProjectId(null)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="mono-label text-[10px]" style={{ color: theme.accent }}>▸</span>
+                      <p className="text-sm text-highlight/90">{p.title}</p>
+                    </div>
+                    <p className="mt-1 pl-4 font-sans text-xs leading-relaxed text-highlight/75">
+                      {p.shortDescription}
+                    </p>
+                    {p.liveUrl && (
+                      <a
+                        href={p.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mono-label mt-2 ml-4 inline-block text-[10px] transition-opacity hover:opacity-80"
+                        style={{ color: theme.accent }}
+                      >
+                        Live site →
+                      </a>
+                    )}
                   </div>
-                  <p className="mt-1 pl-4 font-sans text-xs leading-relaxed text-highlight/75">
-                    {p.shortDescription}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

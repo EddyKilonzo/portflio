@@ -20,7 +20,7 @@ import AOS from "aos";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ToastViewport } from "@/components/ui/ToastViewport";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { StickySectionRail } from "@/components/layout/StickySectionRail";
@@ -72,10 +72,6 @@ const BlogSection = dynamic(
 );
 const CVSection = dynamic(
   () => import("@/components/sections/CVSection").then((m) => m.CVSection),
-  { ssr: false }
-);
-const DownloadCenterSection = dynamic(
-  () => import("@/components/sections/DownloadCenterSection").then((m) => m.DownloadCenterSection),
   { ssr: false }
 );
 const BookingSection = dynamic(
@@ -135,10 +131,24 @@ gsap.registerPlugin(ScrollTrigger);
 export function PortfolioPage() {
   const reducedMotion = useReducedMotion();
   const { ambientFx, cursorAccent } = useTheme();
-  const [bootDone, setBootDone] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try { return sessionStorage.getItem("portfolio-booted") === "1"; } catch { return false; }
-  });
+  const [bootDone, setBootDone] = useState(false);
+  // Captured at mount (before any effects) — true if the user has visited before.
+  // Used to skip stale-hash auto-scroll on return visits.
+  const isReturnVisitRef = useRef(false);
+  // Skip boot animation synchronously before first paint on return visits
+  useLayoutEffect(() => {
+    try {
+      if (sessionStorage.getItem("portfolio-booted") === "1") {
+        isReturnVisitRef.current = true;
+        setBootDone(true);
+        // Clear any hash the Nav left in the URL from the previous session so
+        // the hash-scroll effect below doesn't teleport the user on page load.
+        if (window.location.hash) {
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }
+    } catch {}
+  }, []);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [enhancementsReady, setEnhancementsReady] = useState(false);
   const [lowEnd, setLowEnd] = useState(false);
@@ -358,9 +368,6 @@ export function PortfolioPage() {
             <ErrorBoundary label="CV"><CVSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
-          <LazySection skeletonCards={2}>
-            <ErrorBoundary label="Downloads"><DownloadCenterSection /></ErrorBoundary>
-          </LazySection>
           <SectionDivider variant="wave" />
           <LazySection skeletonCards={2}>
             <ErrorBoundary label="Booking"><BookingSection /></ErrorBoundary>

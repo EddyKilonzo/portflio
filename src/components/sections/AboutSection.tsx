@@ -125,7 +125,7 @@ export function AboutSection() {
                   <img src={logoSrc} alt={label} className="h-5 w-auto shrink-0 rounded" />
                   <div className="min-w-0 flex-1">
                     <p className="font-mono text-xs text-highlight/80">{label}</p>
-                    <p className="font-mono text-[10px] text-highlight/45">{detail}</p>
+                    <p className="font-mono text-[10px] text-highlight/65">{detail}</p>
                   </div>
                   {href && <span className="font-mono text-[10px] text-accent/60">↗</span>}
                 </a>

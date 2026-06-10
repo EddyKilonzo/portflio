@@ -148,7 +148,7 @@ export function ContactSection() {
       data-section="contact"
       className="relative overflow-hidden py-24 section-bg"
     >
-      <SectionNumber n="12" sectionId="contact" />
+      <SectionNumber n="13" sectionId="contact" />
       <DecorNetwork />
 <div className="relative z-10 mx-auto max-w-xl px-6">
   <ParallaxDrift speed={0.1}>
@@ -306,7 +306,7 @@ export function ContactSection() {
                 onChange={(e) => { setMessage(e.target.value); setSendError(null); }}
               />
               <div className="flex items-center justify-between gap-2">
-                <span className={`font-mono text-[10px] ${message.length > 2800 ? "text-amber-400" : "text-highlight/40"}`}>
+                <span className={`font-mono text-[10px] ${message.length > 2800 ? "text-amber-400" : "text-highlight/60"}`}>
                   {message.length}/3000
                 </span>
               </div>
@@ -324,7 +324,7 @@ export function ContactSection() {
               </MagneticButton>
               <div className="flex items-center gap-3 py-1">
                 <span className="h-px flex-1 bg-highlight/10" />
-                <span className="font-mono text-[10px] text-highlight/35">or</span>
+                <span className="font-mono text-[10px] text-highlight/55">or</span>
                 <span className="h-px flex-1 bg-highlight/10" />
               </div>
               <a
@@ -343,7 +343,7 @@ export function ContactSection() {
 
         {/* Direct contact profiles */}
         <div className="mt-8 space-y-3">
-          <p className="font-mono text-xs uppercase tracking-widest text-highlight/40">Contact me through</p>
+          <p className="font-mono text-xs uppercase tracking-widest text-highlight/60">Contact me through</p>
           <div className="grid gap-3 sm:grid-cols-3">
             <a
               href={`https://wa.me/254703526520?text=${encodeURIComponent("Hi Eddy! I found your portfolio and would love to connect.")}`}

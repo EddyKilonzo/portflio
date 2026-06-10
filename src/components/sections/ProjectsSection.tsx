@@ -31,10 +31,10 @@ type CyberSubTab = "projects" | "reports" | "scripts";
 
 /* ── colour helpers ───────────────────────────────────────────────────────── */
 function sevColor(s: string) {
-  if (s === "critical") return "bg-red-500/20 text-red-300 border-red-500/30";
-  if (s === "high")     return "bg-orange-500/20 text-orange-300 border-orange-500/30";
-  if (s === "medium")   return "bg-yellow-400/20 text-yellow-200 border-yellow-400/30";
-  return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+  if (s === "critical") return "bg-cyber/15 text-cyber border-cyber/40";
+  if (s === "high")     return "bg-cyber/10 text-cyber/70 border-cyber/30";
+  if (s === "medium")   return "bg-accent/15 text-accent border-accent/40";
+  return "bg-eng/10 text-eng border-eng/30";
 }
 function catBadge(cat: string) {
   return "border-accent/40 bg-accent/10 text-accent";
@@ -162,7 +162,7 @@ export function ProjectsSection() {
         data-section="projects"
         className="relative overflow-hidden py-24 section-bg"
       >
-        <SectionNumber n="04" sectionId="projects" />
+        <SectionNumber n="06" sectionId="projects" />
         <DecorNetwork />
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
@@ -182,10 +182,13 @@ export function ProjectsSection() {
             {([
               { id: "cybersec",  label: "CyberSec",  count: cyberCount, active: "border-cyber/70 bg-cyber/10 text-cyber shadow-[0_0_20px_rgba(255,76,76,0.15)]" },
               { id: "developer", label: "Developer",  count: devCount,   active: "border-eng/70 bg-eng/10 text-eng shadow-[0_0_20px_rgba(76,158,255,0.15)]"    },
-            ] as const).map(m => (
+            ] as const).map((m, i) => (
               <button
                 key={m.id}
                 type="button"
+                data-aos="fade-up"
+                data-aos-delay={i * 80}
+                data-aos-once="true"
                 onClick={() => { setActiveModule(m.id); trackEvent("projects_module_change", { module: m.id }); }}
                 className={`rounded-2xl border px-6 py-3 font-mono text-sm font-semibold transition-all duration-300 ${
                   activeModule === m.id
@@ -194,7 +197,7 @@ export function ProjectsSection() {
                 }`}
               >
                 {m.label}
-                <span className={`ml-2.5 rounded-full border px-2 py-0.5 font-mono text-[10px] ${activeModule === m.id ? "border-current/40 bg-current/10" : "border-highlight/15 text-highlight/40"}`}>
+                <span className={`ml-2.5 rounded-full border px-2 py-0.5 font-mono text-[10px] ${activeModule === m.id ? "border-current/40 bg-current/10" : "border-highlight/15 text-highlight/60"}`}>
                   {m.count}
                 </span>
               </button>
@@ -434,9 +437,9 @@ export function ProjectsSection() {
               touchXRef.current = null;
             }}
           >
-            <p><span className="font-mono text-xs text-highlight/45">Problem</span><br />{caseProject.caseStudy.problem}</p>
+            <p><span className="font-mono text-xs text-highlight/65">Problem</span><br />{caseProject.caseStudy.problem}</p>
             <div>
-              <p className="mb-2 font-mono text-xs text-highlight/45">Approach</p>
+              <p className="mb-2 font-mono text-xs text-highlight/65">Approach</p>
               <ul className="space-y-2">
                 {caseProject.caseStudy.approach.map((a,i) => (
                   <li key={a} className="flex gap-3">
@@ -446,11 +449,11 @@ export function ProjectsSection() {
                 ))}
               </ul>
             </div>
-            <p><span className="font-mono text-xs text-highlight/45">Stack</span><br />{caseProject.tech.join(", ")}</p>
-            <p><span className="font-mono text-xs text-highlight/45">Outcome</span><br />{caseProject.caseStudy.outcome}</p>
+            <p><span className="font-mono text-xs text-highlight/65">Stack</span><br />{caseProject.tech.join(", ")}</p>
+            <p><span className="font-mono text-xs text-highlight/65">Outcome</span><br />{caseProject.caseStudy.outcome}</p>
             {(caseProject.caseStudy.lessonsLearned?.length ?? 0) > 0 && (
               <div className="rounded-xl border border-accent/15 bg-accent/5 p-4 space-y-2">
-                <p className="font-mono text-xs text-highlight/45">Key Takeaway</p>
+                <p className="font-mono text-xs text-highlight/65">Key Takeaway</p>
                 <p className="text-xs text-highlight/75">{caseProject.caseStudy.lessonsLearned![0]}</p>
               </div>
             )}
@@ -490,8 +493,8 @@ export function ProjectsSection() {
               <h4 className="font-display text-lg text-highlight">{p.title}</h4>
               <p className="font-mono text-[11px] text-highlight/50">{p.roleMode === "cyber" ? "CyberSec" : "Developer"} · {diffLabel[p.difficulty]}</p>
               <p className="text-sm text-highlight/75">{p.shortDescription}</p>
-              <div><p className="font-mono text-[10px] text-highlight/40 mb-1">Stack</p><p className="text-xs text-highlight/80">{p.tech.join(", ")}</p></div>
-              <div><p className="font-mono text-[10px] text-highlight/40 mb-1">Outcome</p><p className="text-xs text-highlight/80">{p.caseStudy.outcome}</p></div>
+              <div><p className="font-mono text-[10px] text-highlight/60 mb-1">Stack</p><p className="text-xs text-highlight/80">{p.tech.join(", ")}</p></div>
+              <div><p className="font-mono text-[10px] text-highlight/60 mb-1">Outcome</p><p className="text-xs text-highlight/80">{p.caseStudy.outcome}</p></div>
             </article>
           ))}
         </div>
@@ -512,19 +515,19 @@ function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
     <>
       <article
         data-aos="fade-up" data-aos-delay={idx * 70} data-aos-once="true"
-        className="glass-card flex flex-col gap-4 rounded-2xl border border-t-2 border-highlight/10 border-t-accent/60 p-7 min-h-[300px] transition-all duration-300 hover:border-accent/25 hover:-translate-y-0.5"
+        className="glass-card flex flex-col gap-3 rounded-2xl border border-t-2 border-highlight/10 border-t-accent/60 p-5 sm:p-7 transition-all duration-300 hover:border-accent/25 hover:-translate-y-0.5"
       >
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <span className="font-mono text-[10px] uppercase tracking-widest text-accent/70">
             {typeLabel[report.type]}
           </span>
           <h3 className="font-display text-lg text-highlight leading-snug">{report.title}</h3>
-          <p className="font-mono text-[10px] text-highlight/40">{report.timeline}</p>
+          <p className="font-mono text-[10px] text-highlight/60">{report.timeline}</p>
         </div>
 
         {/* Teaser — the hook */}
         {report.teaser && (
-          <p className="font-sans text-sm text-highlight/80 leading-relaxed italic border-l-2 border-accent/40 pl-3">
+          <p className="font-sans text-sm text-highlight/80 leading-relaxed italic border-l-2 border-accent/40 pl-3 line-clamp-3 sm:line-clamp-none">
             {report.teaser}
           </p>
         )}
@@ -553,32 +556,16 @@ function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
         </div>
 
         <div className="mt-auto flex gap-2 pt-1">
-          {report.pdfUrl && (
-            <button
-              type="button"
-              onClick={() => setPdfOpen(true)}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-accent/20 bg-accent/5 px-3 py-2.5 font-mono text-xs text-accent/70 transition-all hover:border-accent/35 hover:text-accent"
-            >
-              ◎ PDF
-            </button>
-          )}
           <a
             href={`/reports/${encodeProjectId(report.id)}`}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent/8 px-4 py-2.5 font-mono text-xs text-accent transition-all hover:bg-accent/15 hover:border-accent/50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent/8 px-4 py-2.5 font-mono text-xs text-accent transition-all hover:bg-accent/15 hover:border-accent/50"
           >
             Full Report <span className="opacity-60">→</span>
           </a>
         </div>
       </article>
 
-      {report.pdfUrl && (
-        <PdfModal
-          pdfUrl={report.pdfUrl}
-          title={report.title}
-          isOpen={pdfOpen}
-          onClose={() => setPdfOpen(false)}
-        />
-      )}
+      {/* No more PDF modal here */}
     </>
   );
 }
@@ -593,7 +580,7 @@ function ScriptCard({ script, idx }: { script: SecurityScript; idx: number }) {
     <>
       <article
         data-aos="fade-up" data-aos-delay={idx * 70} data-aos-once="true"
-        className="glass-card flex flex-col gap-4 rounded-2xl border border-highlight/10 p-7 min-h-[300px] transition-all duration-300 hover:border-accent/25 hover:-translate-y-0.5"
+        className="glass-card flex flex-col gap-3 rounded-2xl border border-highlight/10 p-5 sm:p-7 transition-all duration-300 hover:border-accent/25 hover:-translate-y-0.5"
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
@@ -608,7 +595,7 @@ function ScriptCard({ script, idx }: { script: SecurityScript; idx: number }) {
 
         <div>
           <h3 className="font-display text-xl text-highlight">{script.title}</h3>
-          <p className="mt-0.5 font-mono text-[10px] text-highlight/40">{script.filename}</p>
+          <p className="mt-0.5 font-mono text-[10px] text-highlight/60">{script.filename}</p>
         </div>
 
         <p className="font-sans text-sm text-highlight/60 leading-relaxed line-clamp-3">{script.shortDescription}</p>
@@ -616,7 +603,7 @@ function ScriptCard({ script, idx }: { script: SecurityScript; idx: number }) {
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 overflow-hidden max-h-[3.5rem]">
           {script.tags.slice(0,4).map(t => (
-            <span key={t} className="rounded-full border border-highlight/10 px-2 py-0.5 font-mono text-[10px] text-highlight/40 shrink-0">
+            <span key={t} className="rounded-full border border-highlight/10 px-2 py-0.5 font-mono text-[10px] text-highlight/60 shrink-0">
               #{t}
             </span>
           ))}

@@ -175,7 +175,7 @@ export function CyberShowcaseSection() {
               ))}
             </div>
 
-            <p className="font-mono text-[10px] text-highlight/40">
+            <p className="font-mono text-[10px] text-highlight/60">
               Hall of Fame: {profile.bugBounty.hallOfFame.join(", ")}
             </p>
 
@@ -200,7 +200,7 @@ export function CyberShowcaseSection() {
                 <li key={c.id} className="border-l-2 border-highlight/20 pl-3 font-mono text-xs leading-relaxed">
                   <span className={`${severityColor(c.severity)} mr-1`}>{c.severity}</span>
                   {c.cve ?? "responsible disclosure"} — {c.software}{" "}
-                  <span className="text-highlight/45">{c.disclosed}</span>{" "}
+                  <span className="text-highlight/65">{c.disclosed}</span>{" "}
                   <span className="text-accent">{c.status}</span>
                 </li>
               ))}
@@ -219,7 +219,7 @@ export function CyberShowcaseSection() {
                 data-aos="fade-up"
                 data-aos-delay={i * 75}
               >
-                <p className="mb-1 font-mono text-[10px] text-highlight/35">{m.phase}</p>
+                <p className="mb-1 font-mono text-[10px] text-highlight/55">{m.phase}</p>
                 <p className="font-display text-lg text-highlight">{m.label}</p>
                 <p className="mt-2 font-mono text-[10px] leading-relaxed text-highlight/55">{m.desc}</p>
               </div>
@@ -243,7 +243,7 @@ export function CyberShowcaseSection() {
         <div data-aos="fade-up" data-aos-delay="100">
           <div className="mb-3 flex items-center gap-3">
             <div className="h-px flex-1 bg-highlight/10" />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-highlight/40">Interactive shell</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-highlight/60">Interactive shell</span>
             <div className="h-px flex-1 bg-highlight/10" />
           </div>
           <div className="overflow-hidden rounded-2xl border border-highlight/15 shadow-[0_0_60px_rgba(22,163,74,0.08)]">

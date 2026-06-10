@@ -200,7 +200,7 @@ function CertCard({ cert }: { cert: CertItem }) {
               </p>
             </div>
           ) : (
-            <span className="font-mono text-[10px] text-highlight/40">
+            <span className="font-mono text-[10px] text-highlight/60">
               Hover for back
             </span>
           )}

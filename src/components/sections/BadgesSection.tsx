@@ -5,26 +5,27 @@ import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
-import { useEffect, useMemo, useState } from "react";
+import { AnimeHoverBloom } from "@/components/motion/AnimeHoverBloom";
+import { useState } from "react";
 import { PdfModal } from "@/components/ui/PdfModal";
 
-type GhPinnedRepo = { stars: number };
-type GhStats = {
-  pinned?: GhPinnedRepo[];
-  totalContributions?: number | null;
-};
-
 const catColor: Record<Cert["category"], string> = {
-  security: "border-accent/40 bg-accent/10 text-accent",
-  cloud:    "border-accent/30 bg-accent/8 text-accent/80",
-  language: "border-accent/30 bg-accent/8 text-accent/80",
-  os:       "border-accent/30 bg-accent/8 text-accent/80",
-  platform: "border-accent/40 bg-accent/10 text-accent",
+  security:    "border-accent/40 bg-accent/10 text-accent",
+  cloud:       "border-accent/30 bg-accent/8 text-accent/80",
+  development: "border-eng/40 bg-eng/10 text-eng",
+  language:    "border-accent/30 bg-accent/8 text-accent/80",
+  os:          "border-accent/30 bg-accent/8 text-accent/80",
+  platform:    "border-accent/40 bg-accent/10 text-accent",
 };
 
 const localBadgeMap: Record<string, string> = {
-  "i2cs":     "/badges/introduction-to-cybersecurity.png",
-  "os-basics":"/badges/operating-systems-basics.png",
+  "i2cs":      "/badges/introduction-to-cybersecurity.png",
+  "os-basics": "/badges/operating-systems-basics.png",
+  "thm-cert-1":"/logos/thm.png",
+  "thm-cert-2":"/logos/thm.png",
+  "ibm-cad":   "/logos/ibm.png",
+  "cti":       "/logos/arcx.jfif",
+  "efset":     "/logos/efset.png",
 };
 
 type BadgeEntry = { id: string; src: string; title: string; issuer: string; date?: string; pdfUrl: string };
@@ -44,7 +45,7 @@ function BadgeCard({ badge, index = 0 }: { badge: BadgeEntry; index?: number }) 
         <div>
           <h3 className="font-display text-base text-highlight leading-snug">{badge.title}</h3>
           <p className="mt-0.5 font-mono text-xs text-accent/70">{badge.issuer}</p>
-          {badge.date && <p className="mt-0.5 font-mono text-[10px] text-highlight/40">{badge.date}</p>}
+          {badge.date && <p className="mt-0.5 font-mono text-[10px] text-highlight/60">{badge.date}</p>}
         </div>
         <button
           type="button"
@@ -65,7 +66,7 @@ function CertCard({ cert, index = 0 }: { cert: Cert; index?: number }) {
   return (
     <>
       <article
-        className="glass-card flex flex-col gap-3 rounded-2xl p-6 min-h-[200px]"
+        className="glass-card flex flex-col gap-3 rounded-2xl p-4 sm:p-6"
         data-aos="fade-up"
         data-aos-delay={index * 80}
         data-aos-once="true"
@@ -74,22 +75,27 @@ function CertCard({ cert, index = 0 }: { cert: Cert; index?: number }) {
           <div className="flex items-center gap-2">
             {badgeSrc && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={badgeSrc} alt={`${cert.title} badge`} className="h-8 w-8 rounded-full object-cover" />
+              <img
+                src={badgeSrc}
+                alt={`${cert.title} badge`}
+                className="h-10 w-10 rounded-lg object-contain p-0.5 shrink-0"
+                style={{ background: "rgba(168,217,184,0.08)", border: "1px solid rgba(168,217,184,0.15)" }}
+              />
             )}
             <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] capitalize ${catColor[cert.category]}`}>
               {cert.category}
             </span>
           </div>
           {cert.date && (
-            <span className="font-mono text-[10px] text-highlight/40 shrink-0">{cert.date}</span>
+            <span className="font-mono text-[10px] text-highlight/60 shrink-0">{cert.date}</span>
           )}
         </div>
         <div className="flex-1">
-          <h3 className="font-display text-lg text-highlight leading-snug">{cert.title}</h3>
+          <h3 className="font-display text-base sm:text-lg text-highlight leading-snug">{cert.title}</h3>
           <p className="mt-0.5 font-mono text-xs text-accent/70">{cert.issuer}</p>
-          <p className="mt-2 font-sans text-sm text-highlight/60 leading-relaxed">{cert.description}</p>
+          <p className="mt-2 font-sans text-sm text-highlight/60 leading-relaxed line-clamp-3 sm:line-clamp-none">{cert.description}</p>
           {cert.why && (
-            <p className="mt-3 border-l-2 border-accent/40 pl-3 font-sans text-xs italic text-accent/90 leading-relaxed">
+            <p className="mt-2 hidden sm:block border-l-2 border-accent/40 pl-3 font-sans text-xs italic text-accent/90 leading-relaxed">
               {cert.why}
             </p>
           )}
@@ -97,7 +103,7 @@ function CertCard({ cert, index = 0 }: { cert: Cert; index?: number }) {
         <button
           type="button"
           onClick={() => setPreviewOpen(true)}
-          className="flex items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent/8 px-4 py-2.5 font-mono text-xs text-accent transition-all hover:bg-accent/15 hover:border-accent/50"
+          className="flex items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent/8 px-4 py-2 sm:py-2.5 font-mono text-xs text-accent transition-all hover:bg-accent/15 hover:border-accent/50"
         >
           ◎ Preview Certificate
         </button>
@@ -115,30 +121,6 @@ function CertCard({ cert, index = 0 }: { cert: Cert; index?: number }) {
 export function BadgesSection() {
   const sectionRef = useSectionReveal(8);
   const [tab, setTab] = useState<"certs" | "badges">("certs");
-  const [gh, setGh] = useState<GhStats | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const res = await fetch("/api/github");
-        if (!res.ok) return;
-        const data = (await res.json()) as GhStats;
-        if (!cancelled) setGh(data);
-      } catch {
-        // Non-fatal
-      }
-    };
-    void load();
-    return () => { cancelled = true; };
-  }, []);
-
-  const pinnedStars = useMemo(
-    () => gh?.pinned?.reduce((sum, r) => sum + (Number(r.stars) || 0), 0) ?? 0,
-    [gh],
-  );
-
-  const githubContribs = gh?.totalContributions ?? null;
 
   const tabBtn = (id: "certs" | "badges", label: string) => (
     <button
@@ -229,62 +211,59 @@ export function BadgesSection() {
 
         {/* Platforms — always visible */}
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <a
-            href="https://tryhackme.com/p/eddy.kilonzo"
-            target="_blank"
-            rel="noreferrer"
-            data-aos="fade-up"
-            data-aos-delay="0"
-            data-aos-once="true"
-            className="glass-card flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:border-[#212C42]"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://img.shields.io/badge/THM-212C42?logo=tryhackme&logoColor=white&style=flat-square" alt="TryHackMe" className="h-8 w-auto shrink-0" />
-            <div className="min-w-0">
-              <p className="font-display text-base text-highlight">TryHackMe</p>
-              <p className="font-mono text-[11px] text-accent/70">eddy.kilonzo</p>
-              <p className="font-mono text-[10px] text-highlight/40">SOC Level 1 path</p>
-            </div>
-            <span className="ml-auto font-mono text-xs text-highlight/30">↗</span>
-          </a>
+          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="0" data-aos-once="true">
+            <a
+              href="https://tryhackme.com/p/eddy.kilonzo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:border-accent/30"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://img.shields.io/badge/THM-212C42?logo=tryhackme&logoColor=white&style=flat-square" alt="TryHackMe" className="h-8 w-auto shrink-0" />
+              <div className="min-w-0">
+                <p className="font-display text-base text-highlight">TryHackMe</p>
+                <p className="font-mono text-[11px] text-accent/70">eddy.kilonzo</p>
+                <p className="font-mono text-[10px] text-highlight/60">SOC Level 1 path</p>
+              </div>
+              <span className="ml-auto font-mono text-xs text-highlight/55">↗</span>
+            </a>
+          </AnimeHoverBloom>
 
-          <a
-            href="https://github.com/EddyKilonzo"
-            target="_blank"
-            rel="noreferrer"
-            data-aos="fade-up"
-            data-aos-delay="80"
-            data-aos-once="true"
-            className="glass-card flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:border-highlight/30"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://img.shields.io/badge/GH-181717?logo=github&logoColor=white&style=flat-square" alt="GitHub" className="h-8 w-auto shrink-0" />
-            <div className="min-w-0">
-              <p className="font-display text-base text-highlight">GitHub</p>
-              <p className="font-mono text-[11px] text-accent/70">EddyKilonzo</p>
-              <p className="font-mono text-[10px] text-highlight/40">Projects &amp; code</p>
-            </div>
-            <span className="ml-auto font-mono text-xs text-highlight/30">↗</span>
-          </a>
+          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="80" data-aos-once="true">
+            <a
+              href="https://github.com/EddyKilonzo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:border-highlight/30"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://img.shields.io/badge/GH-181717?logo=github&logoColor=white&style=flat-square" alt="GitHub" className="h-8 w-auto shrink-0" />
+              <div className="min-w-0">
+                <p className="font-display text-base text-highlight">GitHub</p>
+                <p className="font-mono text-[11px] text-accent/70">EddyKilonzo</p>
+                <p className="font-mono text-[10px] text-highlight/60">Projects &amp; code</p>
+              </div>
+              <span className="ml-auto font-mono text-xs text-highlight/55">↗</span>
+            </a>
+          </AnimeHoverBloom>
 
-          <a
-            href={profile.social.htb}
-            target="_blank"
-            rel="noreferrer"
-            data-aos="fade-up"
-            data-aos-delay="160"
-            data-aos-once="true"
-            className="glass-card flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:border-[#9FEF00]/20"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://img.shields.io/badge/HTB-111927?logo=hackthebox&logoColor=9FEF00&style=flat-square" alt="HackTheBox" className="h-8 w-auto shrink-0" />
-            <div className="min-w-0">
-              <p className="font-display text-base text-highlight">HackTheBox</p>
-              <p className="font-mono text-[11px] text-accent/70">Rank: {profile.ctf.htbRank}</p>
-              <p className="font-mono text-[10px] text-highlight/40">CTF labs &amp; machines</p>
-            </div>
-            <span className="ml-auto font-mono text-xs text-highlight/30">↗</span>
-          </a>
+          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="160" data-aos-once="true">
+            <a
+              href={profile.social.htb}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card flex items-center gap-4 rounded-2xl p-5 transition-all hover:-translate-y-0.5 hover:border-accent/20"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://img.shields.io/badge/HTB-111927?logo=hackthebox&logoColor=9FEF00&style=flat-square" alt="HackTheBox" className="h-8 w-auto shrink-0" />
+              <div className="min-w-0">
+                <p className="font-display text-base text-highlight">HackTheBox</p>
+                <p className="font-mono text-[11px] text-accent/70">Rank: {profile.ctf.htbRank}</p>
+                <p className="font-mono text-[10px] text-highlight/60">CTF labs &amp; machines</p>
+              </div>
+              <span className="ml-auto font-mono text-xs text-highlight/55">↗</span>
+            </a>
+          </AnimeHoverBloom>
         </div>
       </div>
     </section>

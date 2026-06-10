@@ -5,25 +5,24 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 const COLORS: Record<RoleMode, number> = {
-  cyber: 0xff4c4c,
+  cyber:       0xff4c4c,
   engineering: 0x4c9eff,
-  web: 0xa8d9b8,
+  web:         0xa8d9b8,
 };
 
 export function RoleParticles({ mode }: { mode: RoleMode }) {
   const mountRef = useRef<HTMLDivElement>(null);
-  // Hold material ref so color updates never recreate the WebGL context
-  const matRef = useRef<THREE.PointsMaterial | null>(null);
+  const matRef   = useRef<THREE.PointsMaterial | null>(null);
 
-  // Three.js setup — runs once, never on mode change
+  // Three.js setup — runs once, pauses when off-screen via IntersectionObserver
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
 
     const w = mount.clientWidth;
     const h = mount.clientHeight;
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
+    const scene    = new THREE.Scene();
+    const camera   = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
     camera.position.z = 4;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -31,7 +30,7 @@ export function RoleParticles({ mode }: { mode: RoleMode }) {
     renderer.setClearColor(0x000000, 0);
     mount.appendChild(renderer.domElement);
 
-    const n = 220;
+    const n   = 220;
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
@@ -42,25 +41,37 @@ export function RoleParticles({ mode }: { mode: RoleMode }) {
     geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
 
     const mat = new THREE.PointsMaterial({
-      color: COLORS[mode],
-      size: 0.035,
+      color:       COLORS[mode],
+      size:        0.035,
       transparent: true,
-      opacity: 0.22,
-      depthWrite: false,
+      opacity:     0.22,
+      depthWrite:  false,
     });
     matRef.current = mat;
 
     const pts = new THREE.Points(geo, mat);
     scene.add(pts);
 
-    let raf = 0;
-    const t0 = performance.now();
+    let raf     = 0;
+    let visible = true;
+    const t0    = performance.now();
+
     const tick = (t: number) => {
+      if (!visible) return;
       pts.rotation.y = (t - t0) * 0.00008;
       renderer.render(scene, camera);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) raf = requestAnimationFrame(tick);
+      },
+      { threshold: 0 },
+    );
+    io.observe(mount);
 
     const ro = new ResizeObserver(() => {
       const nw = mount.clientWidth;
@@ -73,6 +84,7 @@ export function RoleParticles({ mode }: { mode: RoleMode }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       ro.disconnect();
       geo.dispose();
       mat.dispose();
@@ -84,15 +96,8 @@ export function RoleParticles({ mode }: { mode: RoleMode }) {
 
   // Color update — no canvas recreation, just swap the material color
   useEffect(() => {
-    if (matRef.current) {
-      matRef.current.color.setHex(COLORS[mode]);
-    }
+    if (matRef.current) matRef.current.color.setHex(COLORS[mode]);
   }, [mode]);
 
-  return (
-    <div
-      ref={mountRef}
-      className="pointer-events-none absolute inset-0 opacity-45"
-    />
-  );
+  return <div ref={mountRef} className="pointer-events-none absolute inset-0 opacity-45" />;
 }

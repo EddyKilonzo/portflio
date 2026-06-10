@@ -6,6 +6,8 @@ import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { useMemo, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
+import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
+import { StaggerReveal } from "@/components/motion/StaggerReveal";
 import { AppModal } from "@/components/ui/AppModal";
 import Image from "next/image";
 
@@ -156,19 +158,21 @@ export function SkillsSection() {
         data-section="skills"
         className="relative overflow-hidden py-24 section-bg"
       >
-        <SectionNumber n="03" sectionId="skills" />
+        <SectionNumber n="05" sectionId="skills" />
         <DecorNetwork />
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
           {/* Heading */}
-          <div data-aos="fade-up" data-aos-once="true">
-            <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
-              Skills
-            </h2>
-            <p className="mt-2 max-w-2xl font-sans text-sm text-highlight/65">
-              Click any skill to filter the projects section. Hover a row to pause the scroll.
-            </p>
-          </div>
+          <ParallaxDrift speed={0.1}>
+            <div data-aos="fade-up" data-aos-once="true">
+              <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
+                Skills
+              </h2>
+              <p className="mt-2 max-w-2xl font-sans text-sm text-highlight/65">
+                Click any skill to filter the projects section. Hover a row to pause the scroll.
+              </p>
+            </div>
+          </ParallaxDrift>
 
           {/* Active filter banner */}
           {activeSkill && (
@@ -192,7 +196,7 @@ export function SkillsSection() {
             <div className="flex items-center gap-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-eng/70">Developer</span>
               <span className="h-px flex-1 bg-eng/15" />
-              <span className="font-mono text-[10px] text-highlight/40">{developerSkills.length} skills</span>
+              <span className="font-mono text-[10px] text-highlight/60">{developerSkills.length} skills</span>
             </div>
             <MarqueeRow
               skills={developerSkills}
@@ -209,7 +213,7 @@ export function SkillsSection() {
             <div className="flex items-center gap-3">
               <span className="font-mono text-[10px] uppercase tracking-widest text-cyber/70">CyberSec</span>
               <span className="h-px flex-1 bg-cyber/15" />
-              <span className="font-mono text-[10px] text-highlight/40">{cyberSkills.length} skills</span>
+              <span className="font-mono text-[10px] text-highlight/60">{cyberSkills.length} skills</span>
             </div>
             <MarqueeRow
               skills={cyberSkills}
@@ -222,7 +226,13 @@ export function SkillsSection() {
           </div>
 
           {/* Stats row */}
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4" data-aos="fade-up" data-aos-delay="240" data-aos-once="true">
+          <StaggerReveal
+            className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4"
+            stagger={0.1}
+            from="up"
+            distance={20}
+            start="top 88%"
+          >
             {[
               { label: "Total Skills", value: String(developerSkills.length + cyberSkills.length) },
               { label: "Developer", value: String(developerSkills.length) },
@@ -231,10 +241,10 @@ export function SkillsSection() {
             ].map(({ label, value }) => (
               <div key={label} className="glass-card rounded-xl px-4 py-3 text-center">
                 <p className="font-display text-2xl text-highlight">{value}</p>
-                <p className="font-mono text-[10px] text-highlight/45">{label}</p>
+                <p className="font-mono text-[10px] text-highlight/65">{label}</p>
               </div>
             ))}
-          </div>
+          </StaggerReveal>
         </div>
 
         <style>{`

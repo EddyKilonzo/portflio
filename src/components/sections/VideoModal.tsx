@@ -222,63 +222,68 @@ export function VideoModal({ project, open, onClose }: Props) {
           role="dialog"
           aria-label={`Video demo: ${project.title}`}
           ref={panelRef}
-          className="glass-card max-h-[90vh] w-full max-w-[960px] overflow-hidden rounded-2xl will-change-transform"
+          className="glass-card flex max-h-[90vh] w-full max-w-[960px] flex-col overflow-hidden rounded-2xl will-change-transform"
           style={{
             background: "rgba(30,74,58,0.2)",
             backdropFilter: "blur(24px)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between border-b border-highlight/10 px-4 py-3">
-            <h2 className="font-display text-lg text-highlight">
+          {/* Header — fixed */}
+          <div className="flex shrink-0 items-center justify-between border-b border-highlight/10 px-4 py-3">
+            <h2 className="truncate font-display text-base text-highlight sm:text-lg">
               {project.title}
             </h2>
             <button
               type="button"
-              className="font-mono text-sm text-highlight/70 hover:text-highlight"
+              className="ml-3 shrink-0 font-mono text-sm text-highlight/70 hover:text-highlight"
               onClick={onClose}
             >
               Close
             </button>
           </div>
-          <div className="p-4">
-            <div ref={mountRef} className="plyr-wrap aspect-video w-full" />
-          </div>
-          <div className="space-y-3 border-t border-highlight/10 px-4 py-4">
-            <p className="font-sans text-sm text-highlight/80">
-              {project.shortDescription}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {project.tech.map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full border border-highlight/25 bg-surface/15 px-2 py-0.5 font-mono text-[10px] text-highlight/75"
-                >
-                  {t}
-                </span>
-              ))}
+
+          {/* Scrollable body — video + info */}
+          <div className="flex-1 overflow-y-auto overscroll-contain">
+            <div className="p-3 sm:p-4">
+              <div ref={mountRef} className="plyr-wrap aspect-video w-full" />
             </div>
-            <div className="flex gap-3 font-mono text-xs">
-              {project.codeUrl ? (
-                <a
-                  href={project.codeUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent underline"
-                >
-                  GitHub
-                </a>
-              ) : null}
-              {project.liveUrl ? (
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent underline"
-                >
-                  Live demo
-                </a>
-              ) : null}
+            <div className="space-y-3 border-t border-highlight/10 px-4 py-4">
+              <p className="font-sans text-sm text-highlight/80">
+                {project.shortDescription}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {project.tech.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-full border border-highlight/25 bg-surface/15 px-2 py-0.5 font-mono text-[10px] text-highlight/75"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-3 pb-2 font-mono text-xs">
+                {project.codeUrl ? (
+                  <a
+                    href={project.codeUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-accent underline"
+                  >
+                    GitHub
+                  </a>
+                ) : null}
+                {project.liveUrl ? (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-accent underline"
+                  >
+                    Live demo
+                  </a>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

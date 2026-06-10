@@ -34,7 +34,7 @@ export function CVSection() {
       data-section="cv"
       className="relative overflow-hidden py-24 section-bg print:bg-white print:text-black"
     >
-      <SectionNumber n="11" sectionId="cv" />
+      <SectionNumber n="10" sectionId="cv" />
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-4xl px-6 print:max-w-none">
@@ -71,8 +71,8 @@ export function CVSection() {
           ) : (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
               <span className="font-mono text-3xl text-accent/30">◎</span>
-              <p className="font-mono text-sm text-highlight/40">CV coming soon</p>
-              <p className="font-sans text-xs text-highlight/25">Check back shortly — the full document will be available here.</p>
+              <p className="font-mono text-sm text-highlight/60">CV coming soon</p>
+              <p className="font-sans text-xs text-highlight/50">Check back shortly — the full document will be available here.</p>
             </div>
           )}
         </div>

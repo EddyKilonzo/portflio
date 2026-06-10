@@ -137,7 +137,7 @@ function ExpCard({
           <div className="min-w-0 flex-1">
             <h3 className="font-display text-xl text-highlight">{ex.title}</h3>
             <p className="font-mono text-sm text-accent">{ex.company}</p>
-            <p className="mt-0.5 font-mono text-xs text-highlight/45">
+            <p className="mt-0.5 font-mono text-xs text-highlight/65">
               {ex.duration} · {ex.location}
             </p>
           </div>

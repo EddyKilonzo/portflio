@@ -1,32 +1,11 @@
-import { notFound } from "next/navigation";
-import type { Metadata } from "next";
-import { securityReports, type ReportFinding, type Severity } from "@/content/portfolio";
+"use client";
+
+import { useState } from "react";
+import { type SecurityReport, type ReportFinding, type Severity } from "@/content/portfolio";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { BackButton } from "@/components/ui/BackButton";
-import { decodeProjectId, encodeProjectId } from "@/lib/projectId";
 import { AosInit } from "@/components/ui/AosInit";
-import { NetworkDiagramSection } from "@/components/sections/NetworkDiagramSection";
-
-type Props = { params: { id: string } };
-
-export function generateStaticParams() {
-  return securityReports.map((r) => ({ id: encodeProjectId(r.id) }));
-}
-
-export function generateMetadata({ params }: Props): Metadata {
-  const realId = decodeProjectId(params.id);
-  const report = securityReports.find((r) => r.id === realId) ?? securityReports.find((r) => r.id === params.id);
-  if (!report) return {};
-  return {
-    title: `${report.title} — Security Report`,
-    description: report.purpose,
-    openGraph: {
-      title: `${report.title} — Security Report`,
-      description: report.purpose,
-      type: "article",
-    },
-  };
-}
+import { DiagramModal } from "@/components/ui/DiagramModal";
 
 const typeLabel: Record<string, string> = {
   pentest: "Penetration Test",
@@ -106,7 +85,7 @@ function CvssBadge({ score }: { score: string }) {
   );
 }
 
-async function FindingCard({ finding, reportId, index = 0 }: { finding: ReportFinding; reportId: string; index?: number }) {
+function FindingCard({ finding, reportId, index = 0 }: { finding: ReportFinding; reportId: string; index?: number }) {
   const pocLang = finding.poc?.includes("msf6") ? "bash"
     : finding.poc?.includes("import ") ? "python"
     : finding.poc?.includes("curl") ? "bash"
@@ -185,20 +164,14 @@ function Section({ icon, title, children, delay = 100 }: { icon: string; title: 
   );
 }
 
-export default async function ReportDetailPage({ params }: Props) {
-  const realId = decodeProjectId(params.id);
-  const report = securityReports.find((r) => r.id === realId) ?? securityReports.find((r) => r.id === params.id);
-  
-  if (!report) {
-    notFound();
-  }
+export function ReportDetailClient({ report }: { report: SecurityReport }) {
+  const [isDiagramOpen, setIsDiagramOpen] = useState(false);
 
   const criticals = report.findings.filter((f) => f.severity === "critical").length;
   const highs = report.findings.filter((f) => f.severity === "high").length;
   const mediums = report.findings.filter((f) => f.severity === "medium").length;
   const lows = report.findings.filter((f) => f.severity === "low").length;
   const maxSeverity = criticals > 0 ? "critical" : highs > 0 ? "high" : mediums > 0 ? "medium" : "low";
-  
   const maxSeverityLabel: Record<string, string> = {
     critical: "Critical risk identified",
     high: "High risk identified",
@@ -463,7 +436,43 @@ export default async function ReportDetailPage({ params }: Props) {
 
         {/* Network diagram */}
         {report.networkDiagramUrl && (
-          <NetworkDiagramSection imageUrl={report.networkDiagramUrl} title={report.title} />
+          <>
+            <Section icon="⊞" title="Network Diagram" delay={100}>
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <p className="text-sm text-highlight/60">
+                  Topology of the target environment as scoped for this engagement.
+                </p>
+                <button
+                  onClick={() => setIsDiagramOpen(true)}
+                  className="glass-pill text-[11px] hover:text-accent transition-colors"
+                >
+                  ⛶ View Full Screen
+                </button>
+              </div>
+              <button
+                onClick={() => setIsDiagramOpen(true)}
+                className="group relative w-full rounded-xl overflow-hidden border border-highlight/10 bg-black/20 text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={report.networkDiagramUrl}
+                  alt={`Network diagram — ${report.title}`}
+                  className="w-full h-auto"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="glass-pill px-4 py-2 text-sm">Click to expand</span>
+                </div>
+              </button>
+            </Section>
+
+            <DiagramModal
+              isOpen={isDiagramOpen}
+              onClose={() => setIsDiagramOpen(false)}
+              imageUrl={report.networkDiagramUrl}
+              title={report.title}
+            />
+          </>
         )}
 
         {/* Footer */}

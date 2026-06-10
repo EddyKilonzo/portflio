@@ -47,7 +47,7 @@ export function AppModal({
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-[10005] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[10005] flex items-end justify-center bg-black/70 px-3 pb-0 pt-3 backdrop-blur-sm sm:items-center sm:p-4"
       role="presentation"
       onClick={onClose}
     >
@@ -66,20 +66,42 @@ export function AppModal({
           aria-label={title}
           ref={panelRef}
           onClick={(e) => e.stopPropagation()}
-          className={`glass-card w-full overflow-hidden rounded-2xl border border-highlight/20 bg-surface/20 ${
-            size === "lg" ? "max-w-2xl" : "max-w-lg"
+          className={`glass-card flex w-full flex-col overflow-hidden rounded-t-2xl border border-highlight/20 bg-surface/20 sm:rounded-2xl ${
+            size === "lg" ? "sm:max-w-2xl" : "sm:max-w-lg"
           }`}
+          style={{ maxHeight: "calc(90vh - env(safe-area-inset-bottom, 0px))" }}
         >
-          <div data-surface-item className="border-b border-highlight/10 px-5 py-4">
-            <h3 className="font-display text-2xl text-highlight">{title}</h3>
-            {subtitle ? (
-              <p className="mt-1 font-sans text-sm text-highlight/70">{subtitle}</p>
-            ) : null}
+          {/* Header — fixed */}
+          <div data-surface-item className="shrink-0 border-b border-highlight/10 px-5 py-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-display text-xl text-highlight sm:text-2xl">{title}</h3>
+                {subtitle ? (
+                  <p className="mt-1 font-sans text-sm text-highlight/70">{subtitle}</p>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={onClose}
+                className="shrink-0 rounded-lg p-1.5 text-highlight/50 transition-colors hover:text-highlight"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M3.72 3.72a.75.75 0 011.06 0L8 6.94l3.22-3.22a.75.75 0 111.06 1.06L9.06 8l3.22 3.22a.75.75 0 11-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 01-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 010-1.06z" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div data-surface-item className="px-5 py-5">{children}</div>
-          <div data-surface-item className="flex flex-wrap items-center justify-end gap-2 border-t border-highlight/10 px-5 py-4">
-            {footer}
+          {/* Body — scrollable */}
+          <div data-surface-item className="flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+            {children}
           </div>
+          {/* Footer — fixed */}
+          {footer && (
+            <div data-surface-item className="shrink-0 flex flex-wrap items-center justify-end gap-2 border-t border-highlight/10 px-5 py-4">
+              {footer}
+            </div>
+          )}
         </div>
       </FocusTrap>
     </div>

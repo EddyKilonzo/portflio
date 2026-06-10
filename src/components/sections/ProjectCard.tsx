@@ -122,7 +122,7 @@ export function ProjectCard({
         {roleDisplayLabel[project.roleMode] ?? project.roleMode}
       </div>
       <h3 className="font-display text-2xl text-highlight">{project.title}</h3>
-      <p className="mt-0.5 font-mono text-[10px] text-highlight/45">
+      <p className="mt-0.5 font-mono text-[10px] text-highlight/65">
         <span className="opacity-70">//</span> {project.category}
       </p>
       <p className="mt-2 font-sans text-sm text-highlight/75">

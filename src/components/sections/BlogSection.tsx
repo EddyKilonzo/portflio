@@ -29,7 +29,7 @@ export function BlogSection() {
       data-section="blog"
       className="relative overflow-hidden py-24 section-bg"
     >
-      <SectionNumber n="10" sectionId="blog" />
+      <SectionNumber n="09" sectionId="blog" />
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
@@ -98,9 +98,9 @@ export function BlogSection() {
                 className="glass-card flex flex-col gap-3 rounded-2xl p-6 transition-all hover:-translate-y-0.5"
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-[10px] text-highlight/40">{post.date}</span>
+                  <span className="font-mono text-[10px] text-highlight/60">{post.date}</span>
                   {post.readingTime && (
-                    <span className="font-mono text-[10px] text-highlight/30">{post.readingTime} read</span>
+                    <span className="font-mono text-[10px] text-highlight/55">{post.readingTime} read</span>
                   )}
                 </div>
                 <h3 className="font-display text-lg text-highlight leading-snug">{post.title}</h3>
@@ -111,7 +111,7 @@ export function BlogSection() {
                   {post.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full border border-highlight/15 px-2 py-0.5 font-mono text-[10px] text-highlight/45"
+                      className="rounded-full border border-highlight/15 px-2 py-0.5 font-mono text-[10px] text-highlight/65"
                     >
                       #{tag}
                     </span>

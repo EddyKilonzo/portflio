@@ -83,7 +83,7 @@ export function ScriptViewerModal({ filename, title, language = "python", isOpen
               download={filename}
               className="glass-pill text-[11px] text-highlight/60 hover:text-highlight"
             >
-              ↓ .py
+              ↓ {filename.includes(".") ? `.${filename.split(".").pop()}` : "file"}
             </a>
             <button
               onClick={onClose}
@@ -109,12 +109,12 @@ export function ScriptViewerModal({ filename, title, language = "python", isOpen
           )}
           {rawCode !== null && !error && highlightedHtml && (
             <div
-              className="shiki-wrap text-[13px] leading-relaxed p-5 overflow-x-auto"
+              className="shiki-wrap overflow-x-auto p-4 text-[11px] leading-relaxed sm:p-5 sm:text-[13px]"
               dangerouslySetInnerHTML={{ __html: highlightedHtml }}
             />
           )}
           {rawCode !== null && !error && !highlightedHtml && (
-            <pre className="p-5 font-mono text-[13px] leading-relaxed text-[#e6edf3] overflow-x-auto whitespace-pre">
+            <pre className="overflow-x-auto whitespace-pre p-4 font-mono text-[11px] leading-relaxed text-[#e6edf3] sm:p-5 sm:text-[13px]">
               <code>{rawCode}</code>
             </pre>
           )}
