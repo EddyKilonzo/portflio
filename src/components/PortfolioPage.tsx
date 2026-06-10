@@ -9,10 +9,7 @@ import { SkipLink } from "@/components/layout/SkipLink";
 // WaveBackground is dynamically imported (ssr:false) to prevent hydration mismatch
 // caused by ambientFx reading localStorage on client vs default true on server.
 import { SectionDivider } from "@/components/sections/SectionDivider";
-import {
-  getDeviceProfile,
-  shouldUseLenis,
-} from "@/lib/device-profile";
+import { getDeviceProfile } from "@/lib/device-profile";
 import { LazySection } from "@/components/motion/LazySection";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useTheme } from "@/context/ThemeContext";
@@ -141,11 +138,8 @@ export function PortfolioPage() {
       if (sessionStorage.getItem("portfolio-booted") === "1") {
         isReturnVisitRef.current = true;
         setBootDone(true);
-        // Clear any hash the Nav left in the URL from the previous session so
-        // the hash-scroll effect below doesn't teleport the user on page load.
-        if (window.location.hash) {
-          history.replaceState(null, "", window.location.pathname + window.location.search);
-        }
+        // Keep any hash intact so back-button navigation (e.g. /?module=cybersec#projects)
+        // correctly scrolls the user to the right section on return visits.
       }
     } catch {}
   }, []);
@@ -171,13 +165,16 @@ export function PortfolioPage() {
   useEffect(() => {
     if (!bootDone) return;
     
-    // Initialize AOS after the boot sequence completes
+    // Initialize AOS after the boot sequence completes.
+    // Simple fades: short duration, plain easing, tiny offset so elements
+    // appear as soon as they enter the viewport. once:false (without mirror)
+    // re-arms elements that drop below the viewport, so the fade replays on
+    // every approach — not only on a fresh page load.
     AOS.init({
-      duration: 860,
-      easing: "ease-out-quart",
+      duration: 450,
+      easing: "ease-out",
       once: false,
-      offset: 120,
-      mirror: true,
+      offset: 24,
       anchorPlacement: "top-bottom",
     });
 
@@ -185,6 +182,11 @@ export function PortfolioPage() {
     const id1 = window.setTimeout(() => { ScrollTrigger.refresh(); AOS.refresh(); }, 400);
     // Second pass for lazy-loaded sections
     const id2 = window.setTimeout(() => { AOS.refresh(); }, 1200);
+
+    // When a LazySection swaps its skeleton for real content, AOS must
+    // recalculate element positions or the new elements stay invisible.
+    const onLazySwap = () => { AOS.refresh(); };
+    window.addEventListener("lazysection:swap", onLazySwap);
 
     // Re-trigger AOS on first scroll for any lazily-revealed elements
     let refreshed = false;
@@ -197,6 +199,7 @@ export function PortfolioPage() {
     return () => {
       window.clearTimeout(id1);
       window.clearTimeout(id2);
+      window.removeEventListener("lazysection:swap", onLazySwap);
       window.removeEventListener("scroll", onScroll);
     };
   }, [bootDone]);
@@ -255,6 +258,21 @@ export function PortfolioPage() {
 
   useEffect(() => {
     if (!bootDone) return;
+
+    // After a fresh boot animation, ALWAYS land on the hero: clear any stale
+    // hash and disable the browser's scroll restoration, which would otherwise
+    // jump back to the pre-reload scroll position once content mounts.
+    if (!isReturnVisitRef.current) {
+      try { history.scrollRestoration = "manual"; } catch {}
+      if (window.location.hash) {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      return;
+    }
+
+    // Return visits (boot skipped): honor the hash so back-button navigation
+    // like /?module=cybersec#projects lands on the right section.
     const hash = window.location.hash.replace("#", "");
     if (hash) {
       const tryScroll = (attempts = 0) => {
@@ -267,7 +285,6 @@ export function PortfolioPage() {
           setTimeout(() => tryScroll(attempts + 1), 100);
         }
       };
-      // If already booted (return navigation) start immediately; else wait for content mount
       setTimeout(() => tryScroll(), 80);
     } else {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
@@ -284,9 +301,7 @@ export function PortfolioPage() {
         />
       ) : null}
 
-      <div
-        className={`page-fx theme-wipe min-h-screen bg-bg ${shouldUseLenis(getDeviceProfile()) ? "" : ""}`}
-      >
+      <div className="page-fx theme-wipe min-h-screen bg-bg">
         {ambientFx ? <WaveBackground lowEnd={lowEnd} /> : null}
         {ambientFx ? <IdleAmbientLayer /> : null}
         <div
@@ -310,6 +325,41 @@ export function PortfolioPage() {
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_60%,_rgba(76,158,255,0.02),_transparent_52%)]" />
         </div>
+
+        {/* Gradient mesh — static colour blobs for depth (skipped on low-end GPUs).
+            Must stay STATIC: anything animating under the glass-cards' backdrop-filter
+            forces every visible card to re-blur its backdrop each frame. */}
+        {!lowEnd && (
+        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          <div
+            className="absolute rounded-full"
+            style={{
+              top: "-12%", left: "3%",
+              width: 680, height: 680,
+              background: "radial-gradient(circle, var(--accent), transparent 70%)",
+              opacity: 0.06,
+            }}
+          />
+          <div
+            className="absolute rounded-full"
+            style={{
+              top: "38%", right: "-8%",
+              width: 560, height: 560,
+              background: "radial-gradient(circle, var(--cyber), transparent 70%)",
+              opacity: 0.045,
+            }}
+          />
+          <div
+            className="absolute rounded-full"
+            style={{
+              bottom: "8%", left: "28%",
+              width: 500, height: 500,
+              background: "radial-gradient(circle, var(--eng), transparent 70%)",
+              opacity: 0.05,
+            }}
+          />
+        </div>
+        )}
 
         <SkipLink />
         <ScrollProgress />

@@ -4,6 +4,7 @@ import type { Project } from "@/content/portfolio";
 import { FocusTrap } from "focus-trap-react";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 const WebDemo = dynamic(() => import("./WebDemo").then((m) => m.WebDemo), {
   ssr: false,
@@ -35,6 +36,8 @@ type Props = {
 
 export function DemoHost({ project, open, onClose }: Props) {
   const [ready, setReady] = useState(false);
+
+  useBodyScrollLock(open && Boolean(project));
 
   useEffect(() => {
     if (open) {

@@ -11,7 +11,7 @@ type Props = {
   children: React.ReactNode;
   /** Skeleton card count to show while loading. Default: 3 */
   skeletonCards?: number;
-  /** How far before the viewport edge to trigger load. Default: "900px" */
+  /** How far before the viewport edge to trigger load. Default: "1600px" */
   rootMargin?: string;
   /** Extra className on the wrapper div */
   className?: string;
@@ -26,7 +26,7 @@ type Props = {
 export function LazySection({
   children,
   skeletonCards = 3,
-  rootMargin = "900px",
+  rootMargin = "1600px",
   className = "",
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);

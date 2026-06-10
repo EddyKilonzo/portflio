@@ -3,6 +3,7 @@
 import { FocusTrap } from "focus-trap-react";
 import { useEffect, useRef } from "react";
 import { playSurfaceEnter } from "@/lib/surface-choreography";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 type Props = {
   open: boolean;
@@ -42,6 +43,10 @@ export function AppModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
+  // Lock background scroll while the modal is open so the page can't scroll
+  // behind the (mobile) bottom-sheet and wheel/touch stays inside the panel.
+  useBodyScrollLock(open);
+
   if (!open) return null;
 
   return (
@@ -77,7 +82,7 @@ export function AppModal({
               <div>
                 <h3 className="font-display text-xl text-highlight sm:text-2xl">{title}</h3>
                 {subtitle ? (
-                  <p className="mt-1 font-sans text-sm text-highlight/70">{subtitle}</p>
+                  <p className="mt-1 font-mono text-xs text-highlight/60">{subtitle}</p>
                 ) : null}
               </div>
               <button

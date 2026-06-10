@@ -9,7 +9,6 @@ import {
 } from "@/content/portfolio";
 import { useSkillFilter } from "@/context/SkillFilterContext";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
@@ -22,7 +21,6 @@ import { trackEvent } from "@/lib/analytics";
 import { emitToast } from "@/lib/toast";
 import { playSurfaceEnter } from "@/lib/surface-choreography";
 import { ScriptViewerModal } from "@/components/ui/ScriptViewerModal";
-import { PdfModal } from "@/components/ui/PdfModal";
 import { encodeProjectId } from "@/lib/projectId";
 
 type Module = "cybersec" | "developer";
@@ -37,6 +35,10 @@ function sevColor(s: string) {
   return "bg-eng/10 text-eng border-eng/30";
 }
 function catBadge(cat: string) {
+  if (cat === "detection") return "border-cyber/40 bg-cyber/10 text-cyber";
+  if (cat === "recon")     return "border-eng/40 bg-eng/10 text-eng";
+  if (cat === "analysis")  return "border-accent/40 bg-accent/10 text-accent";
+  if (cat === "reporting") return "border-amber-400/40 bg-amber-400/10 text-amber-300";
   return "border-accent/40 bg-accent/10 text-accent";
 }
 
@@ -168,17 +170,17 @@ export function ProjectsSection() {
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
 
           {/* Heading */}
-          <ScrollReveal from="up">
+          <div data-aos="fade-up" data-aos-offset="160">
             <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
               Projects by Module
             </h2>
-            <p className="mt-2 max-w-2xl font-sans text-sm text-highlight/65">
+            <p className="mt-2 max-w-2xl font-mono text-xs text-highlight/55">
               Two disciplines — applied cybersecurity and full-stack development. Each with its own depth of work, tools, and documented outcomes.
             </p>
-          </ScrollReveal>
+          </div>
 
-          {/* Module tabs */}
-          <div className="mt-8 flex flex-wrap gap-3">
+          {/* Module tabs — horizontally scrollable on mobile */}
+          <div className="mt-8 flex gap-3 overflow-x-auto pb-1 scrollbar-none">
             {([
               { id: "cybersec",  label: "CyberSec",  count: cyberCount, active: "border-cyber/70 bg-cyber/10 text-cyber shadow-[0_0_20px_rgba(255,76,76,0.15)]" },
               { id: "developer", label: "Developer",  count: devCount,   active: "border-eng/70 bg-eng/10 text-eng shadow-[0_0_20px_rgba(76,158,255,0.15)]"    },
@@ -188,9 +190,10 @@ export function ProjectsSection() {
                 type="button"
                 data-aos="fade-up"
                 data-aos-delay={i * 80}
-                data-aos-once="true"
+                data-aos-offset="120"
+               
                 onClick={() => { setActiveModule(m.id); trackEvent("projects_module_change", { module: m.id }); }}
-                className={`rounded-2xl border px-6 py-3 font-mono text-sm font-semibold transition-all duration-300 ${
+                className={`shrink-0 rounded-2xl border px-5 py-2.5 font-mono text-sm font-semibold transition-all duration-300 ${
                   activeModule === m.id
                     ? m.active
                     : "border-highlight/15 text-highlight/50 hover:border-highlight/30 hover:text-highlight/80"
@@ -208,8 +211,8 @@ export function ProjectsSection() {
           {activeModule === "cybersec" && (
             <div className="mt-8 space-y-6">
 
-              {/* Sub-tabs */}
-              <div className="flex flex-wrap gap-2 rounded-2xl border border-highlight/10 bg-surface/10 p-1.5 w-fit">
+              {/* Sub-tabs — scrollable on mobile */}
+              <div className="flex gap-2 overflow-x-auto scrollbar-none rounded-2xl border border-highlight/10 bg-surface/10 p-1.5 w-full sm:w-fit">
                 {([
                   { id: "reports",  label: "Security Reports",count: securityReports.length },
                   { id: "scripts",  label: "Scripts & Tools", count: scripts.length },
@@ -218,7 +221,7 @@ export function ProjectsSection() {
                     key={t.id}
                     type="button"
                     onClick={() => setCyberSubTab(t.id)}
-                    className={`rounded-xl px-4 py-2 font-mono text-xs font-medium transition-all duration-200 ${
+                    className={`shrink-0 rounded-xl px-4 py-2 font-mono text-xs font-medium transition-all duration-200 ${
                       cyberSubTab === t.id
                         ? "bg-accent/15 text-accent border border-accent/40"
                         : "text-highlight/55 hover:text-highlight/80 border border-transparent"
@@ -233,12 +236,12 @@ export function ProjectsSection() {
               {/* ── Projects ── */}
               {cyberSubTab === "projects" && (
                 <div className="space-y-5">
-                  <p className="font-sans text-sm text-highlight/55">
+                  <p className="font-mono text-xs text-highlight/55">
                     Hands-on security labs, offensive simulations, and blue team tooling — each with a full case study and replication guide.
                   </p>
                   <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {cyberProjects.map((p, i) => (
-                      <div key={p.id} data-aos="fade-up" data-aos-delay={i * 60} data-aos-once="true">
+                      <div key={p.id} data-aos="fade-up" data-aos-delay={Math.min(i * 60, 160)}>
                         <ProjectCard
                           project={p}
                           onCaseStudy={() => setCaseProjectId(p.id)}
@@ -257,7 +260,7 @@ export function ProjectsSection() {
               {/* ── Reports ── */}
               {cyberSubTab === "reports" && (
                 <div className="space-y-5">
-                  <p className="font-sans text-sm text-highlight/55">
+                  <p className="font-mono text-xs text-highlight/55">
                     Penetration test and IR reports with full methodology, CVSS-scored findings, remediation guidance, proof-of-concept code, and lessons learned.
                   </p>
                   {/* Report type filters */}
@@ -296,7 +299,7 @@ export function ProjectsSection() {
               {/* ── Scripts ── */}
               {cyberSubTab === "scripts" && (
                 <div className="space-y-5">
-                  <p className="font-sans text-sm text-highlight/55">
+                  <p className="font-mono text-xs text-highlight/55">
                     Custom security tooling with documented purpose, step-by-step replication guides, and production-grade code.
                   </p>
                   {/* Category filters */}
@@ -304,12 +307,13 @@ export function ProjectsSection() {
                     {(["all", "detection", "recon", "analysis", "reporting"] as const).map(cat => {
                       const cnt = cat === "all" ? scripts.length : scripts.filter(s=>s.category===cat).length;
                       if (!cnt && cat !== "all") return null;
+                      const activeCls = cat === "all" ? "border-accent/60 bg-accent/10 text-accent" : catBadge(cat);
                       return (
                         <button key={cat} type="button"
                           onClick={() => setScriptCatFilter(cat)}
                           className={`rounded-full border px-3 py-1 font-mono text-[11px] capitalize transition-all ${
                             scriptCatFilter === cat
-                              ? "border-accent/60 bg-accent/10 text-accent"
+                              ? activeCls
                               : "border-highlight/35 text-highlight/55 hover:border-highlight/55 hover:text-highlight/80"
                           }`}
                         >
@@ -332,15 +336,15 @@ export function ProjectsSection() {
           {activeModule === "developer" && (
             <div className="mt-8 space-y-6">
 
-              {/* Sub-tabs */}
-              <div className="flex flex-wrap gap-2 rounded-2xl border border-highlight/10 bg-surface/10 p-1.5 w-fit">
+              {/* Sub-tabs — scrollable on mobile */}
+              <div className="flex gap-2 overflow-x-auto scrollbar-none rounded-2xl border border-highlight/10 bg-surface/10 p-1.5 w-full sm:w-fit">
                 {([
                   { id: "all",         label: "All Projects" },
                   { id: "engineering", label: "Engineering" },
                   { id: "web",         label: "Web" },
                 ] as const).map(t => (
                   <button key={t.id} type="button" onClick={() => setDevSubTab(t.id)}
-                    className={`rounded-xl px-4 py-2 font-mono text-xs font-medium transition-all duration-200 ${
+                    className={`shrink-0 rounded-xl px-4 py-2 font-mono text-xs font-medium transition-all duration-200 ${
                       devSubTab === t.id
                         ? "bg-eng/20 text-eng border border-eng/40 shadow-[0_0_12px_rgba(76,158,255,0.12)]"
                         : "text-highlight/55 hover:text-highlight/80 border border-transparent"
@@ -382,7 +386,7 @@ export function ProjectsSection() {
               {devFiltered.length ? (
                 <div className="grid gap-6 md:grid-cols-2">
                   {devFiltered.map((p, i) => (
-                    <div key={p.id} data-aos="fade-up" data-aos-delay={i * 50} data-aos-once="true">
+                    <div key={p.id} data-aos="fade-up" data-aos-delay={Math.min(i * 50, 150)}>
                       <ProjectCard
                         project={p}
                         onCaseStudy={() => { setCaseProjectId(p.id); trackEvent("project_case_study_open",{projectId:p.id}); }}
@@ -504,23 +508,56 @@ export function ProjectsSection() {
 }
 
 /* ── Report Card ─────────────────────────────────────────────────────────── */
+const reportTypeLabel: Record<string,string> = { pentest: "Penetration Test", ir: "Incident Response", vuln: "Vulnerability Assessment", network: "Network Infrastructure" };
+const reportRoleRelevance: Record<string,string> = {
+  pentest: "Red Team · Application Security · Security Assessment",
+  ir: "Blue Team · SOC Analyst · Forensics & Response",
+  vuln: "Security Analyst · Vulnerability Management · Risk Assessment",
+  network: "Network Security · Infrastructure · Architecture Review",
+};
+const reportTeamLabel: Record<string, string> = {
+  pentest: "Red Team",
+  network: "Red Team",
+  ir:      "Blue Team",
+  vuln:    "Blue Team",
+};
+const reportTeamBadge: Record<string, string> = {
+  pentest: "border-cyber/40 bg-cyber/10 text-cyber",
+  network: "border-cyber/40 bg-cyber/10 text-cyber",
+  ir:      "border-eng/40 bg-eng/10 text-eng",
+  vuln:    "border-eng/40 bg-eng/10 text-eng",
+};
+const reportCardAccent: Record<string, string> = {
+  pentest: "border-t-cyber/60",
+  network: "border-t-cyber/60",
+  ir:      "border-t-eng/60",
+  vuln:    "border-t-eng/60",
+};
+
 function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
-  const [pdfOpen, setPdfOpen] = useState(false);
-  const typeLabel: Record<string,string> = { pentest: "Pentest", ir: "Incident Response", vuln: "Vuln Assessment", network: "Network Infrastructure" };
+  const [previewOpen, setPreviewOpen] = useState(false);
   const totalFindings = report.findings.length;
   const criticals = report.findings.filter(f=>f.severity==="critical").length;
   const highs     = report.findings.filter(f=>f.severity==="high").length;
+  const mediums   = report.findings.filter(f=>f.severity==="medium").length;
+  const lows      = report.findings.filter(f=>f.severity==="low").length;
+  const sevDot: Record<string,string> = { critical:"bg-cyber", high:"bg-cyber/60", medium:"bg-accent", low:"bg-eng" };
 
   return (
     <>
       <article
-        data-aos="fade-up" data-aos-delay={idx * 70} data-aos-once="true"
-        className="glass-card flex flex-col gap-3 rounded-2xl border border-t-2 border-highlight/10 border-t-accent/60 p-5 sm:p-7 transition-all duration-300 hover:border-accent/25 hover:-translate-y-0.5"
+        data-aos="fade-up" data-aos-delay={Math.min(idx * 40, 120)}
+        className={`glass-card flex flex-col gap-3 rounded-2xl border border-t-2 border-highlight/10 p-5 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] ${reportCardAccent[report.type] ?? "border-t-accent/60"}`}
       >
         <div className="space-y-1">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-accent/70">
-            {typeLabel[report.type]}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-highlight/50">
+              {reportTypeLabel[report.type]}
+            </span>
+            <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold ${reportTeamBadge[report.type] ?? "border-accent/20 bg-accent/5 text-accent/70"}`}>
+              {reportTeamLabel[report.type]}
+            </span>
+          </div>
           <h3 className="font-display text-lg text-highlight leading-snug">{report.title}</h3>
           <p className="font-mono text-[10px] text-highlight/60">{report.timeline}</p>
         </div>
@@ -555,17 +592,89 @@ function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
           {report.tools.length > 5 && <span className="glass-pill text-[10px] shrink-0">+{report.tools.length-5} more</span>}
         </div>
 
-        <div className="mt-auto flex gap-2 pt-1">
+        <div className="mt-auto flex flex-col gap-2 pt-1 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => { setPreviewOpen(true); trackEvent("report_preview_open", { reportId: report.id }); }}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-highlight/20 bg-surface/10 px-4 py-2.5 font-mono text-xs text-highlight/70 transition-all hover:border-highlight/35 hover:text-highlight"
+          >
+            Quick Preview
+          </button>
           <a
             href={`/reports/${encodeProjectId(report.id)}`}
-            className="w-full flex items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent/8 px-4 py-2.5 font-mono text-xs text-accent transition-all hover:bg-accent/15 hover:border-accent/50"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent/8 px-4 py-2.5 font-mono text-xs text-accent transition-all hover:bg-accent/15 hover:border-accent/50"
           >
             Full Report <span className="opacity-60">→</span>
           </a>
         </div>
       </article>
 
-      {/* No more PDF modal here */}
+      {/* Quick preview modal — mirrors the attached report */}
+      <AppModal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title={report.title}
+        subtitle={`${reportTypeLabel[report.type]} · ${report.timeline}`}
+        size="lg"
+        footer={
+          <>
+            <button type="button" className="btn-ghost" onClick={() => setPreviewOpen(false)}>Close</button>
+            <a className="btn-ghost border-accent/60 text-accent" href={`/reports/${encodeProjectId(report.id)}`}>
+              Read Full Report →
+            </a>
+          </>
+        }
+      >
+        <div className="space-y-5 text-sm text-highlight/80">
+          {report.teaser && (
+            <p className="font-sans leading-relaxed italic border-l-2 border-accent/40 pl-3 text-highlight/85">
+              {report.teaser}
+            </p>
+          )}
+
+          {/* Role relevance — for recruiters */}
+          <div className="rounded-xl border border-accent/20 bg-accent/5 px-4 py-3">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-accent/60 mb-1">Role Relevance</p>
+            <p className="font-mono text-sm text-accent/90">{reportRoleRelevance[report.type]}</p>
+          </div>
+
+          {/* Severity breakdown */}
+          <div className="flex flex-wrap gap-2">
+            {criticals > 0 && <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${sevColor("critical")}`}>{criticals} Critical</span>}
+            {highs > 0 && <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${sevColor("high")}`}>{highs} High</span>}
+            {mediums > 0 && <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${sevColor("medium")}`}>{mediums} Medium</span>}
+            {lows > 0 && <span className="rounded-full border border-eng/30 bg-eng/10 text-eng px-2.5 py-0.5 font-mono text-[10px]">{lows} Low</span>}
+          </div>
+
+          <div>
+            <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-highlight/60">Scope</p>
+            <p className="leading-relaxed text-highlight/75 line-clamp-2">{report.scope}</p>
+          </div>
+
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-highlight/60">Key Findings</p>
+            <ul className="space-y-1.5">
+              {report.findings.slice(0, 4).map(f => (
+                <li key={f.id} className="flex items-start gap-2">
+                  <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${sevDot[f.severity]}`} aria-hidden />
+                  <span className="text-xs leading-snug text-highlight/80">
+                    {f.title}
+                    {f.cvss && <span className="ml-1.5 font-mono text-[10px] text-highlight/45">CVSS {f.cvss}</span>}
+                  </span>
+                </li>
+              ))}
+              {report.findings.length > 4 && (
+                <li className="pl-3.5 font-mono text-[10px] text-highlight/45">+{report.findings.length - 4} more in the full report</li>
+              )}
+            </ul>
+          </div>
+
+          <div className="rounded-xl border border-highlight/10 bg-surface/10 p-4">
+            <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-highlight/60">Outcome</p>
+            <p className="text-xs leading-relaxed text-highlight/80">{report.outcome}</p>
+          </div>
+        </div>
+      </AppModal>
     </>
   );
 }
@@ -579,7 +688,7 @@ function ScriptCard({ script, idx }: { script: SecurityScript; idx: number }) {
   return (
     <>
       <article
-        data-aos="fade-up" data-aos-delay={idx * 70} data-aos-once="true"
+        data-aos="fade-up" data-aos-delay={Math.min(idx * 70, 140)}
         className="glass-card flex flex-col gap-3 rounded-2xl border border-highlight/10 p-5 sm:p-7 transition-all duration-300 hover:border-accent/25 hover:-translate-y-0.5"
       >
         {/* Header */}

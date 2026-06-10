@@ -3,16 +3,13 @@
 import { profile } from "@/content/portfolio";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { animate } from "animejs";
-import { useRef, useState } from "react";
-import { MagneticButton } from "@/components/ui/MagneticButton";
+import { useEffect, useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { AppModal } from "@/components/ui/AppModal";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { trackEvent } from "@/lib/analytics";
 import { emitToast } from "@/lib/toast";
-
-const steps = ["name", "email", "message", "done"] as const;
 
 const availStyle: Record<string, string> = {
   open: "text-emerald-300 border-emerald-400/40",
@@ -77,44 +74,32 @@ function SocialIcon({ label }: { label: SocialLabel }) {
 
 export function ContactSection() {
   const sectionRef = useSectionReveal(10);
-  const [stepIdx, setStepIdx] = useState(0);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [projectType, setProjectType] = useState("web-platform");
-  const [budget, setBudget] = useState("1k-3k");
-  const [timeline, setTimeline] = useState("2-4-weeks");
-  const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState<string | null>(null);
-  const [sentModalOpen, setSentModalOpen] = useState(false);
+  const [name, setName]                   = useState("");
+  const [nameConfirmed, setNameConfirmed] = useState(false);
+  const [message, setMessage]             = useState("");
+  const [sent, setSent]                   = useState(false);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
-  const [pendingLink, setPendingLink] = useState<{ label: string; href: string } | null>(
-    null,
-  );
-  const planeRef = useRef<SVGSVGElement>(null);
+  const [pendingLink, setPendingLink]     = useState<{ label: string; href: string } | null>(null);
+  const planeRef     = useRef<SVGSVGElement>(null);
+  const textareaRef  = useRef<HTMLTextAreaElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
-  const step = steps[stepIdx]!;
+  const waText = `Hi Eddy! I found your portfolio.\n\nFrom: ${name.trim()}\n\n${message.trim()}`;
+  const waUrl  = `https://wa.me/${profile.social.whatsapp}?text=${encodeURIComponent(waText)}`;
+  const canSend = nameConfirmed && message.trim().length >= 3;
 
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  // Focus the textarea after the CSS slide-in animation starts (avoids focus-on-invisible bug)
+  useEffect(() => {
+    if (!nameConfirmed) return;
+    const id = window.setTimeout(() => textareaRef.current?.focus(), 80);
+    return () => window.clearTimeout(id);
+  }, [nameConfirmed]);
 
-  const getValidationError = (): string | null => {
-    if (!name.trim() || name.trim().length < 2) return "Please enter your name (at least 2 characters).";
-    if (!email.trim() || !EMAIL_RE.test(email.trim())) return "Please enter a valid email address.";
-    if (!message.trim() || message.trim().length < 10) return "Message must be at least 10 characters.";
-    if (message.trim().length > 3000) return "Message is too long (max 3000 characters).";
-    return null;
+  const confirmName = () => {
+    if (name.trim().length >= 2) setNameConfirmed(true);
   };
 
-  const submit = () => {
-    const validationErr = getValidationError();
-    if (validationErr) { setSendError(validationErr); return; }
-
-    setSendError(null);
-
-    const waText = `Hi Eddy! Portfolio contact.\n\nName: ${name}\nEmail: ${email}\nProject: ${projectType} | Budget: ${budget} | Timeline: ${timeline}\n\nMessage:\n${message}`;
-    const waUrl = `https://wa.me/${profile.social.whatsapp}?text=${encodeURIComponent(waText)}`;
-
+  const firePlane = () => {
     const el = planeRef.current;
     if (el) {
       el.style.opacity = "1";
@@ -127,18 +112,8 @@ export function ContactSection() {
         ease: "in(4)",
       });
     }
-
-    trackEvent("contact_submit_whatsapp", {
-      hasName: Boolean(name),
-      hasEmail: Boolean(email),
-      messageLength: message.length,
-      projectType,
-      budget,
-      timeline,
-    });
-
+    trackEvent("contact_submit_whatsapp", { messageLength: message.length });
     setSent(true);
-    window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -152,9 +127,10 @@ export function ContactSection() {
       <DecorNetwork />
 <div className="relative z-10 mx-auto max-w-xl px-6">
   <ParallaxDrift speed={0.1}>
-    <h2 
+    <h2
       className="glitch-hover mb-6 font-display text-4xl text-highlight md:text-5xl"
       data-aos="fade-up"
+      data-aos-offset="0"
     >
       Contact
     </h2>
@@ -163,182 +139,118 @@ export function ContactSection() {
   <div
     data-aos="fade-up"
     data-aos-delay="100"
+    data-aos-offset="0"
     className={`glass-pill mb-6 inline-flex items-center gap-2 ${availStyle[profile.availability]}`}
   >
     {profile.availability}
   </div>
 
-  <div 
+  <div
     className="glass-card space-y-4 rounded-2xl p-6"
     data-aos="fade-up"
     data-aos-delay="200"
+    data-aos-offset="0"
   >
-...
-          <div className="space-y-3">
-            <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-highlight">
-              Hey — what&apos;s your name?
-            </div>
-            {name ? (
-              <div className="mr-auto w-fit max-w-[90%] rounded-2xl border border-highlight/25 bg-surface/20 px-4 py-2.5 text-highlight">
-                {name}
-              </div>
-            ) : null}
-            {stepIdx >= 1 ? (
-              <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-highlight">
-                Email for reply?
-              </div>
-            ) : null}
-            {email ? (
-              <div className="mr-auto w-fit max-w-[90%] rounded-2xl border border-highlight/25 bg-surface/20 px-4 py-2.5 text-highlight">
-                {email}
-              </div>
-            ) : null}
-            {stepIdx >= 2 ? (
-              <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-highlight">
-                What are we building?
-              </div>
-            ) : null}
-            {message ? (
-              <div className="mr-auto w-fit max-w-[90%] rounded-2xl border border-highlight/25 bg-surface/20 px-4 py-2.5 text-highlight">
-                {message}
-              </div>
-            ) : null}
-            {sent ? (
-              <div className="ml-auto w-fit max-w-[90%] rounded-2xl bg-surface/40 px-4 py-2.5 text-emerald-300">
-                WhatsApp opened — your message is pre-filled. Send it there!
-              </div>
-            ) : null}
-          </div>
+          {!sent ? (
+            <div className="space-y-4">
 
-          {step === "name" ? (
-            <div className="flex gap-2">
-              <input
-                autoFocus
-                className="glass-field flex-1 text-highlight placeholder:text-highlight/50"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => { setName(e.target.value); setSendError(null); }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && name.trim().length >= 2) setStepIdx(1);
-                }}
-              />
+              {/* ── Name field ── */}
+              <div>
+                <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-highlight/50">
+                  Your name
+                </label>
+                <div className="flex gap-2">
+                  {/* No autoFocus: focusing on lazy-mount scroll-jumped the
+                      whole page to the contact section a few seconds after load */}
+                  <input
+                    ref={nameInputRef}
+                    className={`glass-field flex-1 text-highlight placeholder:text-highlight/35 transition-all duration-300 ${nameConfirmed ? "opacity-60 pointer-events-none" : ""}`}
+                    placeholder="e.g. Alex Johnson"
+                    value={name}
+                    disabled={nameConfirmed}
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") confirmName(); }}
+                  />
+                  {!nameConfirmed && (
+                    <button
+                      type="button"
+                      onClick={confirmName}
+                      disabled={name.trim().length < 2}
+                      className="shrink-0 rounded-xl border border-highlight/20 bg-surface/20 px-4 font-mono text-xs text-highlight/70 transition-all hover:border-highlight/40 hover:text-highlight disabled:cursor-not-allowed disabled:opacity-30"
+                    >
+                      Next →
+                    </button>
+                  )}
+                  {nameConfirmed && (
+                    <span className="flex shrink-0 items-center rounded-xl border border-accent/30 bg-accent/8 px-3 font-mono text-xs text-accent">
+                      ✓
+                    </span>
+                  )}
+                </div>
+                {!nameConfirmed && name.trim().length >= 2 && (
+                  <p className="mt-1 font-mono text-[10px] text-highlight/35 animate-pulse">
+                    Press Enter or Next →
+                  </p>
+                )}
+              </div>
+
+              {/* ── Message field — animates in after name confirmed ── */}
+              {nameConfirmed && (
+                <div style={{ animation: "contact-msg-in 480ms cubic-bezier(0.22,1,0.36,1) both" }} className="space-y-3">
+                  <div>
+                    <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-widest text-highlight/50">
+                      Your message
+                    </label>
+                    <textarea
+                      ref={textareaRef}
+                      className="glass-field h-32 w-full resize-none text-highlight placeholder:text-highlight/35"
+                      placeholder="What would you like to discuss?"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      maxLength={3000}
+                    />
+                    <div className="mt-1 flex justify-end">
+                      <span className={`font-mono text-[10px] ${message.length > 2800 ? "text-amber-400" : "text-highlight/30"}`}>
+                        {message.length}/3000
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Send button — fades between states via CSS */}
+                  <a
+                    href={canSend ? waUrl : "#"}
+                    target={canSend ? "_blank" : undefined}
+                    rel="noreferrer"
+                    onClick={canSend ? firePlane : (e) => e.preventDefault()}
+                    aria-disabled={!canSend}
+                    className={`flex w-full items-center justify-center gap-2.5 rounded-xl border py-3 font-mono text-sm font-semibold transition-all duration-300 ${
+                      canSend
+                        ? "border-emerald-500/50 bg-emerald-500/12 text-emerald-300 hover:border-emerald-400/70 hover:bg-emerald-500/20 hover:text-emerald-200 active:scale-[0.98] cursor-pointer"
+                        : "border-highlight/10 bg-surface/10 text-highlight/25 cursor-not-allowed"
+                    }`}
+                  >
+                    <SocialIcon label="WhatsApp" />
+                    {canSend ? "Send via WhatsApp" : "Type a message first"}
+                  </a>
+                </div>
+              )}
+
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/8 px-4 py-3">
+                <p className="font-mono text-sm text-emerald-300">WhatsApp opened ✓</p>
+                <p className="mt-1 font-mono text-[11px] text-emerald-400/70">Tap Send in the app to deliver your message.</p>
+              </div>
               <button
                 type="button"
-                className="btn-ghost shrink-0"
-                disabled={name.trim().length < 2}
-                onClick={() => setStepIdx(1)}
+                className="font-mono text-[11px] text-highlight/40 transition-colors hover:text-highlight/70"
+                onClick={() => { setName(""); setNameConfirmed(false); setMessage(""); setSent(false); }}
               >
-                Next
+                Send another →
               </button>
             </div>
-          ) : null}
-          {step === "email" ? (
-            <div className="flex gap-2">
-              <input
-                autoFocus
-                type="email"
-                className="glass-field flex-1 text-highlight placeholder:text-highlight/50"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setSendError(null); }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) setStepIdx(2);
-                }}
-              />
-              <button
-                type="button"
-                className="btn-ghost shrink-0"
-                disabled={!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)}
-                onClick={() => setStepIdx(2)}
-              >
-                Next
-              </button>
-            </div>
-          ) : null}
-          {step === "message" ? (
-            <>
-              <div className="grid gap-2 sm:grid-cols-3">
-                <label className="space-y-1">
-                  <span className="font-mono text-[11px] text-highlight/60">Project type</span>
-                  <select
-                    value={projectType}
-                    onChange={(e) => setProjectType(e.target.value)}
-                    className="glass-field w-full px-2 text-xs text-highlight"
-                  >
-                    <option value="web-platform">Web Platform</option>
-                    <option value="security-review">Security Review</option>
-                    <option value="full-stack-feature">Full-stack Feature Build</option>
-                    <option value="ux-performance">UX + Performance Pass</option>
-                  </select>
-                </label>
-                <label className="space-y-1">
-                  <span className="font-mono text-[11px] text-highlight/60">Budget</span>
-                  <select
-                    value={budget}
-                    onChange={(e) => setBudget(e.target.value)}
-                    className="glass-field w-full px-2 text-xs text-highlight"
-                  >
-                    <option value="under-1k">Under $1k</option>
-                    <option value="1k-3k">$1k - $3k</option>
-                    <option value="3k-8k">$3k - $8k</option>
-                    <option value="8k-plus">$8k+</option>
-                  </select>
-                </label>
-                <label className="space-y-1">
-                  <span className="font-mono text-[11px] text-highlight/60">Timeline</span>
-                  <select
-                    value={timeline}
-                    onChange={(e) => setTimeline(e.target.value)}
-                    className="glass-field w-full px-2 text-xs text-highlight"
-                  >
-                    <option value="1-2-weeks">1-2 weeks</option>
-                    <option value="2-4-weeks">2-4 weeks</option>
-                    <option value="1-2-months">1-2 months</option>
-                    <option value="flexible">Flexible</option>
-                  </select>
-                </label>
-              </div>
-              <textarea
-                autoFocus
-                className="glass-field h-28 w-full text-highlight placeholder:text-highlight/50"
-                placeholder="Message (min 10 characters)"
-                value={message}
-                onChange={(e) => { setMessage(e.target.value); setSendError(null); }}
-              />
-              <div className="flex items-center justify-between gap-2">
-                <span className={`font-mono text-[10px] ${message.length > 2800 ? "text-amber-400" : "text-highlight/60"}`}>
-                  {message.length}/3000
-                </span>
-              </div>
-              {sendError ? (
-                <p role="alert" className="rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2 font-mono text-xs text-red-300">
-                  {sendError}
-                </p>
-              ) : null}
-              <MagneticButton
-                className="btn-ghost hotspot-magnetic w-full"
-                disabled={!message.trim()}
-                onClick={() => { setStepIdx(3); submit(); }}
-              >
-                Send via WhatsApp
-              </MagneticButton>
-              <div className="flex items-center gap-3 py-1">
-                <span className="h-px flex-1 bg-highlight/10" />
-                <span className="font-mono text-[10px] text-highlight/55">or</span>
-                <span className="h-px flex-1 bg-highlight/10" />
-              </div>
-              <a
-                href={`https://wa.me/${profile.social.whatsapp}?text=${encodeURIComponent("Hi Eddy! I found your portfolio and would love to connect.")}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => trackEvent("contact_whatsapp_direct")}
-                className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 py-2.5 font-mono text-sm text-emerald-400 transition-all hover:border-emerald-500/60 hover:bg-emerald-500/15"
-              >
-                <SocialIcon label="WhatsApp" />
-                Chat on WhatsApp
-              </a>
-            </>
-          ) : null}
+          )}
         </div>
 
         {/* Direct contact profiles */}
@@ -423,71 +335,6 @@ export function ContactSection() {
       >
         <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
       </svg>
-
-      <AppModal
-        open={sentModalOpen}
-        onClose={() => setSentModalOpen(false)}
-        title="Message queued"
-        subtitle="Thanks for reaching out. I usually reply within 24 hours."
-        footer={
-          <>
-            <button
-              type="button"
-              className="btn-ghost"
-              onClick={() => setSentModalOpen(false)}
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              className="btn-ghost"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(profile.email);
-                  emitToast("Copied", "success");
-                } catch {
-                  emitToast("Copy failed", "warning");
-                }
-              }}
-            >
-              Copy Email
-            </button>
-            <button
-              type="button"
-              className="btn-ghost border-accent/60 text-accent"
-              onClick={() => {
-                setSentModalOpen(false);
-                trackEvent("contact_email_direct");
-                window.open(`mailto:${profile.email}`, "_blank", "noopener,noreferrer");
-                emitToast("Opened email client", "success");
-              }}
-            >
-              Email Directly
-            </button>
-          </>
-        }
-      >
-        <div className="space-y-3 font-mono text-sm text-highlight/85">
-          <p>
-            Name: <span className="text-highlight">{name || "N/A"}</span>
-          </p>
-          <p>
-            Email: <span className="text-highlight">{email || "N/A"}</span>
-          </p>
-          <p>
-            Project type: <span className="text-highlight">{projectType}</span>
-          </p>
-          <p>
-            Budget: <span className="text-highlight">{budget}</span>
-          </p>
-          <p>
-            Timeline: <span className="text-highlight">{timeline}</span>
-          </p>
-          <p className="rounded-lg border border-highlight/15 bg-surface/20 p-3 text-highlight/80">
-            {message || "No message body provided."}
-          </p>
-        </div>
-      </AppModal>
 
       <AppModal
         open={linkModalOpen}

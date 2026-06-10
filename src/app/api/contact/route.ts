@@ -2,6 +2,32 @@ import { NextRequest, NextResponse } from "next/server";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+// Best-effort, per-instance rate limiting. Serverless instances are ephemeral and
+// not shared, so this is a basic abuse speed-bump — not a hard guarantee. A real
+// deployment under load should front this with an edge/WAF rate limiter.
+const RATE_LIMIT = { windowMs: 60_000, max: 5 };
+const hits = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < RATE_LIMIT.windowMs);
+  recent.push(now);
+  hits.set(ip, recent);
+  // Opportunistic cleanup so the map can't grow unbounded.
+  if (hits.size > 5000) {
+    hits.forEach((times, key) => {
+      if (times.every((t: number) => now - t >= RATE_LIMIT.windowMs)) hits.delete(key);
+    });
+  }
+  return recent.length > RATE_LIMIT.max;
+}
+
+function clientIp(req: NextRequest): string {
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0]!.trim();
+  return req.headers.get("x-real-ip") ?? "unknown";
+}
+
 function escapeHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")
@@ -30,11 +56,24 @@ function validate(body: unknown): string | null {
 }
 
 export async function POST(req: NextRequest) {
+  if (isRateLimited(clientIp(req))) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment and try again." },
+      { status: 429 },
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Malformed JSON." }, { status: 400 });
+  }
+
+  // Honeypot: a hidden field real users never fill. Bots that auto-fill every input
+  // get a silent success so they don't retry or probe the validation rules.
+  if (body && typeof body === "object" && typeof (body as Record<string, unknown>).company === "string" && (body as Record<string, unknown>).company !== "") {
+    return NextResponse.json({ ok: true });
   }
 
   const validationError = validate(body);

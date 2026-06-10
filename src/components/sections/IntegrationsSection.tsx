@@ -7,6 +7,7 @@ import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { MagneticAnchor, MagneticButton } from "@/components/ui/MagneticButton";
 import { useEffect, useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
+import { StateCard } from "@/components/ui/StateCard";
 import dynamic from "next/dynamic";
 
 const GlobeScene = dynamic(
@@ -263,7 +264,7 @@ export function IntegrationsSection() {
 
             {weeks.length > 0 ? (
               <GitHubHeatmap weeks={weeks} />
-            ) : (
+            ) : (gh?.heatmap ?? []).length > 0 ? (
               <div className="mt-4 flex flex-wrap gap-1">
                 {(gh?.heatmap ?? []).slice(0, 112).map((c, i) => (
                   <div
@@ -274,6 +275,12 @@ export function IntegrationsSection() {
                   />
                 ))}
               </div>
+            ) : (
+              <StateCard
+                compact
+                title="Activity loading…"
+                message="Connect a GitHub token to see live contribution data."
+              />
             )}
 
             <p className="mt-4 font-mono text-xs text-highlight/50">Pinned</p>

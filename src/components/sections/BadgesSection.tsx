@@ -37,8 +37,8 @@ function BadgeCard({ badge, index = 0 }: { badge: BadgeEntry; index?: number }) 
       <article
         className="glass-card flex flex-col items-center gap-4 rounded-2xl p-6 text-center"
         data-aos="fade-up"
-        data-aos-delay={index * 80}
-        data-aos-once="true"
+        data-aos-delay={Math.min(index * 80, 160)}
+       
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={badge.src} alt={badge.title} className="h-28 w-28 rounded-full object-cover shadow-md" />
@@ -68,8 +68,8 @@ function CertCard({ cert, index = 0 }: { cert: Cert; index?: number }) {
       <article
         className="glass-card flex flex-col gap-3 rounded-2xl p-4 sm:p-6"
         data-aos="fade-up"
-        data-aos-delay={index * 80}
-        data-aos-once="true"
+        data-aos-delay={Math.min(index * 80, 160)}
+       
       >
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -125,6 +125,7 @@ export function BadgesSection() {
   const tabBtn = (id: "certs" | "badges", label: string) => (
     <button
       key={id}
+
       type="button"
       onClick={() => setTab(id)}
       className={`rounded-lg border px-5 py-2 font-mono text-xs transition-colors ${
@@ -211,7 +212,7 @@ export function BadgesSection() {
 
         {/* Platforms — always visible */}
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="0" data-aos-once="true">
+          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="0">
             <a
               href="https://tryhackme.com/p/eddy.kilonzo"
               target="_blank"
@@ -229,7 +230,7 @@ export function BadgesSection() {
             </a>
           </AnimeHoverBloom>
 
-          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="80" data-aos-once="true">
+          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="80">
             <a
               href="https://github.com/EddyKilonzo"
               target="_blank"
@@ -247,7 +248,7 @@ export function BadgesSection() {
             </a>
           </AnimeHoverBloom>
 
-          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="160" data-aos-once="true">
+          <AnimeHoverBloom data-aos="fade-up" data-aos-delay="160">
             <a
               href={profile.social.htb}
               target="_blank"

@@ -35,7 +35,7 @@ export function NowSection() {
               key={item.title}
               className="glass-card rounded-2xl p-8 min-h-[220px] flex flex-col"
               data-aos="fade-up"
-              data-aos-delay={idx * 80}
+              data-aos-delay={Math.min(idx * 80, 160)}
             >
               <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
                 {item.title}

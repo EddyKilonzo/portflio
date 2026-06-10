@@ -93,8 +93,8 @@ export function BlogSection() {
               <article
                 key={post.id}
                 data-aos="fade-up"
-                data-aos-delay={i * 60}
-                data-aos-once="true"
+                data-aos-delay={Math.min(i * 60, 120)}
+               
                 className="glass-card flex flex-col gap-3 rounded-2xl p-6 transition-all hover:-translate-y-0.5"
               >
                 <div className="flex items-center justify-between gap-2">

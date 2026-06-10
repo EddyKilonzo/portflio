@@ -12,8 +12,11 @@ const LINES = [
   "Establishing session...",
   "Access granted. Welcome.",
 ];
-const TYPE_DELAY_MS = 6;
-const LINE_PAUSE_MS = 40;
+/* Type several chars per tick: one React render per character (~200 renders)
+   starved the main thread while the app hydrated behind the overlay. */
+const CHARS_PER_TICK = 3;
+const TYPE_DELAY_MS = 16;
+const LINE_PAUSE_MS = 30;
 const POST_COMPLETE_PAUSE_MS = 150;
 const EXIT_DURATION_MS = 400;
 
@@ -66,9 +69,9 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
         const line = LINES[i]!;
         setStatusText(line.replace(/\.\.\.$/, ""));
 
-        for (let c = 0; c <= line.length; c++) {
+        for (let c = 0; c <= line.length; c += CHARS_PER_TICK) {
           if (cancelled) return;
-          const partial = line.slice(0, c);
+          const partial = line.slice(0, Math.min(c, line.length));
           setLinesShown((prev) => {
             const next = [...prev];
             next[i] = partial;
@@ -76,6 +79,12 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
           });
           await sleep(TYPE_DELAY_MS);
         }
+        // Ensure the full line lands even when length isn't a multiple of the tick
+        setLinesShown((prev) => {
+          const next = [...prev];
+          next[i] = line;
+          return next;
+        });
 
         await sleep(LINE_PAUSE_MS);
         setProgress(Math.round(((i + 1) / totalSteps) * 100));

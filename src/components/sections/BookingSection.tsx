@@ -50,7 +50,7 @@ export function BookingSection() {
                 key={pkg.name}
                 className="glass-card rounded-2xl p-5"
                 data-aos="fade-up"
-                data-aos-delay={idx * 70}
+                data-aos-delay={Math.min(idx * 70, 140)}
               >
                 <h3 className="font-display text-xl text-highlight">{pkg.name}</h3>
                 <p className="mt-2 text-sm text-highlight/75">{pkg.detail}</p>

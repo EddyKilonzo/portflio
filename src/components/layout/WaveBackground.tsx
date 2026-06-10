@@ -31,10 +31,9 @@ export function WaveBackground({ lowEnd = false }: Props) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = Math.min(
-      typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,
-      lowEnd ? 1 : 2,
-    );
+    // dpr capped at 1: the lines are near-invisible ambience — retina raster
+    // quadruples the per-frame paint cost for no perceptible gain.
+    const dpr = 1;
 
     let raf = 0;
     const start = performance.now();
@@ -53,11 +52,21 @@ export function WaveBackground({ lowEnd = false }: Props) {
     const ro = new ResizeObserver(resize);
     ro.observe(document.documentElement);
 
-    const stepX = lowEnd ? 6 : 3;
-    const bands = lowEnd ? 5 : 8;
+    const stepX = lowEnd ? 6 : 4;
+    const bands = lowEnd ? 5 : 6;
     const speedScale = reducedMotion ? 0 : 1;
 
+    // Throttle to ~30fps: the drift is slow, and a full-viewport canvas
+    // repaint every 16ms competes with scrolling on the main thread.
+    const FRAME_MS = 33;
+    let lastDraw = 0;
+
     const draw = (now: number) => {
+      if (!reducedMotion && now - lastDraw < FRAME_MS) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      lastDraw = now;
       const w = window.innerWidth;
       const h = window.innerHeight;
       const elapsed = (now - start) * 0.001;

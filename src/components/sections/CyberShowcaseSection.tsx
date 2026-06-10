@@ -88,7 +88,7 @@ export function CyberShowcaseSection() {
             Security &amp; Research
           </h2>
           <p
-            className="mb-10 max-w-2xl font-sans text-sm text-highlight/65"
+            className="mb-10 max-w-2xl font-mono text-xs text-highlight/55"
             data-aos="fade-up"
             data-aos-delay="80"
           >

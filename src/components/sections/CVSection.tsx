@@ -47,7 +47,7 @@ export function CVSection() {
               <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl print:text-black">
                 CV
               </h2>
-              <p className="mt-2 font-sans text-sm text-highlight/60">
+              <p className="mt-2 font-mono text-xs text-highlight/55">
                 Cybersecurity analyst track — print or download as PDF.
               </p>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 interface Props {
   filename: string;
@@ -10,12 +11,14 @@ interface Props {
   onClose: () => void;
 }
 
-export function ScriptViewerModal({ filename, title, language = "python", isOpen, onClose }: Props) {
+export function ScriptViewerModal({ filename, language = "python", isOpen, onClose }: Props) {
   const [rawCode, setRawCode] = useState<string | null>(null);
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  useBodyScrollLock(isOpen);
 
   useEffect(() => {
     if (!isOpen) return;

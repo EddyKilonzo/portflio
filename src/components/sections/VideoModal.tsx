@@ -4,6 +4,7 @@ import type { Project } from "@/content/portfolio";
 import { animate } from "animejs";
 import { FocusTrap } from "focus-trap-react";
 import { useEffect, useRef } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 function detectVideoKind(
   url: string,
@@ -40,6 +41,8 @@ export function VideoModal({ project, open, onClose }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
   const plyrRef = useRef<PlyrInstance | null>(null);
   const mountRef = useRef<HTMLDivElement>(null);
+
+  useBodyScrollLock(open && Boolean(project));
 
   useEffect(() => {
     if (!open || !project || !mountRef.current) return;

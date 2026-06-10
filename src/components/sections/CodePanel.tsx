@@ -4,6 +4,7 @@ import { projectCodeSamples } from "@/content/portfolio";
 import gsap from "gsap";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { codeToHtml } from "shiki";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 type Props = {
   projectId: string | null;
@@ -15,6 +16,8 @@ export function CodePanel({ projectId, open, onClose }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [fileIdx, setFileIdx] = useState(0);
   const [html, setHtml] = useState("");
+
+  useBodyScrollLock(open && Boolean(projectId));
 
   const files = useMemo(
     () => (projectId ? projectCodeSamples[projectId] ?? [] : []),
@@ -86,7 +89,7 @@ export function CodePanel({ projectId, open, onClose }: Props) {
           </button>
         </div>
         <div className="flex min-h-0 flex-1">
-          <aside className="w-44 shrink-0 border-r border-highlight/10 p-2 font-mono text-xs">
+          <aside className="w-28 shrink-0 overflow-y-auto border-r border-highlight/10 p-2 font-mono text-xs sm:w-44">
             {files.map((f, i) => (
               <button
                 key={f.path}

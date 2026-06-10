@@ -52,16 +52,11 @@ function SkillLogo({ name, size = 20 }: { name: string; size?: number }) {
 
 type SkillItem = { name: string; level: number; related: string[] };
 
+/* ── Marquee chip (original view) ──────────────────────────────────────── */
 function SkillChip({
-  skill,
-  group,
-  isActive,
-  onClick,
+  skill, group, isActive, onClick,
 }: {
-  skill: SkillItem;
-  group: "developer" | "cyber";
-  isActive: boolean;
-  onClick: () => void;
+  skill: SkillItem; group: "developer" | "cyber"; isActive: boolean; onClick: () => void;
 }) {
   const borderColor = isActive
     ? group === "cyber" ? "border-cyber/70 bg-cyber/12 text-cyber" : "border-eng/70 bg-eng/12 text-eng"
@@ -86,31 +81,18 @@ function SkillChip({
 }
 
 function MarqueeRow({
-  skills,
-  group,
-  direction = "left",
-  speed = 38,
-  activeSkill,
-  onPick,
+  skills, group, direction = "left", speed = 38, activeSkill, onPick,
 }: {
-  skills: SkillItem[];
-  group: "developer" | "cyber";
-  direction?: "left" | "right";
-  speed?: number;
-  activeSkill: string | null;
-  onPick: (name: string) => void;
+  skills: SkillItem[]; group: "developer" | "cyber"; direction?: "left" | "right";
+  speed?: number; activeSkill: string | null; onPick: (name: string) => void;
 }) {
   const doubled = [...skills, ...skills];
   const animName = direction === "left" ? "marquee-left" : "marquee-right";
-
   return (
     <div className="overflow-hidden py-1" aria-label={`${group} skills`}>
       <div
         className="flex gap-3 hover:[animation-play-state:paused]"
-        style={{
-          width: "max-content",
-          animation: `${animName} ${speed}s linear infinite`,
-        }}
+        style={{ width: "max-content", animation: `${animName} ${speed}s linear infinite` }}
       >
         {doubled.map((skill, i) => (
           <SkillChip
@@ -126,10 +108,96 @@ function MarqueeRow({
   );
 }
 
+/* ── Bubble view ────────────────────────────────────────────────────────── */
+const FLOAT_ANIMS = ["float-a", "float-b", "float-c"] as const;
+
+function SkillBubble({
+  skill, group, index, isActive, onClick,
+}: {
+  skill: SkillItem; group: "developer" | "cyber"; index: number;
+  isActive: boolean; onClick: () => void;
+}) {
+  const size = Math.max(64, Math.min(96, Math.round(skill.level * 0.62 + 34)));
+  const anim = FLOAT_ANIMS[index % 3];
+  const dur = 3 + (index % 4) * 0.55;
+  const delay = ((index * 0.17) % 2.2).toFixed(2);
+
+  const activeRing = group === "cyber"
+    ? "rgba(255,76,76,0.7)" : "rgba(76,158,255,0.7)";
+  const activeBg = group === "cyber"
+    ? "rgba(255,76,76,0.14)" : "rgba(76,158,255,0.14)";
+  const activeText = group === "cyber" ? "var(--cyber)" : "var(--eng)";
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={`${skill.name} — ${skill.level}%`}
+      className="flex flex-col items-center justify-center rounded-full transition-transform duration-300 hover:scale-110 focus-visible:outline-none"
+      style={{
+        width: size,
+        height: size,
+        flexShrink: 0,
+        background: isActive ? activeBg : "rgba(30,74,58,0.55)",
+        border: `1.5px solid ${isActive ? activeRing : "rgba(168,217,184,0.16)"}`,
+        boxShadow: isActive ? `0 0 22px ${activeRing}` : "none",
+        animation: `${anim} ${dur}s ease-in-out ${delay}s infinite`,
+      }}
+    >
+      <SkillLogo name={skill.name} size={size > 75 ? 22 : 17} />
+      <span
+        className="mt-1 font-mono leading-tight text-center px-1 overflow-hidden"
+        style={{
+          fontSize: size > 80 ? "8px" : "7px",
+          color: isActive ? activeText : "rgba(216,236,224,0.65)",
+          maxWidth: "85%",
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          display: "block",
+        }}
+      >
+        {skill.name}
+      </span>
+    </button>
+  );
+}
+
+function BubbleCloud({
+  skills, group, activeSkill, onPick, label,
+}: {
+  skills: SkillItem[]; group: "developer" | "cyber";
+  activeSkill: string | null; onPick: (name: string) => void; label: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <span className={`font-mono text-[10px] uppercase tracking-widest ${group === "cyber" ? "text-cyber/70" : "text-eng/70"}`}>
+          {label}
+        </span>
+        <span className={`h-px flex-1 ${group === "cyber" ? "bg-cyber/15" : "bg-eng/15"}`} />
+        <span className="font-mono text-[10px] text-highlight/60">{skills.length} skills</span>
+      </div>
+      <div className="flex flex-wrap gap-3 items-center justify-start py-3">
+        {skills.map((skill, i) => (
+          <SkillBubble
+            key={skill.name}
+            skill={skill}
+            group={group}
+            index={i}
+            isActive={activeSkill === skill.name}
+            onClick={() => onPick(skill.name)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Section ────────────────────────────────────────────────────────────── */
 export function SkillsSection() {
   const sectionRef = useSectionReveal(1);
   const { activeSkill, setActiveSkill } = useSkillFilter();
-
+  const [viewMode, setViewMode] = useState<"marquee" | "bubbles">("marquee");
   const [modalSkill, setModalSkill] = useState<(SkillItem & { group: "developer" | "cyber" }) | null>(null);
 
   const developerSkills = useMemo(() => {
@@ -141,10 +209,7 @@ export function SkillsSection() {
   const cyberSkills = useMemo(() => skillsByRole.cyber, []);
 
   const handlePick = (name: string, group: "developer" | "cyber") => {
-    if (activeSkill === name) {
-      setActiveSkill(null);
-      return;
-    }
+    if (activeSkill === name) { setActiveSkill(null); return; }
     const pool = group === "developer" ? developerSkills : cyberSkills;
     const skill = pool.find(s => s.name === name);
     if (skill) setModalSkill({ ...skill, group });
@@ -162,82 +227,89 @@ export function SkillsSection() {
         <DecorNetwork />
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6">
-          {/* Heading */}
+          {/* Heading + view toggle */}
           <ParallaxDrift speed={0.1}>
-            <div data-aos="fade-up" data-aos-once="true">
-              <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
-                Skills
-              </h2>
-              <p className="mt-2 max-w-2xl font-sans text-sm text-highlight/65">
-                Click any skill to filter the projects section. Hover a row to pause the scroll.
-              </p>
+            <div data-aos="fade-up" className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
+                  Skills
+                </h2>
+                <p className="mt-2 font-mono text-xs text-highlight/55">
+                  Click any skill to see matching projects ↓
+                </p>
+              </div>
+              {/* View mode toggle */}
+              <div className="flex rounded-xl border border-highlight/10 bg-surface/10 p-1 gap-1">
+                {(["marquee", "bubbles"] as const).map(mode => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setViewMode(mode)}
+                    className={`rounded-lg px-3 py-1.5 font-mono text-[11px] transition-all duration-200 capitalize ${
+                      viewMode === mode
+                        ? "bg-accent/20 text-accent border border-accent/40"
+                        : "text-highlight/50 hover:text-highlight/75 border border-transparent"
+                    }`}
+                  >
+                    {mode === "marquee" ? "⟵ Scroll" : "◎ Bubbles"}
+                  </button>
+                ))}
+              </div>
             </div>
           </ParallaxDrift>
 
           {/* Active filter banner */}
           {activeSkill && (
             <div
-              data-aos="fade-up" data-aos-once="true"
+              data-aos="fade-up"
               className="mt-5 flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/8 px-4 py-2.5 w-fit"
             >
-              <span className="font-mono text-xs text-accent">Filtering projects by: <strong>{activeSkill}</strong></span>
-              <button
-                type="button"
-                onClick={() => setActiveSkill(null)}
-                className="font-mono text-[11px] text-accent/70 hover:text-accent transition-colors"
-              >
+              <span className="font-mono text-xs text-accent">Filtering by: <strong>{activeSkill}</strong></span>
+              <button type="button" onClick={() => setActiveSkill(null)} className="font-mono text-[11px] text-accent/70 hover:text-accent transition-colors">
                 ✕ clear
               </button>
             </div>
           )}
 
-          {/* Developer marquee */}
-          <div className="mt-10 space-y-3" data-aos="fade-up" data-aos-delay="80" data-aos-once="true">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-eng/70">Developer</span>
-              <span className="h-px flex-1 bg-eng/15" />
-              <span className="font-mono text-[10px] text-highlight/60">{developerSkills.length} skills</span>
-            </div>
-            <MarqueeRow
-              skills={developerSkills}
-              group="developer"
-              direction="left"
-              speed={65}
-              activeSkill={activeSkill}
-              onPick={(name) => handlePick(name, "developer")}
-            />
-          </div>
+          {viewMode === "marquee" ? (
+            <>
+              {/* Developer marquee */}
+              <div className="mt-10 space-y-3" data-aos="fade-up" data-aos-delay="80">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-eng/70">Developer</span>
+                  <span className="h-px flex-1 bg-eng/15" />
+                  <span className="font-mono text-[10px] text-highlight/60">{developerSkills.length} skills</span>
+                </div>
+                <MarqueeRow skills={developerSkills} group="developer" direction="left" speed={65} activeSkill={activeSkill} onPick={(n) => handlePick(n, "developer")} />
+              </div>
 
-          {/* Cyber marquee */}
-          <div className="mt-8 space-y-3" data-aos="fade-up" data-aos-delay="160" data-aos-once="true">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-cyber/70">CyberSec</span>
-              <span className="h-px flex-1 bg-cyber/15" />
-              <span className="font-mono text-[10px] text-highlight/60">{cyberSkills.length} skills</span>
+              {/* Cyber marquee */}
+              <div className="mt-8 space-y-3" data-aos="fade-up" data-aos-delay="160">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-cyber/70">CyberSec</span>
+                  <span className="h-px flex-1 bg-cyber/15" />
+                  <span className="font-mono text-[10px] text-highlight/60">{cyberSkills.length} skills</span>
+                </div>
+                <MarqueeRow skills={cyberSkills} group="cyber" direction="right" speed={60} activeSkill={activeSkill} onPick={(n) => handlePick(n, "cyber")} />
+              </div>
+            </>
+          ) : (
+            <div className="mt-10 space-y-8" data-aos="fade-up">
+              <BubbleCloud skills={developerSkills} group="developer" activeSkill={activeSkill} onPick={(n) => handlePick(n, "developer")} label="Developer" />
+              <BubbleCloud skills={cyberSkills} group="cyber" activeSkill={activeSkill} onPick={(n) => handlePick(n, "cyber")} label="CyberSec" />
             </div>
-            <MarqueeRow
-              skills={cyberSkills}
-              group="cyber"
-              direction="right"
-              speed={60}
-              activeSkill={activeSkill}
-              onPick={(name) => handlePick(name, "cyber")}
-            />
-          </div>
+          )}
 
           {/* Stats row */}
           <StaggerReveal
             className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4"
-            stagger={0.1}
-            from="up"
-            distance={20}
-            start="top 88%"
+            stagger={0.1} from="up" distance={20} start="top 88%"
           >
             {[
               { label: "Total Skills", value: String(developerSkills.length + cyberSkills.length) },
-              { label: "Developer", value: String(developerSkills.length) },
-              { label: "CyberSec",  value: String(cyberSkills.length) },
-              { label: "Projects",  value: String(projects.length) },
+              { label: "Developer",    value: String(developerSkills.length) },
+              { label: "CyberSec",     value: String(cyberSkills.length) },
+              { label: "Projects",     value: String(projects.length) },
             ].map(({ label, value }) => (
               <div key={label} className="glass-card rounded-xl px-4 py-3 text-center">
                 <p className="font-display text-2xl text-highlight">{value}</p>
@@ -248,14 +320,8 @@ export function SkillsSection() {
         </div>
 
         <style>{`
-          @keyframes marquee-left {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
-          }
-          @keyframes marquee-right {
-            from { transform: translateX(-50%); }
-            to   { transform: translateX(0); }
-          }
+          @keyframes marquee-left  { from { transform: translateX(0);    } to { transform: translateX(-50%); } }
+          @keyframes marquee-right { from { transform: translateX(-50%); } to { transform: translateX(0);    } }
         `}</style>
       </section>
 

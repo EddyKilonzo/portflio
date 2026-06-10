@@ -27,9 +27,10 @@ export function AboutSection() {
 
       <div className="relative z-10 mx-auto grid max-w-6xl gap-4 px-6 md:grid-cols-6">
         <ParallaxDrift speed={0.15} className="md:col-span-4 md:row-span-2">
-          <div 
+          <div
             className="glass-card h-full rounded-2xl p-6"
             data-aos="fade-up"
+            data-aos-offset="160"
           >
             <h2 className="mb-4 font-display text-4xl text-highlight md:text-5xl">
               About
@@ -62,10 +63,11 @@ export function AboutSection() {
         </ParallaxDrift>
 
         <ParallaxDrift speed={0.25} className="md:col-span-2">
-          <aside 
+          <aside
             className="glass-card rounded-2xl border border-highlight/15 p-5"
             data-aos="fade-up"
             data-aos-delay="100"
+            data-aos-offset="160"
           >
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">
               Availability
@@ -91,6 +93,7 @@ export function AboutSection() {
             className="glass-card rounded-2xl border border-highlight/15 p-5"
             data-aos="fade-up"
             data-aos-delay="200"
+            data-aos-offset="160"
           >
             <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-accent">Active Learning</p>
             <div className="mt-3 space-y-3">

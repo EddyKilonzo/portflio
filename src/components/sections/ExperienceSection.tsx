@@ -72,7 +72,7 @@ export function ExperienceSection() {
             <h2 className="glitch-hover font-display text-4xl text-highlight md:text-5xl">
               Experience
             </h2>
-            <p className="mt-2 max-w-3xl font-sans text-sm text-highlight/60">
+            <p className="mt-2 max-w-3xl font-mono text-xs text-highlight/55">
               Career timeline — from support foundations to software engineering and security leadership.
             </p>
           </div>
@@ -119,7 +119,7 @@ function ExpCard({
     <article
       className="exp-card relative"
       data-aos="fade-up"
-      data-aos-delay={index * 60}
+      data-aos-delay={Math.min(index * 60, 120)}
     >
       {/* Timeline dot */}
       <span
@@ -135,7 +135,13 @@ function ExpCard({
       >
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <h3 className="font-display text-xl text-highlight">{ex.title}</h3>
+            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+              <h3 className="font-display text-xl text-highlight">{ex.title}</h3>
+              {/* Year pill — visible on mobile (desktop shows it in the timeline margin) */}
+              <span className="inline-block rounded border border-highlight/15 bg-surface/20 px-2 py-0.5 font-mono text-[10px] text-highlight/70 md:hidden">
+                {yearLabel}
+              </span>
+            </div>
             <p className="font-mono text-sm text-accent">{ex.company}</p>
             <p className="mt-0.5 font-mono text-xs text-highlight/65">
               {ex.duration} · {ex.location}

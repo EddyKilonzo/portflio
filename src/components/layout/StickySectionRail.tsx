@@ -75,6 +75,7 @@ export function StickySectionRail() {
   const [visited,  setVisited]  = useState<Set<string>>(() => new Set(["hero"]));
   const [menuOpen, setMenuOpen] = useState(false);
   const [entered,  setEntered]  = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const ringRef      = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevIdxRef   = useRef(0);
@@ -84,6 +85,19 @@ export function StickySectionRail() {
   useEffect(() => {
     const id = setTimeout(() => setEntered(true), 200);
     return () => clearTimeout(id);
+  }, []);
+
+  // Overall scroll progress
+  useEffect(() => {
+    const onScroll = () => {
+      const winScroll = window.scrollY;
+      const height = document.documentElement.scrollHeight - window.innerHeight;
+      if (height <= 0) return;
+      setScrollProgress(Math.min(1, Math.max(0, winScroll / height)));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Track active section
@@ -159,26 +173,31 @@ export function StickySectionRail() {
   const activeIdx     = NAV_SECTIONS.findIndex((s) => s.id === active);
   const activeSection = NAV_SECTIONS[activeIdx] ?? NAV_SECTIONS[0]!;
 
+  const progressArcCircumference = 2 * Math.PI * RING_R;
+  const progressOffset = progressArcCircumference * (1 - scrollProgress);
+
   return (
     <aside
       ref={containerRef}
       role="navigation"
       aria-label="Dial section navigation"
-      className="fixed bottom-8 right-4 z-[9996] hidden lg:block"
+      className="fixed bottom-32 right-4 z-[9996] hidden lg:block"
       style={{
-        animation: entered ? "dial-entry 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards" : "none",
+        animation: entered ? "dial-entry 0.85s cubic-bezier(0.34,1.56,0.64,1) forwards" : "none",
         opacity: entered ? undefined : 0,
       }}
     >
       {/* ── Section popup menu ─────────────────────────────────────────── */}
       <div
-        className="absolute bottom-full right-0 mb-3 w-48 overflow-hidden rounded-xl border border-white/20 bg-black/85 shadow-2xl backdrop-blur-md"
+        className="absolute bottom-full right-0 mb-3 w-52 overflow-hidden rounded-2xl border border-highlight/12 bg-surface/90 shadow-glass backdrop-blur-xl"
         style={{
           transformOrigin: "bottom right",
-          transition: "opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1)",
+          transition: "opacity 0.24s cubic-bezier(0.22,1,0.36,1), transform 0.24s cubic-bezier(0.34,1.56,0.64,1)",
           opacity: menuOpen ? 1 : 0,
-          transform: menuOpen ? "scale(1) translateY(0)" : "scale(0.88) translateY(8px)",
+          transform: menuOpen ? "scale(1) translateY(0)" : "scale(0.86) translateY(10px)",
           pointerEvents: menuOpen ? "auto" : "none",
+          maxHeight: "min(420px, 70vh)",
+          overflowY: "auto",
         }}
         role="menu"
       >
@@ -193,29 +212,45 @@ export function StickySectionRail() {
                 role="menuitem"
                 aria-current={isActive ? "true" : undefined}
                 onClick={() => jumpTo(s.id)}
-                className={`flex w-full items-center gap-2.5 px-4 py-1.5 text-left font-mono text-[11px] transition-all duration-150 ${
+                className={`flex w-full items-center gap-2.5 px-4 py-2 text-left font-mono text-[11px] transition-all duration-150 ${
                   isActive
-                    ? "bg-white/8 text-white"
+                    ? "text-highlight"
                     : isVisited
-                      ? "text-white/55 hover:bg-white/5 hover:text-white/85"
-                      : "text-white/25 hover:bg-white/5 hover:text-white/50"
+                      ? "text-highlight/50 hover:bg-highlight/5 hover:text-highlight/80"
+                      : "text-highlight/22 hover:bg-highlight/4 hover:text-highlight/45"
                 }`}
+                style={isActive ? { background: "rgba(var(--rgb-accent),0.12)" } : {}}
               >
                 <span
                   className="inline-block h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-150"
                   style={{
                     background: isActive
-                      ? "#ffffff"
-                      : isVisited ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.12)",
-                    boxShadow: isActive ? "0 0 6px rgba(255,255,255,0.8)" : "none",
+                      ? "var(--accent)"
+                      : isVisited ? "rgba(var(--rgb-accent),0.40)" : "rgba(var(--rgb-highlight),0.10)",
+                    boxShadow: isActive ? "0 0 6px var(--accent)" : "none",
                   }}
                 />
                 <span className="flex-1">{s.label}</span>
-                <span className="text-white/20">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-highlight/18">{String(i + 1).padStart(2, "0")}</span>
               </button>
             );
           })}
         </div>
+      </div>
+
+      {/* ── Section label — floats to the left of the dial ────────────── */}
+      <div
+        className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 whitespace-nowrap"
+        style={{
+          opacity: menuOpen ? 0 : 1,
+          transform: `translateY(-50%) translateX(${menuOpen ? "6px" : "0"})`,
+          transition: "opacity 0.2s ease, transform 0.2s ease",
+          animation: entered ? "dial-label-in 0.5s ease 0.65s both" : "none",
+        }}
+      >
+        <span className="font-mono text-[10px] text-highlight tracking-wide" style={{ textShadow: "0 1px 8px rgba(var(--rgb-surface),0.8)" }}>
+          {activeSection.label}
+        </span>
       </div>
 
       {/* ── Dial ───────────────────────────────────────────────────────── */}
@@ -249,23 +284,24 @@ export function StickySectionRail() {
                       width: dotSize + 8,
                       height: dotSize + 8,
                       left: "50%", top: "50%",
-                      animation: "dial-dot-ring 1.8s ease-out infinite",
-                      border: "1px solid rgba(255,255,255,0.5)",
+                      animation: "dial-dot-ring 1.9s ease-out infinite",
+                      border: "1px solid var(--accent)",
+                      opacity: 0.7,
                     }}
                   />
                 )}
                 <span
-                  className="block rounded-full transition-all duration-300"
+                  className="block rounded-full"
                   style={{
                     width: dotSize,
                     height: dotSize,
                     background: isActive
-                      ? "#ffffff"
-                      : isVisited ? "rgba(255,255,255,0.50)" : "rgba(255,255,255,0.16)",
+                      ? "var(--accent)"
+                      : isVisited ? "rgba(var(--rgb-accent),0.45)" : "rgba(var(--rgb-highlight),0.14)",
                     boxShadow: isActive
-                      ? "0 0 10px rgba(255,255,255,0.8), 0 0 4px rgba(255,255,255,0.5)"
+                      ? "0 0 10px var(--accent), 0 0 4px var(--accent)"
                       : "none",
-                    transition: "width 0.3s, height 0.3s, box-shadow 0.3s",
+                    transition: "width 0.35s cubic-bezier(0.34,1.56,0.64,1), height 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, background 0.3s ease",
                   }}
                 />
               </div>
@@ -282,38 +318,56 @@ export function StickySectionRail() {
           aria-hidden
         >
           {/* Outer halo */}
-          <circle cx={CX} cy={CY} r={RING_R + 12}
-            fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+          <circle cx={CX} cy={CY} r={RING_R + 14}
+            fill="none" stroke="rgba(var(--rgb-highlight),0.03)" strokeWidth="1" />
 
           {/* Dashed track groove */}
           <circle cx={CX} cy={CY} r={RING_R}
-            fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5"
-            strokeDasharray="3 5" />
+            fill="none" stroke="rgba(var(--rgb-highlight),0.08)" strokeWidth="1.5"
+            strokeDasharray="3 6" />
+
+          {/* Progress arc — accent fill, rotates from 12 o'clock */}
+          <circle
+            cx={CX} cy={CY} r={RING_R}
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray={progressArcCircumference}
+            strokeDashoffset={progressOffset}
+            style={{
+              transformOrigin: `${CX}px ${CY}px`,
+              transform: "rotate(-90deg)",
+              transition: "stroke-dashoffset 0.1s linear",
+              opacity: 0.85,
+              filter: "drop-shadow(0 0 6px var(--accent))",
+            }}
+          />
 
           {/* Tick marks between sections */}
           {Array.from({ length: N }).map((_, i) => {
             const midAngle = ((dotAngleDeg(i) + dotAngleDeg((i + 1) % N)) / 2) * (Math.PI / 180);
-            const r1 = RING_R - 5, r2 = RING_R + 5;
+            const r1 = RING_R - 4, r2 = RING_R + 4;
             return (
               <line key={i}
                 x1={CX + r1 * Math.cos(midAngle)} y1={CY + r1 * Math.sin(midAngle)}
                 x2={CX + r2 * Math.cos(midAngle)} y2={CY + r2 * Math.sin(midAngle)}
-                stroke="rgba(255,255,255,0.07)" strokeWidth="0.5" />
+                stroke="rgba(var(--rgb-highlight),0.06)" strokeWidth="0.5" />
             );
           })}
 
-          {/* Fixed indicator at 12 o'clock — pulsing */}
+          {/* Fixed indicator at 12 o'clock — accent-colored, pulsing */}
           <polygon
-            points={`${CX - 4},${CY - RING_R - 14} ${CX + 4},${CY - RING_R - 14} ${CX},${CY - RING_R - 5}`}
-            fill="rgba(255,255,255,0.80)"
-            style={{ animation: "dial-indicator-pulse 2.4s ease-in-out infinite" }}
+            points={`${CX - 3.5},${CY - RING_R - 13} ${CX + 3.5},${CY - RING_R - 13} ${CX},${CY - RING_R - 5}`}
+            fill="var(--accent)"
+            style={{ animation: "dial-indicator-pulse 2.6s ease-in-out infinite" }}
           />
 
-          {/* Center bezel */}
+          {/* Center bezel — glass look */}
           <circle cx={CX} cy={CY} r={40}
-            fill="rgba(5,14,9,0.92)" stroke="rgba(255,255,255,0.16)" strokeWidth="1" />
-          <circle cx={CX} cy={CY} r={35}
-            fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+            fill="rgba(var(--rgb-surface),0.95)" stroke="rgba(var(--rgb-highlight),0.22)" strokeWidth="1.2" />
+          <circle cx={CX} cy={CY} r={36}
+            fill="none" stroke="rgba(var(--rgb-accent),0.25)" strokeWidth="0.5" />
         </svg>
 
         {/* Center click zone — opens menu */}
@@ -324,24 +378,24 @@ export function StickySectionRail() {
           onClick={toggleMenu}
           className="absolute flex flex-col items-center justify-center rounded-full focus-visible:outline-none"
           style={{
-            left: CX - 35, top: CY - 35,
-            width: 70, height: 70,
+            left: CX - 36, top: CY - 36,
+            width: 72, height: 72,
             cursor: "pointer",
-            transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)",
-            transform: menuOpen ? "scale(0.92)" : "scale(1)",
+            transition: "transform 0.28s cubic-bezier(0.34,1.56,0.64,1)",
+            transform: menuOpen ? "scale(0.90)" : "scale(1)",
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = menuOpen ? "scale(0.92)" : "scale(1.08)"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = menuOpen ? "scale(0.92)" : "scale(1)"; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = menuOpen ? "scale(0.90)" : "scale(1.10)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = menuOpen ? "scale(0.90)" : "scale(1)"; }}
         >
-          <span className="block font-mono text-[8px] leading-none text-white/38">
+          <span className="block font-mono text-[9px] leading-none" style={{ color: "var(--accent)", opacity: 0.7 }}>
             {String(activeIdx + 1).padStart(2, "0")}/{String(N).padStart(2, "0")}
           </span>
-          <span className="mt-1 block font-mono text-[9px] font-bold leading-none text-white">
+          <span className="mt-0.5 block max-w-[52px] truncate text-center font-mono text-[9px] font-bold leading-none text-highlight">
             {activeSection.shortLabel}
           </span>
           <span
-            className="mt-1.5 block font-mono text-[7px] leading-none text-white/30 transition-transform duration-200"
-            style={{ transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+            className="mt-1.5 block font-mono text-[7px] leading-none transition-transform duration-200"
+            style={{ color: "var(--accent)", opacity: 0.5, transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)" }}
           >
             ▲
           </span>

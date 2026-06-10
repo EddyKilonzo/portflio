@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 interface Props {
   pdfUrl: string;
@@ -11,6 +12,8 @@ interface Props {
 
 export function PdfModal({ pdfUrl, title, isOpen, onClose }: Props) {
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  useBodyScrollLock(isOpen);
 
   useEffect(() => {
     if (!isOpen) return;

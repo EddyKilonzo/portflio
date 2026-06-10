@@ -4,6 +4,7 @@ import { ACCENT_PRESETS, useTheme } from "@/context/ThemeContext";
 import { FocusTrap } from "focus-trap-react";
 import { useEffect } from "react";
 import { emitToast } from "@/lib/toast";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 type Props = {
   open: boolean;
@@ -65,6 +66,8 @@ export function SettingsPanel({ open, onClose }: Props) {
     ambientFx,
     setAmbientFx,
   } = useTheme();
+
+  useBodyScrollLock(open);
 
   useEffect(() => {
     if (!open) return;

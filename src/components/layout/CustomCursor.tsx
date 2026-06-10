@@ -76,18 +76,25 @@ export function CustomCursor() {
       aria-hidden
     >
       {/* Trail particles */}
-      {Array.from({ length: TRAIL_COUNT }, (_, i) => (
-        <div
-          key={i}
-          ref={(el) => { trailRefs.current[i] = el; }}
-          className="pointer-events-none fixed left-0 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-highlight will-change-transform"
-          style={{
-            width: `${Math.max(2, 7 - i)}px`,
-            height: `${Math.max(2, 7 - i)}px`,
-            opacity: (1 - i / TRAIL_COUNT) * 0.35,
-          }}
-        />
-      ))}
+      {Array.from({ length: TRAIL_COUNT }, (_, i) => {
+        const trailColor = i === 0 ? "var(--accent)" : i === 1 ? "rgba(168,217,184,0.9)" : i === 2 ? "var(--cyber)" : "var(--highlight)";
+        const glowColor  = i === 0 ? "var(--accent)" : i === 2 ? "var(--cyber)" : "rgba(168,217,184,0.4)";
+        const sz = Math.max(2, 9 - i);
+        return (
+          <div
+            key={i}
+            ref={(el) => { trailRefs.current[i] = el; }}
+            className="pointer-events-none fixed left-0 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full will-change-transform"
+            style={{
+              width: sz,
+              height: sz,
+              opacity: (1 - i / TRAIL_COUNT) * 0.62,
+              background: trailColor,
+              boxShadow: i < 4 ? `0 0 ${10 - i * 2}px ${glowColor}` : "none",
+            }}
+          />
+        );
+      })}
       {/* Main dot */}
       <div
         ref={dot}

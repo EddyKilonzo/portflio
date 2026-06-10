@@ -23,7 +23,9 @@
       "Bash(dir C:\\\\Users\\\\Admin\\\\Documents\\\\Projects\\\\portfolio\\\\public\\\\projects_docs *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git diff *)",
+      "Bash(git show *)"
     ]
   }
 }

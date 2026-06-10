@@ -169,7 +169,7 @@ export function Nav() {
         className={`glass-nav fixed left-0 right-0 top-0 z-[9997] transition-all duration-300 ${scrolled ? "py-0.5 shadow-[0_6px_24px_rgba(0,0,0,0.22)]" : ""} ${hidden ? "-translate-y-full" : "translate-y-0"}`}
         data-aos="fade-down"
         data-aos-duration="600"
-        data-aos-once="true"
+       
       >
         <nav aria-label="Primary" className={`mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 transition-all ${scrolled ? "py-2" : "py-3"}`}>
           <a

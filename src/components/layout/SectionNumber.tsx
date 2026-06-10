@@ -33,7 +33,7 @@ export function SectionNumber({ n, sectionId }: Props) {
   return (
     <div
       ref={ref}
-      className="pointer-events-none absolute -left-2 top-8 z-0 select-none font-display text-[8rem] font-bold leading-none text-highlight/[0.07] will-change-transform md:text-[11rem]"
+      className="pointer-events-none absolute -left-2 top-8 z-0 select-none font-display text-[8rem] font-bold leading-none text-highlight/[0.1] will-change-transform md:text-[11rem]"
       aria-hidden
     >
       {n}

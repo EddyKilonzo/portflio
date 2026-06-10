@@ -106,7 +106,7 @@ function CvssBadge({ score }: { score: string }) {
   );
 }
 
-async function FindingCard({ finding, reportId, index = 0 }: { finding: ReportFinding; reportId: string; index?: number }) {
+function FindingCard({ finding, reportId, index = 0 }: { finding: ReportFinding; reportId: string; index?: number }) {
   const pocLang = finding.poc?.includes("msf6") ? "bash"
     : finding.poc?.includes("import ") ? "python"
     : finding.poc?.includes("curl") ? "bash"
@@ -118,8 +118,8 @@ async function FindingCard({ finding, reportId, index = 0 }: { finding: ReportFi
       id={`finding-${reportId}-${finding.id}`}
       className={`scroll-mt-28 rounded-xl border border-l-4 border-highlight/10 bg-surface/10 p-5 space-y-4 ${sevBorderL[finding.severity]}`}
       data-aos="fade-up"
-      data-aos-delay={index * 60}
-      data-aos-once="true"
+      data-aos-delay={Math.min(index * 60, 120)}
+     
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1.5">
@@ -175,7 +175,7 @@ async function FindingCard({ finding, reportId, index = 0 }: { finding: ReportFi
 
 function Section({ icon, title, children, delay = 100 }: { icon: string; title: string; children: React.ReactNode; delay?: number }) {
   return (
-    <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up" data-aos-delay={delay} data-aos-once="true">
+    <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up" data-aos-delay={delay}>
       <h2 className="mb-4 flex items-center gap-2 font-display text-xl text-highlight">
         <span className="text-accent">{icon}</span>
         {title}
@@ -185,7 +185,7 @@ function Section({ icon, title, children, delay = 100 }: { icon: string; title: 
   );
 }
 
-export default async function ReportDetailPage({ params }: Props) {
+export default function ReportDetailPage({ params }: Props) {
   const realId = decodeProjectId(params.id);
   const report = securityReports.find((r) => r.id === realId) ?? securityReports.find((r) => r.id === params.id);
   
@@ -219,7 +219,7 @@ export default async function ReportDetailPage({ params }: Props) {
 
         {/* Back nav */}
         <nav data-aos="fade-down">
-          <BackButton label="← Back to Reports" />
+          <BackButton label="← Back to Reports" href="/?module=cybersec&cybertab=reports#projects" />
         </nav>
 
         {/* Header */}
@@ -301,8 +301,8 @@ export default async function ReportDetailPage({ params }: Props) {
                 key={stat.label}
                 className="rounded-xl border border-highlight/10 bg-surface/10 px-4 py-3 text-center"
                 data-aos="zoom-in"
-                data-aos-delay={80 + i * 50}
-                data-aos-once="true"
+                data-aos-delay={Math.min(80 + i * 50, 180)}
+               
               >
                 <p className={`font-mono font-bold uppercase ${stat.cls ?? "text-2xl text-accent"}`}>{stat.value}</p>
                 <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-highlight/65">{stat.label}</p>
@@ -311,13 +311,13 @@ export default async function ReportDetailPage({ params }: Props) {
           </div>
 
           {/* Role relevance */}
-          <div className="mb-5 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3" data-aos="fade-up" data-aos-delay="160" data-aos-once="true">
+          <div className="mb-5 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3" data-aos="fade-up" data-aos-delay="160">
             <p className="font-mono text-[10px] uppercase tracking-widest text-accent/60 mb-1">Role Relevance</p>
             <p className="font-mono text-sm text-accent/90">{typeRoleRelevance[report.type]}</p>
           </div>
 
           {/* Skills demonstrated */}
-          <div className="mb-5" data-aos="fade-up" data-aos-delay="200" data-aos-once="true">
+          <div className="mb-5" data-aos="fade-up" data-aos-delay="200">
             <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-highlight/60">Skills Demonstrated</p>
             <div className="flex flex-wrap gap-2">
               {(typeSkills[report.type] ?? []).map((skill) => (
@@ -369,8 +369,8 @@ export default async function ReportDetailPage({ params }: Props) {
                   key={step}
                   className="flex gap-5"
                   data-aos="fade-left"
-                  data-aos-delay={i * 60}
-                  data-aos-once="true"
+                  data-aos-delay={Math.min(i * 60, 120)}
+                 
                 >
                   <div className="flex flex-col items-center shrink-0">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-accent/10">
@@ -392,8 +392,8 @@ export default async function ReportDetailPage({ params }: Props) {
         </section>
 
         {/* Findings */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3" data-aos="fade-up">
+        <section>
+          <div className="flex items-center gap-3 mb-6" data-aos="fade-up">
             <h2 className="font-display text-2xl text-highlight">
               <span className="text-accent mr-2">⊘</span>Findings
             </h2>
@@ -402,36 +402,44 @@ export default async function ReportDetailPage({ params }: Props) {
             </span>
           </div>
 
-          {/* Findings nav */}
-          <nav className="glass-card rounded-xl p-4" data-aos="fade-up" data-aos-delay="60" data-aos-once="true">
-            <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-highlight/60">
-              Jump to finding
-            </p>
-            <ul className="space-y-1.5">
-              {report.findings.map((f, i) => (
-                <li key={f.id} data-aos="fade-right" data-aos-delay={i * 40} data-aos-once="true">
-                  <a
-                    href={`#finding-${report.id}-${f.id}`}
-                    className="flex items-center gap-2 rounded px-2 py-1 font-mono text-xs text-highlight/70 hover:bg-surface/20 hover:text-highlight transition-colors"
-                  >
-                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${sevDot[f.severity]}`} />
-                    {f.title}
-                    <span className="ml-auto font-mono text-[10px] uppercase opacity-50">{f.severity}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {/* Two-col on desktop: sticky nav sidebar + findings list */}
+          <div className="lg:grid lg:grid-cols-[220px_1fr] lg:gap-6 lg:items-start">
+            {/* Findings nav — sticky on lg */}
+            <nav
+              className="glass-card rounded-xl p-4 mb-6 lg:mb-0 lg:sticky lg:top-24"
+              data-aos="fade-up"
+              data-aos-delay="60"
+             
+            >
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-highlight/60">
+                Jump to finding
+              </p>
+              <ul className="space-y-1.5">
+                {report.findings.map((f) => (
+                  <li key={f.id}>
+                    <a
+                      href={`#finding-${report.id}-${f.id}`}
+                      className="flex items-center gap-2 rounded px-2 py-1 font-mono text-xs text-highlight/70 hover:bg-surface/20 hover:text-highlight transition-colors"
+                    >
+                      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${sevDot[f.severity]}`} />
+                      <span className="truncate">{f.title}</span>
+                      <span className="ml-auto shrink-0 font-mono text-[10px] uppercase opacity-50">{f.severity}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-          <div className="space-y-6">
-            {report.findings.map((f, i) => (
-              <FindingCard key={f.id} finding={f} reportId={report.id} index={i} />
-            ))}
+            <div className="space-y-6">
+              {report.findings.map((f, i) => (
+                <FindingCard key={f.id} finding={f} reportId={report.id} index={i} />
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Outcome */}
-        <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up" data-aos-once="true">
+        <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up">
           <h2 className="mb-4 flex items-center gap-2 font-display text-xl text-highlight">
             <span className="text-accent">◈</span>
             Outcome &amp; Impact
@@ -440,7 +448,7 @@ export default async function ReportDetailPage({ params }: Props) {
         </section>
 
         {/* Lessons learned */}
-        <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up" data-aos-once="true">
+        <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up">
           <h2 className="mb-6 flex items-center gap-2 font-display text-xl text-highlight">
             <span className="text-accent">◉</span>
             What I Learned
@@ -451,8 +459,8 @@ export default async function ReportDetailPage({ params }: Props) {
                 key={l}
                 className="flex gap-4 rounded-xl border border-highlight/10 bg-surface/10 p-4"
                 data-aos="fade-up"
-                data-aos-delay={i * 60}
-                data-aos-once="true"
+                data-aos-delay={Math.min(i * 60, 120)}
+               
               >
                 <span className="shrink-0 font-mono text-sm font-bold text-accent/60">{String(i + 1).padStart(2, "0")}</span>
                 <p className="text-sm text-highlight/80 leading-relaxed">{l}</p>
@@ -467,8 +475,8 @@ export default async function ReportDetailPage({ params }: Props) {
         )}
 
         {/* Footer */}
-        <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6" data-aos="fade-up" data-aos-once="true">
-          <BackButton label="← All Reports" />
+        <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6" data-aos="fade-up">
+          <BackButton label="← All Reports" href="/?module=cybersec&cybertab=reports#projects" />
         </footer>
       </article>
     </main>

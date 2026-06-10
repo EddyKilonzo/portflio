@@ -64,7 +64,7 @@ export default async function ScriptDetailPage({ params }: Props) {
 
         {/* Back nav */}
         <nav className="flex flex-wrap items-center gap-3">
-          <BackButton label="← Back to Scripts" />
+          <BackButton label="← Back to Scripts" href="/?module=cybersec&cybertab=scripts#projects" />
           {prev && (
             <a href={`/scripts/${prev.id}`} className="glass-pill text-highlight/60 hover:text-highlight">
               ← {prev.title}
@@ -184,7 +184,7 @@ export default async function ScriptDetailPage({ params }: Props) {
 
         {/* Footer nav */}
         <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6">
-          <BackButton label="← All Scripts" />
+          <BackButton label="← All Scripts" href="/?module=cybersec&cybertab=scripts#projects" />
           {prev && (
             <a href={`/scripts/${prev.id}`} className="glass-pill text-highlight/60 hover:text-highlight">
               ← {prev.title}

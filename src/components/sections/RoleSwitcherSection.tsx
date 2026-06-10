@@ -21,9 +21,9 @@ const RoleParticles = dynamic(
   { ssr: false },
 );
 
-const modes: { id: RoleMode; label: string; icon: string }[] = [
-  { id: "engineering", label: "Developer", icon: "⚙" },
-  { id: "cyber",       label: "CyberSec",  icon: "🛡" },
+const modes: { id: RoleMode; label: string; icon: string; tagline: string }[] = [
+  { id: "engineering", label: "Developer", icon: "⚙", tagline: "Build it" },
+  { id: "cyber",       label: "CyberSec",  icon: "🛡", tagline: "Defend it" },
 ];
 
 const roleTheme: Record<RoleMode, {
@@ -72,10 +72,10 @@ const roleInsights: Record<
   }
 > = {
   cyber: {
-    focus: "Detection engineering, incident response, and practical offensive simulation.",
-    impact: "Reduced triage noise and improved response confidence in cloud-native environments.",
+    focus: "Detection engineering, incident response, and hands-on offensive simulation — blue team operations grounded in how attackers actually move.",
+    impact: "Documented investigations with CVSS-scored findings, remediation guidance, and proof-of-concept evidence across network, web, and cloud targets.",
     stack: ["SIEM", "Threat Hunting", "Purple Team", "Hardening"],
-    mission: "Secure systems by design, not just post-incident patching.",
+    mission: "Secure systems by design — not just post-incident patching.",
     stats: [
       { label: "Reports filed",   value: "12+" },
       { label: "CVEs tracked",    value: "6"   },
@@ -106,7 +106,7 @@ const roleInsights: Record<
     focus: "Full-stack product engineering — from React UIs and design systems to NestJS APIs, event-driven backends, and cloud delivery pipelines.",
     impact: "Shipped 10+ production applications across fintech, logistics, edtech, and SaaS — from solo builds to collaborative delivery.",
     stack: ["React", "Next.js", "Angular", "NestJS", "PostgreSQL", "Docker", "CI/CD"],
-    mission: "Build products that hold up under scale, feel polished to use, and stay maintainable over time.",
+    mission: "Build products that hold up under scale and stay maintainable over time.",
     stats: [
       { label: "Apps shipped",   value: "10+" },
       { label: "Perf score avg", value: "92"  },
@@ -164,13 +164,36 @@ function SkillBar({ name, level, accent }: { name: string; level: number; accent
   );
 }
 
-function StatCard({ label, value, accent, border }: { label: string; value: string; accent: string; border: string }) {
+/* Animated count-up stat — re-runs when the value changes (mode switch). */
+function CountUpStat({ label, value, accent, border }: { label: string; value: string; accent: string; border: string }) {
+  const [display, setDisplay] = useState(value);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const match = value.match(/^(\d+)(.*)$/);
+    if (!match) { setDisplay(value); return; }
+    const target = parseInt(match[1]!, 10);
+    const suffix = match[2] ?? "";
+    let rafId = 0;
+    const t0 = performance.now();
+    const DUR = 850;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / DUR);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setDisplay(`${Math.round(target * eased)}${suffix}`);
+      if (p < 1) rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [value]);
+
   return (
     <div
-      className="flex flex-col items-center rounded-xl px-3 py-2.5 text-center"
+      ref={ref}
+      className="flex flex-col items-center rounded-xl px-3 py-2.5 text-center transition-transform duration-300 hover:-translate-y-0.5"
       style={{ border: `1px solid ${border}`, background: `${accent}08` }}
     >
-      <span className="font-display text-xl font-bold" style={{ color: accent }}>{value}</span>
+      <span className="font-display text-xl font-bold tabular-nums" style={{ color: accent }}>{display}</span>
       <span className="mt-0.5 font-mono text-[11px] text-highlight/75">{label}</span>
     </div>
   );
@@ -254,14 +277,17 @@ export function RoleSwitcherSection() {
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <ParallaxDrift speed={0.1}>
           <div data-aos="fade-up">
+            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: theme.accent, transition: "color 0.5s ease" }}>
+              {"// dual discipline"}
+            </p>
             <SplittingHeading
               as="h2"
-              text="Role switcher"
+              text="Two operating modes"
               className="splitting-chars mb-4 font-display text-4xl text-highlight md:text-5xl"
             />
             <p className="mb-10 max-w-2xl font-sans text-highlight/85">
-              One operator, three lenses — flip the stack to see how I show up across
-              security, systems, and the web.
+              One engineer, two lenses — I build production software, and I know how
+              to defend it. Switch modes to see how each discipline shows up in my work.
             </p>
           </div>
         </ParallaxDrift>
@@ -278,10 +304,10 @@ export function RoleSwitcherSection() {
                 onClick={() => onSelect(m.id)}
                 className="relative rounded-full px-5 py-2 font-mono text-xs font-semibold tracking-wide transition-all duration-300"
                 style={{
-                  border: `1px solid ${active ? t.border : "rgba(168,217,184,0.35)"}`,
-                  background: active ? t.tag : "rgba(168,217,184,0.08)",
-                  color: active ? t.tagText : "var(--highlight)",
-                  boxShadow: active ? `0 0 14px ${t.glow}` : "0 1px 0 rgba(0,0,0,0.25)",
+                  border: `1px solid ${active ? t.border : "rgba(168,217,184,0.25)"}`,
+                  background: active ? t.tag : "rgba(30,74,58,0.25)",
+                  color: active ? t.tagText : "rgba(216,236,224,0.75)",
+                  boxShadow: active ? `0 0 14px ${t.glow}` : "none",
                 }}
               >
                 <span className="mr-1.5">{m.icon}</span>
@@ -297,11 +323,11 @@ export function RoleSwitcherSection() {
           })}
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[210px_minmax(0,1fr)] lg:items-start">
+        <div className="grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)] lg:items-start">
           {/* Desktop sidebar tabs */}
           <aside className="hidden lg:block">
             <div
-              className="sticky top-24 space-y-2 rounded-2xl border border-highlight/15 bg-bg/40 p-2 backdrop-blur-sm"
+              className="sticky top-24 space-y-2 rounded-2xl border border-highlight/15 bg-bg/40 p-2"
               data-aos="fade-right"
               data-aos-delay="100"
             >
@@ -313,16 +339,32 @@ export function RoleSwitcherSection() {
                     key={m.id}
                     type="button"
                     onClick={() => onSelect(m.id)}
-                    className="relative w-full rounded-xl px-3 py-2 text-left font-mono text-xs font-semibold transition-all duration-300"
+                    className="group relative w-full overflow-hidden rounded-xl px-3.5 py-3 text-left transition-all duration-300"
                     style={{
-                      border: `1px solid ${active ? t.border : "rgba(168,217,184,0.25)"}`,
-                      background: active ? t.tag : "rgba(255,255,255,0.88)",
-                      color: active ? t.tagText : "rgba(12, 32, 24, 0.98)",
-                      boxShadow: active ? `0 0 12px ${t.glow}` : "none",
+                      border: `1px solid ${active ? t.border : "rgba(168,217,184,0.12)"}`,
+                      background: active ? t.tag : "rgba(30,74,58,0.2)",
+                      boxShadow: active ? `0 0 16px ${t.glow}` : "none",
                     }}
                   >
-                    <span className="mr-1.5">{m.icon}</span>
-                    {m.label}
+                    {/* Accent edge indicator */}
+                    <span
+                      className="absolute inset-y-2 left-0 w-[3px] rounded-r-full transition-all duration-300"
+                      style={{
+                        background: t.accent,
+                        opacity: active ? 1 : 0,
+                        transform: active ? "scaleY(1)" : "scaleY(0.3)",
+                      }}
+                    />
+                    <span className="flex items-center gap-2 font-mono text-xs font-semibold" style={{ color: active ? t.tagText : "rgba(216,236,224,0.8)" }}>
+                      <span>{m.icon}</span>
+                      {m.label}
+                    </span>
+                    <span
+                      className="mt-0.5 block pl-6 font-mono text-[9px] uppercase tracking-widest transition-colors duration-300"
+                      style={{ color: active ? t.accent : "rgba(216,236,224,0.4)" }}
+                    >
+                      {m.tagline}
+                    </span>
                   </button>
                 );
               })}
@@ -342,6 +384,15 @@ export function RoleSwitcherSection() {
                     transition: "border-color 0.5s ease",
                   }}
                 >
+                  {/* Accent shimmer edge */}
+                  <div
+                    className="absolute inset-x-0 top-0 h-[2px]"
+                    style={{
+                      background: `linear-gradient(90deg, transparent, ${theme.accent}, transparent)`,
+                      backgroundSize: "200% 100%",
+                      animation: "role-edge-shimmer 3.5s linear infinite",
+                    }}
+                  />
                   <RoleParticles mode={displayMode} />
 
                   <div
@@ -378,7 +429,7 @@ export function RoleSwitcherSection() {
                         {profile.name}
                       </p>
                       <p className="mono-label mt-0.5 text-sm" style={{ color: theme.tagText }}>
-                        {activeMode?.icon} {activeMode?.label}
+                        {activeMode?.icon} {activeMode?.label} · {activeMode?.tagline}
                       </p>
                     </div>
 
@@ -390,14 +441,15 @@ export function RoleSwitcherSection() {
 
                     {/* Stack tags */}
                     <div className="flex flex-wrap gap-1.5">
-                      {insight.stack.map((item) => (
+                      {insight.stack.map((item, i) => (
                         <span
                           key={item}
-                          className="mono-label rounded-full px-2.5 py-1 text-[10px] transition-colors"
+                          className="mono-label rounded-full px-2.5 py-1 text-[10px]"
                           style={{
                             background: theme.tag,
                             border: `1px solid ${theme.border}`,
                             color: theme.tagText,
+                            animation: `role-tag-in 0.4s ease ${i * 0.05}s both`,
                           }}
                         >
                           {item}
@@ -405,11 +457,11 @@ export function RoleSwitcherSection() {
                       ))}
                     </div>
 
-                    {/* Stats row */}
+                    {/* Stats row — animated count-up */}
                     <div className="grid grid-cols-3 gap-2">
                       {insight.stats.map((s) => (
-                        <StatCard
-                          key={s.label}
+                        <CountUpStat
+                          key={`${displayMode}-${s.label}`}
                           label={s.label}
                           value={s.value}
                           accent={theme.accent}
@@ -431,24 +483,29 @@ export function RoleSwitcherSection() {
                               key={pillar.title}
                               type="button"
                               onClick={() => setActivePillarIdx(idx)}
-                              className="w-full rounded-xl px-3 py-2 text-left transition-all duration-200 hover:border-opacity-100"
+                              className="relative w-full overflow-hidden rounded-xl px-3 py-2 text-left transition-all duration-250"
                               style={{
-                                border: `1px solid ${active ? theme.border : "rgba(168,217,184,0.08)"}`,
-                                background: active ? theme.tag : "rgba(255,255,255,0.88)",
+                                border: `1px solid ${active ? theme.border : "rgba(168,217,184,0.1)"}`,
+                                background: active ? theme.tag : "rgba(30,74,58,0.18)",
+                                transform: active ? "translateX(3px)" : "translateX(0)",
                               }}
                             >
-                              <div className="flex items-center justify-between">
+                              <span
+                                className="absolute inset-y-1.5 left-0 w-[3px] rounded-r-full transition-all duration-300"
+                                style={{ background: theme.accent, opacity: active ? 1 : 0 }}
+                              />
+                              <div className="flex items-center justify-between pl-1.5">
                                 <span
-                                  className="mono-label text-xs"
-                                  style={{ color: active ? theme.tagText : "rgba(16, 36, 28, 0.96)" }}
+                                  className="mono-label text-xs transition-colors duration-200"
+                                  style={{ color: active ? theme.tagText : "rgba(216,236,224,0.7)" }}
                                 >
-                                  {active ? "▶ " : "  "}{pillar.title}
+                                  {pillar.title}
                                 </span>
                                 <span
-                                  className="mono-label rounded-full px-2 py-0.5 text-[9px]"
+                                  className="mono-label rounded-full px-2 py-0.5 text-[9px] transition-colors duration-200"
                                   style={{
                                     background: active ? `${theme.accent}20` : "transparent",
-                                    color: active ? theme.accent : "rgba(30, 60, 48, 0.82)",
+                                    color: active ? theme.accent : "rgba(216,236,224,0.45)",
                                   }}
                                 >
                                   {pillar.metric}
@@ -494,9 +551,15 @@ export function RoleSwitcherSection() {
                     <p className="mono-label mb-2 text-[11px] uppercase text-highlight/70">Impact</p>
                     <p className="font-sans text-sm leading-relaxed text-highlight/90">{insight.impact}</p>
 
+                    {/* Active module — crossfades when the selected pillar changes */}
                     <div
+                      key={`${displayMode}-${activePillar.title}`}
                       className="mt-4 rounded-xl p-3"
-                      style={{ border: `1px solid ${theme.border}`, background: theme.tag }}
+                      style={{
+                        border: `1px solid ${theme.border}`,
+                        background: theme.tag,
+                        animation: "role-module-in 0.32s ease both",
+                      }}
                     >
                       <p className="mono-label text-[11px] uppercase text-highlight/70">Active module</p>
                       <p className="mt-1 font-display text-lg text-highlight">{activePillar.title}</p>
@@ -574,6 +637,21 @@ export function RoleSwitcherSection() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes role-edge-shimmer {
+          from { background-position: 200% 0; }
+          to   { background-position: -200% 0; }
+        }
+        @keyframes role-tag-in {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes role-module-in {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </section>
   );
 }

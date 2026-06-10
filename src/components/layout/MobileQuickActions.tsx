@@ -74,7 +74,7 @@ export function MobileQuickActions() {
                 className={`absolute flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border font-mono text-[10px] font-medium shadow-lg backdrop-blur-sm transition-all duration-300
                   ${isActive
                     ? "border-accent bg-accent/20 text-accent shadow-[0_0_12px_rgba(var(--rgb-accent),0.4)]"
-                    : "border-highlight/20 bg-bg/90 text-highlight/70 hover:border-highlight/40 hover:text-highlight"
+                    : "border-highlight/20 bg-surface/90 text-highlight/70 hover:border-highlight/40 hover:text-highlight"
                   }
                   ${open ? "pointer-events-auto scale-100 opacity-100" : "pointer-events-none scale-75 opacity-0"}
                 `}

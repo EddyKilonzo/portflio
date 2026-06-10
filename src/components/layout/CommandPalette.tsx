@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { certifications, profile, projects } from "@/content/portfolio";
 import { sectionLinks } from "@/content/sections";
 import { emitToast } from "@/lib/toast";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 type Cmd = { id: string; label: string; type: "section" | "project" | "cert" | "social"; target: string };
 
@@ -11,6 +12,8 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+
+  useBodyScrollLock(open);
   const commands: Cmd[] = useMemo(
     () => [
       ...sectionLinks.map((s) => ({

@@ -191,16 +191,8 @@ main section[data-prefetch-state="ready"]::before {
 
 /* Scroll snap removed for more fluid native-like feel. */
 
-/* backdrop-filter overrides removed — changing blur mid-scroll causes GPU repaints/tearing.
-   Only fade the ambient wave canvas (compositor-only opacity). Never touch page-fx overlays
-   during scroll — changing their opacity causes the noise/scanline textures to flash visibly. */
-html.motion-velocity-high .ambient-wave-canvas {
-  opacity: 0.5 !important;
-}
-
-html.motion-velocity-severe .ambient-wave-canvas {
-  opacity: 0.24 !important;
-}
+/* motion-velocity-* rules removed (2026-06): the scroll-velocity watcher that
+   toggled those classes on <html> caused full-document style recalc storms. */
 
 .hotspot-magnetic {
   transition: transform 0.2s var(--mi-ease), box-shadow 0.2s var(--mi-ease);
@@ -253,8 +245,6 @@ html.pack-minimal .page-fx::after {
 }
 
 html.pack-minimal .glass-card {
-  backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
   border-color: rgba(168, 217, 184, 0.09);
 }
 
@@ -299,7 +289,7 @@ html.motion-minimal *::after {
 
 html {
   overflow-x: hidden;
-  scroll-behavior: auto !important;
+  scroll-behavior: smooth;
   scroll-padding-top: 4rem;
 }
 
@@ -450,14 +440,16 @@ html.light .page-fx::after {
   .glass-card {
     --sg-x: -9999px;
     --sg-y: -9999px;
-    background-color: rgba(30, 74, 58, 0.15);
+    background-color: rgba(30, 74, 58, 0.38);
     background-image: radial-gradient(
       300px circle at var(--sg-x) var(--sg-y),
       rgba(22, 163, 74, 0.09),
       transparent 60%
     );
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    /* NO backdrop-filter on cards: 50+ blurred cards re-render their backdrop
+       on every scrolled frame — measured as the dominant scroll-jank source.
+       The page bg behind cards is near-flat, so an opaque tint reads the same.
+       Keep backdrop-filter only on glass-nav and modal overlays. */
     border: 1px solid rgba(168, 217, 184, 0.12);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
       rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
@@ -515,9 +507,7 @@ html.light .page-fx::after {
   }
 
   .glass-panel {
-    background: rgba(30, 74, 58, 0.15);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(30, 74, 58, 0.38);
     border: 1px solid rgba(168, 217, 184, 0.12);
     border-radius: 1rem;
   }
@@ -525,24 +515,20 @@ html.light .page-fx::after {
   .glass-pill {
     border-radius: 9999px;
     border: 1px solid rgba(168, 217, 184, 0.2);
-    background: rgba(30, 74, 58, 0.2);
+    background: rgba(30, 74, 58, 0.35);
     padding: 0.25rem 0.75rem;
     font-family: var(--font-jetbrains);
     font-size: 0.75rem;
     color: color-mix(in srgb, var(--highlight) 80%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-field {
     border-radius: 0.5rem;
     border: 1px solid rgba(168, 217, 184, 0.15);
-    background: rgba(30, 74, 58, 0.2);
+    background: rgba(30, 74, 58, 0.35);
     padding: 0.5rem 0.75rem;
     font-family: var(--font-jetbrains);
     color: var(--highlight);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-field::placeholder {
@@ -565,18 +551,16 @@ html.light .page-fx::after {
   .glass-card textarea {
     border-radius: 0.5rem;
     border: 1px solid rgba(168, 217, 184, 0.15);
-    background: rgba(30, 74, 58, 0.2);
+    background: rgba(30, 74, 58, 0.35);
     padding: 0.5rem 0.75rem;
     font-family: var(--font-jetbrains);
     color: var(--highlight);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 
   .glass-nav {
-    background: rgba(30, 74, 58, 0.08);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(30, 74, 58, 0.14);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(168, 217, 184, 0.08);
   }
 
@@ -585,26 +569,24 @@ html.light .page-fx::after {
     border-bottom: 1px solid rgba(46, 122, 90, 0.14);
   }
 
-  /* Spec: triple stack — blur 8px / 16px / 32px with readable glass edges */
+  /* Hero glass stack — tinted backgrounds instead of backdrop-filter
+     (blurred backdrops re-render every scrolled frame = jank) */
   .glass-hero-layer-1 {
-    backdrop-filter: blur(8px) saturate(1.15);
-    -webkit-backdrop-filter: blur(8px) saturate(1.15);
+    background: rgba(13, 31, 26, 0.45);
     border: 1px solid rgba(168, 217, 184, 0.12);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.06),
       0 20px 50px rgba(0, 0, 0, 0.22);
   }
   .glass-hero-layer-2 {
-    backdrop-filter: blur(16px) saturate(1.12);
-    -webkit-backdrop-filter: blur(16px) saturate(1.12);
+    background: rgba(13, 31, 26, 0.55);
     border: 1px solid rgba(168, 217, 184, 0.1);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
       0 24px 60px rgba(0, 0, 0, 0.28);
   }
   .glass-hero-layer-3 {
-    backdrop-filter: blur(32px) saturate(1.08);
-    -webkit-backdrop-filter: blur(32px) saturate(1.08);
+    background: rgba(13, 31, 26, 0.65);
     border: 1px solid rgba(168, 217, 184, 0.08);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
@@ -612,9 +594,7 @@ html.light .page-fx::after {
   }
 
   .btn-ghost {
-    background: rgba(30, 74, 58, 0.15);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(30, 74, 58, 0.35);
     border: 1px solid rgba(168, 217, 184, 0.12);
     border-radius: 0.5rem;
     padding: 0.625rem 1.25rem;
@@ -763,18 +743,11 @@ html.light .theme-wipe-toggle {
 }
 .shiki-wrap code { background: transparent !important; }
 
-/* AOS — larger initial offsets for more dramatic entries */
-[data-aos="fade-up"]        { transform: translate3d(0,  56px, 0); }
-[data-aos="fade-down"]      { transform: translate3d(0, -56px, 0); }
-[data-aos="fade-left"]      { transform: translate3d(56px, 0, 0); }
-[data-aos="fade-right"]     { transform: translate3d(-56px, 0, 0); }
-[data-aos="fade-up-right"]  { transform: translate3d(-40px, 56px, 0); }
-[data-aos="fade-up-left"]   { transform: translate3d(40px,  56px, 0); }
-[data-aos="zoom-in"]        { transform: scale3d(0.86, 0.86, 0.86); opacity: 0; }
-[data-aos="zoom-in-up"]     { transform: translate3d(0, 56px, 0) scale3d(0.86, 0.86, 0.86); }
-
-/* Ensure AOS animated elements start fully transparent before entering */
-[data-aos] { will-change: transform, opacity; }
+/* AOS — simple, subtle reveals: short travel distance, plain easing.
+   Runs after aos.css import and overrides its default 100px offsets.
+   will-change only while waiting to animate — once revealed the layer is
+   demoted, otherwise 60+ permanently promoted layers slow compositing. */
+[data-aos]:not(.aos-animate) { will-change: transform, opacity; }
 
 /* Glitch effect fires once on entry for section headings */
 @keyframes glitch-text-enter {
@@ -791,29 +764,53 @@ h2.glitch-hover[data-aos].aos-animate {
   animation: glitch-text-enter 0.9s ease-out 0.15s both;
 }
 
+[data-aos="fade-up"]    { transform: translate3d(0, 16px, 0); }
+[data-aos="fade-up"].aos-animate { transform: translate3d(0, 0, 0); }
+[data-aos="fade-down"]  { transform: translate3d(0, -16px, 0); }
+[data-aos="fade-down"].aos-animate { transform: translate3d(0, 0, 0); }
+[data-aos="fade-right"] { transform: translate3d(-16px, 0, 0); }
+[data-aos="fade-right"].aos-animate { transform: translate3d(0, 0, 0); }
+[data-aos="fade-left"]  { transform: translate3d(16px, 0, 0); }
+[data-aos="fade-left"].aos-animate { transform: translate3d(0, 0, 0); }
+[data-aos="zoom-in"]    { transform: translate3d(0, 0, 0) scale(0.98); }
+[data-aos="zoom-in"].aos-animate { transform: translate3d(0, 0, 0) scale(1); }
+
 /* Section dial jump flash */
 @keyframes rail-jump-hint {
   0%   { opacity: 0.9; transform: scale(1); }
   100% { opacity: 0;   transform: scale(2.8); }
 }
 
-/* Dial entry: slides up from below-right */
-@keyframes dial-entry {
-  0%   { opacity: 0; transform: translate(40px, 40px) scale(0.7); }
-  60%  { opacity: 1; transform: translate(-4px, -4px) scale(1.03); }
-  100% { opacity: 1; transform: translate(0, 0) scale(1); }
+/* Contact form — message section slides in after name confirmed */
+@keyframes contact-msg-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Dial idle glow pulse on the indicator */
+/* Dial entry: slides in from below-right with a spring overshoot */
+@keyframes dial-entry {
+  0%   { opacity: 0; transform: translate(48px, 48px) scale(0.65) rotate(12deg); }
+  55%  { opacity: 1; transform: translate(-5px, -5px) scale(1.04) rotate(-2deg); }
+  75%  { transform: translate(2px, 2px) scale(0.98) rotate(0.5deg); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+
+/* Dial idle glow pulse on the indicator — uses accent color */
 @keyframes dial-indicator-pulse {
-  0%, 100% { opacity: 0.75; filter: drop-shadow(0 0 3px rgba(255,255,255,0.4)); }
-  50%       { opacity: 1;   filter: drop-shadow(0 0 8px rgba(255,255,255,0.9)); }
+  0%, 100% { opacity: 0.7;  filter: drop-shadow(0 0 3px var(--accent)); }
+  50%       { opacity: 1;   filter: drop-shadow(0 0 10px var(--accent)); }
 }
 
 /* Dial active-dot ring expand */
 @keyframes dial-dot-ring {
-  0%   { transform: translate(-50%,-50%) scale(1); opacity: 0.5; }
-  100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
+  0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.6; }
+  100% { transform: translate(-50%,-50%) scale(3.0); opacity: 0; }
+}
+
+/* Dial label fade-slide in */
+@keyframes dial-label-in {
+  from { opacity: 0; transform: translateX(6px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 /* Skeleton shimmer keyframe */
@@ -936,3 +933,54 @@ h2.glitch-hover[data-aos].aos-animate {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Spotlight beam sweep on section headings ────────────────────────────── */
+h2.glitch-hover {
+  position: relative;
+}
+
+h2.glitch-hover::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 0;
+  width: 48%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(168, 217, 184, 0.09) 50%,
+    transparent 100%
+  );
+  transform: skewX(-8deg) translateX(-220%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+h2.glitch-hover[data-aos].aos-animate::after,
+[data-aos].aos-animate h2.glitch-hover::after {
+  animation: beam-sweep 1.6s ease-out 0.45s both;
+}
+
+@keyframes beam-sweep {
+  from { transform: skewX(-8deg) translateX(-220%); }
+  to   { transform: skewX(-8deg) translateX(480%); }
+}
+
+/* ── Skill bubble float animations ──────────────────────────────────────── */
+@keyframes float-a {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-14px) rotate(1.5deg); }
+}
+
+@keyframes float-b {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  35%       { transform: translateY(-10px) rotate(-1.2deg); }
+  68%       { transform: translateY(-18px) rotate(0.8deg); }
+}
+
+@keyframes float-c {
+  0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+  50%       { transform: translateY(-12px) scale(1.02) rotate(-1.5deg); }
+}
+
