@@ -294,19 +294,27 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-space), system-ui, sans-serif;
   color: var(--highlight);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg);
   color: var(--foreground);
   font-size: var(--type-step-0);
-  line-height: 1.65;
+  line-height: 1.72;
+  letter-spacing: 0.012em;
+  word-spacing: 0.04em;
 }
 
 h1, h2, h3, h4 {
-  letter-spacing: -0.02em;
-  line-height: 1.12;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  word-spacing: -0.01em;
+}
+
+p {
+  letter-spacing: 0.014em;
+  word-spacing: 0.05em;
 }
 
 h1 { font-size: var(--type-step-4); }
@@ -764,16 +772,87 @@ h2.glitch-hover[data-aos].aos-animate {
   animation: glitch-text-enter 0.9s ease-out 0.15s both;
 }
 
-[data-aos="fade-up"]    { transform: translate3d(0, 16px, 0); }
-[data-aos="fade-up"].aos-animate { transform: translate3d(0, 0, 0); }
-[data-aos="fade-down"]  { transform: translate3d(0, -16px, 0); }
-[data-aos="fade-down"].aos-animate { transform: translate3d(0, 0, 0); }
-[data-aos="fade-right"] { transform: translate3d(-16px, 0, 0); }
-[data-aos="fade-right"].aos-animate { transform: translate3d(0, 0, 0); }
-[data-aos="fade-left"]  { transform: translate3d(16px, 0, 0); }
-[data-aos="fade-left"].aos-animate { transform: translate3d(0, 0, 0); }
-[data-aos="zoom-in"]    { transform: translate3d(0, 0, 0) scale(0.98); }
-[data-aos="zoom-in"].aos-animate { transform: translate3d(0, 0, 0) scale(1); }
+/* Impactful scroll reveals — strong travel + scale for a punchy premium feel */
+[data-aos="fade-up"]    { transform: translate3d(0, 72px, 0) scale(0.92); opacity: 0; }
+[data-aos="fade-up"].aos-animate { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+[data-aos="fade-down"]  { transform: translate3d(0, -72px, 0) scale(0.92); opacity: 0; }
+[data-aos="fade-down"].aos-animate { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+[data-aos="fade-right"] { transform: translate3d(-56px, 0, 0) scale(0.94); opacity: 0; }
+[data-aos="fade-right"].aos-animate { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+[data-aos="fade-left"]  { transform: translate3d(56px, 0, 0) scale(0.94); opacity: 0; }
+[data-aos="fade-left"].aos-animate { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+[data-aos="zoom-in"]    { transform: translate3d(0, 32px, 0) scale(0.86); opacity: 0; }
+[data-aos="zoom-in"].aos-animate { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+
+/* Scroll-up reveals: flip the initial state so elements come from above */
+html[data-scroll-dir="up"] [data-aos="fade-up"]:not(.aos-animate) {
+  transform: translate3d(0, -40px, 0) scale(0.97) !important;
+}
+html[data-scroll-dir="up"] [data-aos="fade-down"]:not(.aos-animate) {
+  transform: translate3d(0, 40px, 0) scale(0.97) !important;
+}
+html[data-scroll-dir="up"] [data-aos="zoom-in"]:not(.aos-animate) {
+  transform: translate3d(0, -20px, 0) scale(1.04) !important;
+}
+
+/* Scroll-exit: element has been scrolled above the viewport.
+   AOS's existing 750ms transition animates this smoothly — no extra
+   transition declaration needed here. */
+[data-scroll-exited] {
+  opacity: 0 !important;
+  transform: translate3d(0, -28px, 0) scale(0.96) !important;
+  pointer-events: none !important;
+}
+
+/* Mobile Dynamic Island — box-shadow ripple (overflow-safe, no clip) */
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(var(--rgb-accent),0.8), 0 0 0 0   rgba(var(--rgb-accent),0.45); }
+  55%       { box-shadow: 0 0 8px rgba(var(--rgb-accent),0.9), 0 0 0 6px rgba(var(--rgb-accent),0); }
+}
+/* Cert card hint — safe to expand because parent has no overflow:hidden */
+@keyframes island-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  70%  { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Quick-preview modal — staggered item entrance */
+@keyframes modal-item-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.preview-modal-body > * {
+  opacity: 0;
+  animation: modal-item-in 0.34s cubic-bezier(0.16,1,0.3,1) both;
+}
+.preview-modal-body > *:nth-child(1) { animation-delay: 55ms; }
+.preview-modal-body > *:nth-child(2) { animation-delay: 105ms; }
+.preview-modal-body > *:nth-child(3) { animation-delay: 148ms; }
+.preview-modal-body > *:nth-child(4) { animation-delay: 186ms; }
+.preview-modal-body > *:nth-child(5) { animation-delay: 218ms; }
+.preview-modal-body > *:nth-child(6) { animation-delay: 245ms; }
+.preview-modal-body > *:nth-child(n+7) { animation-delay: 265ms; }
+
+/* Island first-appearance hint tooltip */
+@keyframes island-hint-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes island-hint-out {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+}
+
+/* Skill proficiency bar — grows from left on mount */
+@keyframes bar-grow-x {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+.skill-bar-fill {
+  transform-origin: left center;
+  animation: bar-grow-x 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--bar-delay, 0.1s);
+}
 
 /* Section dial jump flash */
 @keyframes rail-jump-hint {
@@ -807,10 +886,16 @@ h2.glitch-hover[data-aos].aos-animate {
   100% { transform: translate(-50%,-50%) scale(3.0); opacity: 0; }
 }
 
-/* Dial label fade-slide in */
+/* Dial label fade-slide in (now below the dial) */
 @keyframes dial-label-in {
-  from { opacity: 0; transform: translateX(6px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Dial open: ripple ring burst from center */
+@keyframes dial-open-ring {
+  0%   { transform: translate(-50%,-50%) scale(0.5); opacity: 0.7; }
+  100% { transform: translate(-50%,-50%) scale(2.4); opacity: 0; }
 }
 
 /* Skeleton shimmer keyframe */

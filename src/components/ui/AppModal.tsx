@@ -52,7 +52,8 @@ export function AppModal({
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-[10005] flex items-end justify-center bg-black/70 px-3 pb-0 pt-3 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-[10005] flex items-end justify-center bg-black/70 px-3 pt-3 backdrop-blur-sm sm:items-center sm:p-4"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       role="presentation"
       onClick={onClose}
     >
@@ -71,10 +72,10 @@ export function AppModal({
           aria-label={title}
           ref={panelRef}
           onClick={(e) => e.stopPropagation()}
-          className={`glass-card flex w-full flex-col overflow-hidden rounded-t-2xl border border-highlight/20 bg-surface/20 sm:rounded-2xl ${
+          className={`glass-card flex w-full flex-col overflow-hidden rounded-t-2xl border border-highlight/20 bg-bg/90 sm:rounded-2xl ${
             size === "lg" ? "sm:max-w-2xl" : "sm:max-w-lg"
           }`}
-          style={{ maxHeight: "calc(90vh - env(safe-area-inset-bottom, 0px))" }}
+          style={{ maxHeight: "calc(88vh - env(safe-area-inset-bottom, 0px))" }}
         >
           {/* Header — fixed */}
           <div data-surface-item className="shrink-0 border-b border-highlight/10 px-5 py-4">
@@ -97,8 +98,8 @@ export function AppModal({
               </button>
             </div>
           </div>
-          {/* Body — scrollable */}
-          <div data-surface-item className="flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+          {/* Body — scrollable; data-lenis-prevent stops Lenis hijacking wheel inside */}
+          <div data-surface-item data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-5 py-5">
             {children}
           </div>
           {/* Footer — fixed */}

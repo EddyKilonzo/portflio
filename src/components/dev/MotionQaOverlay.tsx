@@ -48,7 +48,7 @@ export function MotionQaOverlay() {
   if (process.env.NODE_ENV !== "development") return null;
 
   return (
-    <aside className="fixed bottom-4 right-2 z-[10040] rounded-lg border border-highlight/20 bg-bg/85 px-3 py-2 font-mono text-[10px] text-highlight/85 backdrop-blur">
+    <aside className="fixed bottom-4 right-2 z-[10040] hidden md:block rounded-lg border border-highlight/20 bg-bg/85 px-3 py-2 font-mono text-[10px] text-highlight/85 backdrop-blur">
       <p>FPS: {fps}</p>
       <p>Long tasks: {longTasks}</p>
       <p>Worst LT: {worstLongTask.toFixed(1)}ms</p>

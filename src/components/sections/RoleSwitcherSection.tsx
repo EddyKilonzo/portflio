@@ -9,8 +9,12 @@ import {
 import { useRole } from "@/context/RoleContext";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { animate } from "animejs";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
@@ -164,14 +168,17 @@ function SkillBar({ name, level, accent }: { name: string; level: number; accent
   );
 }
 
-/* Animated count-up stat — re-runs when the value changes (mode switch). */
+/* Animated count-up stat — fires only when scrolled into view, re-runs on mode switch. */
 function CountUpStat({ label, value, accent, border }: { label: string; value: string; accent: string; border: string }) {
-  const [display, setDisplay] = useState(value);
+  const [display, setDisplay] = useState("0");
   const ref = useRef<HTMLDivElement>(null);
+  const triggered = useRef(false);
+  const valueRef = useRef(value);
+  valueRef.current = value;
 
-  useEffect(() => {
-    const match = value.match(/^(\d+)(.*)$/);
-    if (!match) { setDisplay(value); return; }
+  const runAnim = useCallback((v: string) => {
+    const match = v.match(/^(\d+)(.*)$/);
+    if (!match) { setDisplay(v); return () => {}; }
     const target = parseInt(match[1]!, 10);
     const suffix = match[2] ?? "";
     let rafId = 0;
@@ -185,7 +192,29 @@ function CountUpStat({ label, value, accent, border }: { label: string; value: s
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [value]);
+  }, []);
+
+  // Gate animation on scroll entry
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 90%",
+      once: true,
+      onEnter: () => {
+        triggered.current = true;
+        runAnim(valueRef.current);
+      },
+    });
+    return () => st.kill();
+  }, [runAnim]);
+
+  // Re-animate on mode switch after initial trigger
+  useEffect(() => {
+    if (!triggered.current) return;
+    return runAnim(value);
+  }, [value, runAnim]);
 
   return (
     <div

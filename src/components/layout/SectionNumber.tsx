@@ -1,7 +1,10 @@
 "use client";
 
+import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type Props = {
   n: string;
@@ -16,18 +19,40 @@ export function SectionNumber({ n, sectionId }: Props) {
     const section = document.getElementById(sectionId);
     if (!el || !section) return;
 
-    const st = ScrollTrigger.create({
+    // Start invisible — will fade in on entry
+    gsap.set(el, { opacity: 0 });
+
+    // Entry: fade in + brief scale-down for a "landing" feel
+    const entry = ScrollTrigger.create({
       trigger: section,
-      start: "top bottom",
-      end: "bottom top",
-      scrub: true,
-      onUpdate: (self) => {
-        const y = self.progress * -120;
-        el.style.transform = `translateY(${y}px)`;
+      start: "top 82%",
+      once: true,
+      onEnter: () => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, scale: 1.18 },
+          { opacity: 1, scale: 1, duration: 1.1, ease: "power3.out" },
+        );
       },
     });
 
-    return () => st.kill();
+    // Parallax scrub
+    const parallax = gsap.to(el, {
+      y: -120,
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+      },
+    });
+
+    return () => {
+      entry.kill();
+      parallax.scrollTrigger?.kill();
+      parallax.kill();
+    };
   }, [sectionId]);
 
   return (

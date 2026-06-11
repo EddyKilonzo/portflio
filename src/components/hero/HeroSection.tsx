@@ -615,7 +615,7 @@ export function HeroSection({
                 {/* Subtitle scramble */}
                 <p
                   ref={subtitleRef}
-                  className={`mt-6 min-h-[1.6em] max-w-2xl font-sans text-lg ${mutedText} will-change-[opacity,transform] motion-reduce:transition-none ${
+                  className={`mt-6 min-h-[1.6em] max-w-2xl font-display text-lg leading-relaxed ${mutedText} will-change-[opacity,transform] motion-reduce:transition-none ${
                     reducedMotion
                       ? "translate-y-0 opacity-100"
                       : heroLanded

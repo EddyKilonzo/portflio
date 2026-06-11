@@ -99,7 +99,7 @@ export function ScriptViewerModal({ filename, language = "python", isOpen, onClo
         </div>
 
         {/* Body */}
-        <div className="overflow-y-auto flex-1 bg-[#0d1117]">
+        <div data-lenis-prevent className="overflow-y-auto flex-1 bg-[#0d1117]">
           {loading && (
             <div className="flex items-center justify-center py-16 text-highlight/40 font-mono text-sm">
               Loading {filename}…

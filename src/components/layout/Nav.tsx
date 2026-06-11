@@ -9,6 +9,7 @@ import { certifications, projects } from "@/content/portfolio";
 import { emitToast } from "@/lib/toast";
 import gsap from "gsap";
 import { motionTokens } from "@/lib/motion-tokens";
+import { smoothScrollTo } from "@/lib/smooth-scroll";
 
 export function Nav() {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -52,7 +53,7 @@ export function Nav() {
       const el = document.getElementById(target.id);
       if (el) {
         const y = el.getBoundingClientRect().top + window.scrollY - getNavOffset();
-        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+        smoothScrollTo(y);
         history.replaceState(null, "", `#${target.id}`);
       }
     } else if (target.type === "project") {
@@ -127,13 +128,19 @@ export function Nav() {
       if (!link) return;
       const id = link.getAttribute("href")?.replace("#", "");
       if (!id) return;
-      const el = document.getElementById(id);
-      if (!el) return;
       e.preventDefault();
-      const y = el.getBoundingClientRect().top + window.scrollY - getNavOffset();
-      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
       history.replaceState(null, "", `#${id}`);
       setSheetOpen(false);
+      // Defer scroll by one rAF so the sheet unmounts and body.overflow
+      // is cleared before Lenis reads the scroll position.
+      requestAnimationFrame(() => {
+        const el: HTMLElement | null =
+          document.getElementById(id) ??
+          (document.querySelector(`[data-lazy-for="${id}"]`) as HTMLElement | null);
+        if (!el) return;
+        const y = el.getBoundingClientRect().top + window.scrollY - getNavOffset();
+        smoothScrollTo(y);
+      });
     };
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
@@ -313,7 +320,7 @@ export function Nav() {
                 className="btn-ghost py-2 text-xs"
                 onClick={() => {
                   setSheetOpen(false);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  smoothScrollTo(0);
                 }}
               >
                 Back to top

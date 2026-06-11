@@ -16,6 +16,14 @@ export function useBodyScrollLock(locked: boolean) {
     if (!locked) return;
     const { body, documentElement } = document;
     const scrollY = window.scrollY;
+    const lenis = (window as any).__lenis;
+
+    // Pause Lenis so its RAF loop doesn't fight the position:fixed trick.
+    // While the body is fixed, window.scrollY returns 0 and Lenis would
+    // update its internal target to 0 — causing it to animate back to the
+    // top when the modal closes.
+    if (lenis) lenis.stop();
+
     const prev = {
       position: body.style.position,
       top: body.style.top,
@@ -33,8 +41,19 @@ export function useBodyScrollLock(locked: boolean) {
       body.style.top = prev.top;
       body.style.width = prev.width;
       body.style.overflow = prev.overflow;
-      window.scrollTo(0, scrollY);
       documentElement.style.scrollBehavior = prev.scrollBehavior;
+      // Restore native scroll position before Lenis resumes.
+      window.scrollTo(0, scrollY);
+      if (lenis) {
+        // Defer lenis.start() by one rAF so the browser has a full frame
+        // to commit window.scrollTo before Lenis's ticker reads scrollY.
+        // Without this, Lenis reads 0 (from the fixed-body frame) and
+        // snaps back to the top of the page.
+        requestAnimationFrame(() => {
+          lenis.scrollTo(scrollY, { immediate: true });
+          lenis.start();
+        });
+      }
     };
   }, [locked]);
 }

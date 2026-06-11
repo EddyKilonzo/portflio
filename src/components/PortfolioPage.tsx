@@ -13,7 +13,6 @@ import { getDeviceProfile } from "@/lib/device-profile";
 import { LazySection } from "@/components/motion/LazySection";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useTheme } from "@/context/ThemeContext";
-import AOS from "aos";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
@@ -164,37 +163,34 @@ export function PortfolioPage() {
 
   useEffect(() => {
     if (!bootDone) return;
-    
-    // Initialize AOS after the boot sequence completes.
-    // Simple fades: short duration, plain easing, tiny offset so elements
-    // appear as soon as they enter the viewport. once:false (without mirror)
-    // re-arms elements that drop below the viewport, so the fade replays on
-    // every approach — not only on a fresh page load.
-    AOS.init({
-      duration: 450,
-      easing: "ease-out",
-      once: false,
-      offset: 24,
-      anchorPlacement: "top-bottom",
+
+    let aosRef: { init: Function; refresh: Function } | null = null;
+    let id1 = 0;
+    let id2 = 0;
+
+    const onLazySwap = () => { aosRef?.refresh(); };
+    let scrollRefreshed = false;
+    const onScroll = () => {
+      if (scrollRefreshed) return;
+      scrollRefreshed = true;
+      aosRef?.refresh();
+    };
+
+    import("aos").then((mod) => {
+      const AOS = (mod as any).default ?? mod;
+      aosRef = AOS;
+      AOS.init({
+        duration: 900,
+        easing: "ease-out-quart",
+        once: false,
+        offset: 60,
+        anchorPlacement: "top-bottom",
+      });
+      id1 = window.setTimeout(() => { ScrollTrigger.refresh(); AOS.refresh(); }, 400);
+      id2 = window.setTimeout(() => { AOS.refresh(); }, 1200);
     });
 
-    // Initial refresh after sections mount
-    const id1 = window.setTimeout(() => { ScrollTrigger.refresh(); AOS.refresh(); }, 400);
-    // Second pass for lazy-loaded sections
-    const id2 = window.setTimeout(() => { AOS.refresh(); }, 1200);
-
-    // When a LazySection swaps its skeleton for real content, AOS must
-    // recalculate element positions or the new elements stay invisible.
-    const onLazySwap = () => { AOS.refresh(); };
     window.addEventListener("lazysection:swap", onLazySwap);
-
-    // Re-trigger AOS on first scroll for any lazily-revealed elements
-    let refreshed = false;
-    const onScroll = () => {
-      if (refreshed) return;
-      refreshed = true;
-      AOS.refresh();
-    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.clearTimeout(id1);
@@ -229,6 +225,54 @@ export function PortfolioPage() {
     };
   }, [bootDone, enhancementsReady]);
 
+  // ── Lenis smooth scroll ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!bootDone) return;
+    const p = getDeviceProfile();
+    if (p.prefersReducedMotion || p.lowEnd) return;
+
+    let lenis: any;
+    let destroyed = false;
+
+    import("lenis").then(({ default: Lenis }) => {
+      if (destroyed) return;
+      lenis = new Lenis({
+        duration: 1.25,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: "vertical",
+        gestureOrientation: "vertical",
+        smoothWheel: true,
+        wheelMultiplier: 0.95,
+        touchMultiplier: 1.8,
+        infinite: false,
+      });
+
+      // Expose globally so Nav/Dial components can call lenis.scrollTo()
+      (window as any).__lenis = lenis;
+
+      // Disable CSS smooth-scroll — Lenis handles inertia
+      document.documentElement.style.scrollBehavior = "auto";
+
+      // Wire Lenis into GSAP ticker so ScrollTrigger stays accurate
+      const ticker = (time: number) => lenis.raf(time * 1000);
+      gsap.ticker.add(ticker);
+      gsap.ticker.lagSmoothing(0);
+
+      // Keep ScrollTrigger in sync with Lenis scroll position
+      lenis.on("scroll", () => ScrollTrigger.update());
+    });
+
+    return () => {
+      destroyed = true;
+      if (lenis) {
+        lenis.destroy();
+        gsap.ticker.remove((t: number) => lenis.raf(t * 1000));
+      }
+      delete (window as any).__lenis;
+      document.documentElement.style.scrollBehavior = "";
+    };
+  }, [bootDone]);
+
   useEffect(() => {
     if (!bootDone) return;
     const p = getDeviceProfile();
@@ -239,7 +283,6 @@ export function PortfolioPage() {
     const l3 = layer3.current;
     if (!l1 || !l2 || !l3) return;
 
-    // Use a direct scrub: true for a more responsive native-scroll feel
     const st = ScrollTrigger.create({
       start: 0,
       end: "max",
@@ -254,7 +297,58 @@ export function PortfolioPage() {
     return () => st.kill();
   }, [bootDone]);
 
-  // Removed internal hero scroll tracking to fix potential state-update glitching during scroll.
+  // Track scroll direction so CSS can flip AOS reveal animations
+  useEffect(() => {
+    if (!bootDone) return;
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      document.documentElement.dataset.scrollDir = y < lastY ? "up" : "down";
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      delete document.documentElement.dataset.scrollDir;
+    };
+  }, [bootDone]);
+
+  // Scroll-exit fade: elements that have been scrolled above the viewport
+  // get a fade-up exit so the page feels layered and immersive.
+  useEffect(() => {
+    if (!bootDone) return;
+
+    let ioRef: IntersectionObserver | null = null;
+
+    // Delay so AOS finishes its own observer setup first
+    const tid = window.setTimeout(() => {
+      const targets = document.querySelectorAll("[data-aos]");
+      if (!targets.length) return;
+
+      ioRef = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const el = entry.target as HTMLElement;
+            if (!entry.isIntersecting && entry.boundingClientRect.bottom < 0) {
+              el.dataset.scrollExited = "1";
+            } else {
+              delete el.dataset.scrollExited;
+            }
+          });
+        },
+        { threshold: 0 },
+      );
+      targets.forEach((el) => ioRef!.observe(el));
+    }, 1000);
+
+    return () => {
+      window.clearTimeout(tid);
+      ioRef?.disconnect();
+      document.querySelectorAll("[data-scroll-exited]").forEach((el) => {
+        delete (el as HTMLElement).dataset.scrollExited;
+      });
+    };
+  }, [bootDone]);
 
   useEffect(() => {
     if (!bootDone) return;
@@ -390,7 +484,7 @@ export function PortfolioPage() {
           <SectionDivider />
           <ErrorBoundary label="About"><AboutSection /></ErrorBoundary>
           <SectionDivider />
-          <LazySection skeletonCards={2}>
+          <LazySection skeletonCards={2} sectionId="education">
             <ErrorBoundary label="Education"><EducationSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
@@ -402,32 +496,32 @@ export function PortfolioPage() {
           <SectionDivider />
           <ErrorBoundary label="Projects"><ProjectsSection /></ErrorBoundary>
           <SectionDivider />
-          <LazySection skeletonCards={2}>
+          <LazySection skeletonCards={2} sectionId="experience">
             <ErrorBoundary label="Experience"><ExperienceSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
-          <LazySection skeletonCards={3}>
+          <LazySection skeletonCards={3} sectionId="badges">
             <ErrorBoundary label="Badges"><BadgesSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
-          <LazySection skeletonCards={3}>
+          <LazySection skeletonCards={3} sectionId="blog">
             <ErrorBoundary label="Blog"><BlogSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
-          <LazySection skeletonCards={2}>
+          <LazySection skeletonCards={2} sectionId="cv">
             <ErrorBoundary label="CV"><CVSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <SectionDivider variant="wave" />
-          <LazySection skeletonCards={2}>
+          <LazySection skeletonCards={2} sectionId="booking">
             <ErrorBoundary label="Booking"><BookingSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
-          <LazySection skeletonCards={2}>
+          <LazySection skeletonCards={2} sectionId="faq">
             <ErrorBoundary label="FAQ"><FaqSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
-          <LazySection skeletonCards={2}>
+          <LazySection skeletonCards={2} sectionId="contact">
             <ErrorBoundary label="Contact"><ContactSection /></ErrorBoundary>
           </LazySection>
         </main>

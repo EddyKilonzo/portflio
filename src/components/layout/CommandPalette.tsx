@@ -143,7 +143,7 @@ export function CommandPalette() {
           }}
           className="w-full rounded-xl border border-highlight/20 bg-surface/20 px-3 py-2 font-mono text-sm text-highlight outline-none"
         />
-        <div className="mt-2 max-h-[48vh] space-y-1 overflow-y-auto" role="listbox" aria-label="Command results">
+        <div data-lenis-prevent className="mt-2 max-h-[48vh] space-y-1 overflow-y-auto" role="listbox" aria-label="Command results">
           {filtered.map((cmd, idx) => (
             <button
               key={cmd.id}

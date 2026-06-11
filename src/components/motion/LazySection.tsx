@@ -15,6 +15,9 @@ type Props = {
   rootMargin?: string;
   /** Extra className on the wrapper div */
   className?: string;
+  /** Section id — added as data-lazy-for so island/nav can find the anchor
+   *  before the real section element is mounted into the DOM. */
+  sectionId?: string;
 };
 
 /**
@@ -28,6 +31,7 @@ export function LazySection({
   skeletonCards = 3,
   rootMargin = "1600px",
   className = "",
+  sectionId,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -64,6 +68,7 @@ export function LazySection({
     <div
       ref={ref}
       className={className}
+      data-lazy-for={sectionId || undefined}
       style={!visible ? { minHeight: "32rem", overflowAnchor: "none" } : { overflowAnchor: "none" }}
     >
       {visible ? children : <SectionSkeleton cards={skeletonCards} />}

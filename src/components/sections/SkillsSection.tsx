@@ -3,7 +3,9 @@
 import { skillsByRole, projects } from "@/content/portfolio";
 import { useSkillFilter } from "@/context/SkillFilterContext";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useMemo, useState } from "react";
+import gsap from "gsap";
+import { CountUp } from "@/components/ui/CountUp";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
@@ -11,6 +13,47 @@ import { StaggerReveal } from "@/components/motion/StaggerReveal";
 import { AppModal } from "@/components/ui/AppModal";
 import Image from "next/image";
 
+/* Animated proficiency bar + live counter for the skill detail modal */
+function ModalProficiencyBar({ level, group }: { level: number; group: "developer" | "cyber" }) {
+  const barRef = useRef<HTMLDivElement>(null);
+  const numRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const proxy = { val: 0 };
+    const tween = gsap.to(proxy, {
+      val: level,
+      duration: 1.3,
+      ease: "expo.out",
+      delay: 0.15,
+      onUpdate: () => {
+        const v = Math.round(proxy.val);
+        bar.style.width = `${v}%`;
+        if (numRef.current) numRef.current.textContent = `${v}%`;
+      },
+    });
+    return () => { tween.kill(); };
+  }, [level]);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="font-mono text-[10px] text-highlight/50">Proficiency</span>
+        <span ref={numRef} className="font-mono text-xs text-accent">0%</span>
+      </div>
+      <div className="h-2 w-full rounded-full bg-surface/40">
+        <div
+          ref={barRef}
+          className={`h-full rounded-full ${group === "cyber" ? "bg-gradient-to-r from-cyber/60 to-orange-400" : "bg-gradient-to-r from-eng/60 to-accent"}`}
+          style={{ width: "0%" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// skillicons.dev slugs
 const SKILL_ICON_MAP: Record<string, string> = {
   HTML5: "html", CSS3: "css", JavaScript: "js", TypeScript: "ts",
   Angular: "angular", NestJS: "nestjs", "Node.js": "nodejs", Express: "express",
@@ -19,34 +62,65 @@ const SKILL_ICON_MAP: Record<string, string> = {
   GitHub: "github", Figma: "figma", Docker: "docker", "VS Code": "vscode",
   React: "react", "Next.js": "nextjs", Python: "python", Linux: "linux",
   Redis: "redis", GraphQL: "graphql", "Three.js": "threejs",
-  "Tailwind CSS": "tailwind", Kubernetes: "kubernetes",
-  Metasploit: "linux", "Burp Suite": "linux", Wireshark: "linux",
-  Nmap: "linux", "Kali Linux": "linux", OSINT: "linux",
-  "SIEM tools": "linux", "Elastic Stack": "linux",
+  "Tailwind CSS": "tailwind", Kubernetes: "kubernetes", Bash: "bash",
+  "Kali Linux": "kali",
+};
+
+// cdn.simpleicons.org slugs — cybersec tools not on skillicons
+// color suffix /d8ece0 matches --highlight for dark-theme visibility
+const SIMPLEICONS_MAP: Record<string, string> = {
+  Wireshark:  "wireshark",
+  Metasploit: "metasploit",
+  Nmap:       "nmap",
+  "Burp Suite": "portswigger",
 };
 
 function SkillLogo({ name, size = 20 }: { name: string; size?: number }) {
-  const icon = SKILL_ICON_MAP[name];
-  if (!icon) {
+  const skillIcon = SKILL_ICON_MAP[name];
+  const simpleIcon = SIMPLEICONS_MAP[name];
+
+  if (skillIcon) {
     return (
-      <span
+      <Image
+        src={`https://skillicons.dev/icons?i=${skillIcon}`}
+        alt={`${name} logo`}
+        width={size}
+        height={size}
+        className="rounded shrink-0"
         style={{ width: size, height: size }}
-        className="grid place-items-center rounded border border-highlight/20 bg-surface/20 font-mono text-[9px] text-highlight/80 shrink-0"
-      >
-        {name.slice(0, 2)}
-      </span>
+        unoptimized
+      />
     );
   }
+
+  if (simpleIcon) {
+    return (
+      <Image
+        src={`https://cdn.simpleicons.org/${simpleIcon}/d8ece0`}
+        alt={`${name} logo`}
+        width={size}
+        height={size}
+        className="shrink-0 opacity-80"
+        style={{ width: size, height: size }}
+        unoptimized
+      />
+    );
+  }
+
+  // Styled text badge for tools with no external icon
+  const abbr = name
+    .split(/[\s-]/)
+    .map((w) => w[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
   return (
-    <Image
-      src={`https://skillicons.dev/icons?i=${icon}`}
-      alt={`${name} logo`}
-      width={size}
-      height={size}
-      className="rounded shrink-0"
-      style={{ width: size, height: size }}
-      unoptimized
-    />
+    <span
+      style={{ width: size, height: size, fontSize: size * 0.38 }}
+      className="grid place-items-center rounded-md border border-cyber/30 bg-cyber/10 font-display font-bold text-cyber shrink-0 tracking-tight"
+    >
+      {abbr}
+    </span>
   );
 }
 
@@ -69,10 +143,10 @@ function SkillChip({
       className={`flex shrink-0 cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 py-2.5 transition-all duration-200 ${borderColor}`}
     >
       <SkillLogo name={skill.name} size={18} />
-      <span className="font-mono text-xs whitespace-nowrap">{skill.name}</span>
+      <span className="font-sans text-xs whitespace-nowrap">{skill.name}</span>
       <div className="h-1 w-10 overflow-hidden rounded-full bg-surface/40">
         <div
-          className={`h-full rounded-full ${group === "cyber" ? "bg-gradient-to-r from-cyber/60 to-orange-400/70" : "bg-gradient-to-r from-eng/60 to-accent/80"}`}
+          className={`skill-bar-fill h-full rounded-full ${group === "cyber" ? "bg-gradient-to-r from-cyber/60 to-orange-400/70" : "bg-gradient-to-r from-eng/60 to-accent/80"}`}
           style={{ width: `${skill.level}%` }}
         />
       </div>
@@ -306,13 +380,13 @@ export function SkillsSection() {
             stagger={0.1} from="up" distance={20} start="top 88%"
           >
             {[
-              { label: "Total Skills", value: String(developerSkills.length + cyberSkills.length) },
-              { label: "Developer",    value: String(developerSkills.length) },
-              { label: "CyberSec",     value: String(cyberSkills.length) },
-              { label: "Projects",     value: String(projects.length) },
-            ].map(({ label, value }) => (
+              { label: "Total Skills", target: developerSkills.length + cyberSkills.length },
+              { label: "Developer",    target: developerSkills.length },
+              { label: "CyberSec",     target: cyberSkills.length },
+              { label: "Projects",     target: projects.length },
+            ].map(({ label, target }) => (
               <div key={label} className="glass-card rounded-xl px-4 py-3 text-center">
-                <p className="font-display text-2xl text-highlight">{value}</p>
+                <p className="font-display text-2xl text-highlight"><CountUp target={target} /></p>
                 <p className="font-mono text-[10px] text-highlight/65">{label}</p>
               </div>
             ))}
@@ -357,18 +431,7 @@ export function SkillsSection() {
                 <p className="font-mono text-xs text-highlight/50">{modalSkill.group === "developer" ? "Developer" : "CyberSec"}</p>
               </div>
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-mono text-[10px] text-highlight/50">Proficiency</span>
-                <span className="font-mono text-xs text-accent">{modalSkill.level}%</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-surface/40">
-                <div
-                  className={`h-full rounded-full ${modalSkill.group === "cyber" ? "bg-gradient-to-r from-cyber/60 to-orange-400" : "bg-gradient-to-r from-eng/60 to-accent"}`}
-                  style={{ width: `${modalSkill.level}%`, transition: "width 0.6s ease" }}
-                />
-              </div>
-            </div>
+            <ModalProficiencyBar level={modalSkill.level} group={modalSkill.group} />
             {modalSkill.related.length > 0 && (
               <div>
                 <p className="font-mono text-[10px] text-highlight/50 mb-2">Related skills</p>

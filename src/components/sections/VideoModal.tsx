@@ -247,7 +247,7 @@ export function VideoModal({ project, open, onClose }: Props) {
           </div>
 
           {/* Scrollable body — video + info */}
-          <div className="flex-1 overflow-y-auto overscroll-contain">
+          <div data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain">
             <div className="p-3 sm:p-4">
               <div ref={mountRef} className="plyr-wrap aspect-video w-full" />
             </div>

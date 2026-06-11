@@ -147,8 +147,8 @@ function ExpCard({
               {ex.duration} · {ex.location}
             </p>
           </div>
-          <div className="flex shrink-0 items-start gap-3">
-            <span className={`self-start rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${accentLabel[ex.accent]}`}>
+          <div className="flex flex-col shrink-0 items-end gap-2">
+            <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${accentLabel[ex.accent]}`}>
               {roleTag}
             </span>
             {companyLogo[ex.id] && (

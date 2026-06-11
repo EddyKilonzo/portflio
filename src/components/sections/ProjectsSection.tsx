@@ -431,7 +431,7 @@ export function ProjectsSection() {
       >
         {caseProject && (
           <div
-            className="space-y-5 text-sm text-highlight/80"
+            className="preview-modal-body space-y-5 text-sm text-highlight/80"
             onTouchStart={e => { touchXRef.current = e.changedTouches[0]?.clientX ?? null; }}
             onTouchEnd={e => {
               if (touchXRef.current === null) return;
@@ -547,18 +547,18 @@ function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
     <>
       <article
         data-aos="fade-up" data-aos-delay={Math.min(idx * 40, 120)}
-        className={`glass-card flex flex-col gap-3 rounded-2xl border border-t-2 border-highlight/10 p-5 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] ${reportCardAccent[report.type] ?? "border-t-accent/60"}`}
+        className={`relative glass-card flex flex-col gap-3 rounded-2xl border border-t-2 border-highlight/10 p-5 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] ${reportCardAccent[report.type] ?? "border-t-accent/60"}`}
       >
+        {/* Team badge — top right */}
+        <span className={`absolute right-5 top-5 sm:right-7 sm:top-7 rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold ${reportTeamBadge[report.type] ?? "border-accent/20 bg-accent/5 text-accent/70"}`}>
+          {reportTeamLabel[report.type]}
+        </span>
+
         <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-highlight/50">
-              {reportTypeLabel[report.type]}
-            </span>
-            <span className={`rounded-full border px-2 py-0.5 font-mono text-[9px] font-semibold ${reportTeamBadge[report.type] ?? "border-accent/20 bg-accent/5 text-accent/70"}`}>
-              {reportTeamLabel[report.type]}
-            </span>
-          </div>
-          <h3 className="font-display text-lg text-highlight leading-snug">{report.title}</h3>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-highlight/50">
+            {reportTypeLabel[report.type]}
+          </span>
+          <h3 className="font-display text-lg text-highlight leading-snug pr-20">{report.title}</h3>
           <p className="font-mono text-[10px] text-highlight/60">{report.timeline}</p>
         </div>
 
@@ -625,7 +625,7 @@ function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
           </>
         }
       >
-        <div className="space-y-5 text-sm text-highlight/80">
+        <div className="preview-modal-body space-y-5 text-sm text-highlight/80">
           {report.teaser && (
             <p className="font-sans leading-relaxed italic border-l-2 border-accent/40 pl-3 text-highlight/85">
               {report.teaser}

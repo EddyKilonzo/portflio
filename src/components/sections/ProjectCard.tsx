@@ -116,12 +116,12 @@ export function ProjectCard({
       onPointerLeave={onLeave}
       onTouchStart={() => setPeekOpen((v) => !v)}
     >
-      <div
-        className={`mb-3 inline-block rounded-full border px-2 py-0.5 font-mono text-[10px] ${roleBadge[project.roleMode]}`}
+      <span
+        className={`absolute right-5 top-5 rounded-full border px-2 py-0.5 font-mono text-[10px] ${roleBadge[project.roleMode]}`}
       >
         {roleDisplayLabel[project.roleMode] ?? project.roleMode}
-      </div>
-      <h3 className="font-display text-2xl text-highlight">{project.title}</h3>
+      </span>
+      <h3 className="font-display text-2xl text-highlight pr-20">{project.title}</h3>
       <p className="mt-0.5 font-mono text-[10px] text-highlight/65">
         <span className="opacity-70">//</span> {project.category}
       </p>
