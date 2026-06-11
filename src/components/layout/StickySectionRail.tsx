@@ -45,7 +45,7 @@ function getActx(): AudioContext | null {
   } catch { return null; }
 }
 
-function playTick(freq = 880, vol = 0.13, dur = 0.07) {
+function playTick(freq = 880, vol = 0.02, dur = 0.07) {
   const ctx = getActx();
   if (!ctx) return;
   try {
@@ -63,20 +63,20 @@ function playTick(freq = 880, vol = 0.13, dur = 0.07) {
 }
 
 function playDialSweep(steps: number) {
-  const count = Math.min(Math.abs(steps), 10);
+  const count = Math.min(Math.abs(steps), 2);
   for (let i = 0; i < count; i++) {
-    setTimeout(() => playTick(830 - i * 18, 0.12 - i * 0.006, 0.065), i * 58);
+    setTimeout(() => playTick(830 - i * 18, 0.018 - i * 0.004, 0.065), i * 58);
   }
 }
 
 function playJumpClick() {
-  playTick(700, 0.22, 0.09);
-  setTimeout(() => playTick(900, 0.14, 0.06), 75);
+  playTick(700, 0.03, 0.09);
+  setTimeout(() => playTick(900, 0.022, 0.06), 75);
 }
 
 function playMenuOpen() {
-  playTick(1100, 0.10, 0.05);
-  setTimeout(() => playTick(1300, 0.08, 0.04), 60);
+  playTick(1100, 0.018, 0.05);
+  setTimeout(() => playTick(1300, 0.014, 0.04), 60);
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────

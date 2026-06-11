@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { securityReports, type ReportFinding, type Severity } from "@/content/portfolio";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { BackButton } from "@/components/ui/BackButton";
+import { PdfViewButton } from "@/components/ui/PdfViewButton";
 import { decodeProjectId, encodeProjectId } from "@/lib/projectId";
 import { AosInit } from "@/components/ui/AosInit";
 import { NetworkDiagramSection } from "@/components/sections/NetworkDiagramSection";
@@ -218,8 +219,11 @@ export default function ReportDetailPage({ params }: Props) {
       <article className="mx-auto max-w-4xl space-y-8">
 
         {/* Back nav */}
-        <nav data-aos="fade-down">
+        <nav className="flex flex-wrap items-center gap-3" data-aos="fade-down">
           <BackButton label="← Back to Reports" href="/?module=cybersec&cybertab=reports#projects" />
+          {report.pdfUrl && (
+            <PdfViewButton pdfUrl={report.pdfUrl} title={report.title} />
+          )}
         </nav>
 
         {/* Header */}
@@ -477,6 +481,9 @@ export default function ReportDetailPage({ params }: Props) {
         {/* Footer */}
         <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6" data-aos="fade-up">
           <BackButton label="← All Reports" href="/?module=cybersec&cybertab=reports#projects" />
+          {report.pdfUrl && (
+            <PdfViewButton pdfUrl={report.pdfUrl} title={report.title} />
+          )}
         </footer>
       </article>
     </main>

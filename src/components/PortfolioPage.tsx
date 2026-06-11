@@ -1,7 +1,11 @@
 "use client";
 
 import { BootSequence } from "@/components/boot/BootSequence";
-import { HeroSection } from "@/components/hero/HeroSection";
+
+const HeroSection = dynamic(
+  () => import("@/components/hero/HeroSection").then((m) => m.HeroSection),
+  { ssr: false, loading: () => null },
+);
 import { Footer } from "@/components/layout/Footer";
 import { Nav } from "@/components/layout/Nav";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
@@ -10,11 +14,21 @@ import { SkipLink } from "@/components/layout/SkipLink";
 // caused by ambientFx reading localStorage on client vs default true on server.
 import { SectionDivider } from "@/components/sections/SectionDivider";
 import { getDeviceProfile } from "@/lib/device-profile";
+import { loadGsap } from "@/lib/gsap";
+import type Lenis from "lenis";
+import type { gsap as GsapCore } from "gsap";
+import type { ScrollTrigger as ScrollTriggerCore } from "gsap/ScrollTrigger";
+
+/** Lenis instance is shared on window so deep-link scrolling can use it */
+type LenisWindow = Window & { __lenis?: Lenis };
+
+type AosApi = {
+  init: (options?: Record<string, unknown>) => void;
+  refresh: (hard?: boolean) => void;
+};
 import { LazySection } from "@/components/motion/LazySection";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useTheme } from "@/context/ThemeContext";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ToastViewport } from "@/components/ui/ToastViewport";
@@ -85,10 +99,6 @@ const FaqSection = dynamic(
 
 // --- Dynamic Imports for UI/Layout Enhancements ---
 
-const DevStats = dynamic(
-  () => import("@/components/dev/DevStats").then((m) => m.DevStats),
-  { ssr: false },
-);
 const CommandPalette = dynamic(
   () => import("@/components/layout/CommandPalette").then((m) => m.CommandPalette),
   { ssr: false, loading: () => null },
@@ -122,8 +132,6 @@ const MotionQaOverlay = dynamic(
   { ssr: false, loading: () => null },
 );
 
-gsap.registerPlugin(ScrollTrigger);
-
 export function PortfolioPage() {
   const reducedMotion = useReducedMotion();
   const { ambientFx, cursorAccent } = useTheme();
@@ -131,12 +139,17 @@ export function PortfolioPage() {
   // Captured at mount (before any effects) — true if the user has visited before.
   // Used to skip stale-hash auto-scroll on return visits.
   const isReturnVisitRef = useRef(false);
-  // Skip boot animation synchronously before first paint on return visits
+  // Skip boot animation synchronously before first paint on return visits.
+  // A section hash (e.g. "← Back to Reports" → /?module=cybersec#projects) also
+  // skips boot: deep links back into a section must never replay the bootloader,
+  // even when this tab never booted before (report page opened directly).
   useLayoutEffect(() => {
     try {
-      if (sessionStorage.getItem("portfolio-booted") === "1") {
+      const booted = sessionStorage.getItem("portfolio-booted") === "1";
+      if (booted || window.location.hash) {
         isReturnVisitRef.current = true;
         setBootDone(true);
+        sessionStorage.setItem("portfolio-booted", "1");
         // Keep any hash intact so back-button navigation (e.g. /?module=cybersec#projects)
         // correctly scrolls the user to the right section on return visits.
       }
@@ -164,7 +177,7 @@ export function PortfolioPage() {
   useEffect(() => {
     if (!bootDone) return;
 
-    let aosRef: { init: Function; refresh: Function } | null = null;
+    let aosRef: AosApi | null = null;
     let id1 = 0;
     let id2 = 0;
 
@@ -176,8 +189,11 @@ export function PortfolioPage() {
       aosRef?.refresh();
     };
 
-    import("aos").then((mod) => {
-      const AOS = (mod as any).default ?? mod;
+    Promise.all([
+      loadGsap(),
+      import("aos"),
+    ]).then(([{ ScrollTrigger }, mod]) => {
+      const AOS = ((mod as { default?: AosApi }).default ?? mod) as AosApi;
       aosRef = AOS;
       AOS.init({
         duration: 900,
@@ -231,12 +247,19 @@ export function PortfolioPage() {
     const p = getDeviceProfile();
     if (p.prefersReducedMotion || p.lowEnd) return;
 
-    let lenis: any;
+    let lenis: Lenis | undefined;
+    let gsapInst: typeof GsapCore | undefined;
+    let ticker: ((t: number) => void) | null = null;
     let destroyed = false;
 
-    import("lenis").then(({ default: Lenis }) => {
+    Promise.all([
+      loadGsap(),
+      import("lenis").then((m) => m.default),
+    ]).then(([{ gsap, ScrollTrigger }, LenisCtor]) => {
       if (destroyed) return;
-      lenis = new Lenis({
+      gsapInst = gsap;
+
+      const instance = new LenisCtor({
         duration: 1.25,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: "vertical",
@@ -246,29 +269,23 @@ export function PortfolioPage() {
         touchMultiplier: 1.8,
         infinite: false,
       });
+      lenis = instance;
 
-      // Expose globally so Nav/Dial components can call lenis.scrollTo()
-      (window as any).__lenis = lenis;
-
-      // Disable CSS smooth-scroll — Lenis handles inertia
+      (window as LenisWindow).__lenis = instance;
       document.documentElement.style.scrollBehavior = "auto";
 
-      // Wire Lenis into GSAP ticker so ScrollTrigger stays accurate
-      const ticker = (time: number) => lenis.raf(time * 1000);
+      ticker = (time: number) => instance.raf(time * 1000);
       gsap.ticker.add(ticker);
       gsap.ticker.lagSmoothing(0);
 
-      // Keep ScrollTrigger in sync with Lenis scroll position
-      lenis.on("scroll", () => ScrollTrigger.update());
+      instance.on("scroll", () => ScrollTrigger.update());
     });
 
     return () => {
       destroyed = true;
-      if (lenis) {
-        lenis.destroy();
-        gsap.ticker.remove((t: number) => lenis.raf(t * 1000));
-      }
-      delete (window as any).__lenis;
+      if (lenis) lenis.destroy();
+      if (gsapInst && ticker) gsapInst.ticker.remove(ticker);
+      delete (window as LenisWindow).__lenis;
       document.documentElement.style.scrollBehavior = "";
     };
   }, [bootDone]);
@@ -283,18 +300,21 @@ export function PortfolioPage() {
     const l3 = layer3.current;
     if (!l1 || !l2 || !l3) return;
 
-    const st = ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      scrub: true,
-      onUpdate: (self) => {
-        const t = self.progress;
-        gsap.set(l1, { yPercent: -18 * t });
-        gsap.set(l2, { yPercent: -9 * t });
-        gsap.set(l3, { yPercent: -4 * t });
-      },
+    let st: ScrollTriggerCore | undefined;
+    loadGsap().then(({ gsap, ScrollTrigger }) => {
+      st = ScrollTrigger.create({
+        start: 0,
+        end: "max",
+        scrub: true,
+        onUpdate: (self: ScrollTriggerCore) => {
+          const t = self.progress;
+          gsap.set(l1, { yPercent: -18 * t });
+          gsap.set(l2, { yPercent: -9 * t });
+          gsap.set(l3, { yPercent: -4 * t });
+        },
+      });
     });
-    return () => st.kill();
+    return () => st?.kill();
   }, [bootDone]);
 
   // Track scroll direction so CSS can flip AOS reveal animations
@@ -370,14 +390,31 @@ export function PortfolioPage() {
     const hash = window.location.hash.replace("#", "");
     if (hash) {
       const tryScroll = (attempts = 0) => {
-        const el = document.getElementById(hash);
-        if (el) {
-          // Small offset so the nav doesn't overlap the section heading
-          const y = el.getBoundingClientRect().top + window.scrollY - 80;
-          window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-        } else if (attempts < 16) {
+        if (attempts >= 24) return;
+        // Fall back to the LazySection anchor: the real section may not be
+        // mounted yet, and scrolling to the anchor is what mounts it.
+        const el =
+          document.getElementById(hash) ??
+          document.querySelector<HTMLElement>(`[data-lazy-for="${hash}"]`);
+        if (!el) {
           setTimeout(() => tryScroll(attempts + 1), 100);
+          return;
         }
+        // Small offset so the nav doesn't overlap the section heading
+        const y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - 80);
+        // Lenis initializes shortly after boot and cancels native smooth
+        // scrolls — go through it when present so the scroll isn't reset.
+        const lenis = (window as LenisWindow).__lenis;
+        if (lenis) lenis.scrollTo(y, { duration: 1.1 });
+        else window.scrollTo({ top: y, behavior: "smooth" });
+        // Re-run until we actually settle near the real section: lazy
+        // sections mounting above shift the target, and a late-initializing
+        // Lenis can swallow an in-flight scroll.
+        setTimeout(() => {
+          const settled =
+            document.getElementById(hash) && Math.abs(window.scrollY - y) < 120;
+          if (!settled) tryScroll(attempts + 1);
+        }, 350);
       };
       setTimeout(() => tryScroll(), 80);
     } else {

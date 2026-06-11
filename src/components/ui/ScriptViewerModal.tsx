@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 interface Props {
@@ -58,12 +59,13 @@ export function ScriptViewerModal({ filename, language = "python", isOpen, onClo
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
-  return (
+  // Portal to <body> so transformed/AOS ancestors can't trap or clip the overlay
+  return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-[10005] flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div className="glass-card w-full max-w-4xl max-h-[88vh] flex flex-col rounded-2xl overflow-hidden border border-highlight/15">
@@ -123,6 +125,7 @@ export function ScriptViewerModal({ filename, language = "python", isOpen, onClo
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

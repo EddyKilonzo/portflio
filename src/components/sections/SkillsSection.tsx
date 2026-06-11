@@ -94,16 +94,29 @@ function SkillLogo({ name, size = 20 }: { name: string; size?: number }) {
   }
 
   if (simpleIcon) {
+    // Two color variants toggled by theme — white-ish icons vanish on the light bg
     return (
-      <Image
-        src={`https://cdn.simpleicons.org/${simpleIcon}/d8ece0`}
-        alt={`${name} logo`}
-        width={size}
-        height={size}
-        className="shrink-0 opacity-80"
-        style={{ width: size, height: size }}
-        unoptimized
-      />
+      <>
+        <Image
+          src={`https://cdn.simpleicons.org/${simpleIcon}/d8ece0`}
+          alt={`${name} logo`}
+          width={size}
+          height={size}
+          className="icon-on-dark shrink-0 opacity-80"
+          style={{ width: size, height: size }}
+          unoptimized
+        />
+        <Image
+          src={`https://cdn.simpleicons.org/${simpleIcon}/0a3d1f`}
+          alt=""
+          aria-hidden
+          width={size}
+          height={size}
+          className="icon-on-light shrink-0 opacity-80"
+          style={{ width: size, height: size }}
+          unoptimized
+        />
+      </>
     );
   }
 
@@ -182,66 +195,81 @@ function MarqueeRow({
   );
 }
 
-/* ── Bubble view ────────────────────────────────────────────────────────── */
-const FLOAT_ANIMS = ["float-a", "float-b", "float-c"] as const;
+/* ── Web/graph view ─────────────────────────────────────────────────────── */
+type GraphNode = SkillItem & { x: number; y: number; size: number };
+type GraphEdge = { from: string; to: string; x1: number; y1: number; x2: number; y2: number };
 
-function SkillBubble({
-  skill, group, index, isActive, onClick,
-}: {
-  skill: SkillItem; group: "developer" | "cyber"; index: number;
-  isActive: boolean; onClick: () => void;
-}) {
-  const size = Math.max(64, Math.min(96, Math.round(skill.level * 0.62 + 34)));
-  const anim = FLOAT_ANIMS[index % 3];
-  const dur = 3 + (index % 4) * 0.55;
-  const delay = ((index * 0.17) % 2.2).toFixed(2);
-
-  const activeRing = group === "cyber"
-    ? "rgba(255,76,76,0.7)" : "rgba(76,158,255,0.7)";
-  const activeBg = group === "cyber"
-    ? "rgba(255,76,76,0.14)" : "rgba(76,158,255,0.14)";
-  const activeText = group === "cyber" ? "var(--cyber)" : "var(--eng)";
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={`${skill.name} — ${skill.level}%`}
-      className="flex flex-col items-center justify-center rounded-full transition-transform duration-300 hover:scale-110 focus-visible:outline-none"
-      style={{
-        width: size,
-        height: size,
-        flexShrink: 0,
-        background: isActive ? activeBg : "rgba(30,74,58,0.55)",
-        border: `1.5px solid ${isActive ? activeRing : "rgba(168,217,184,0.16)"}`,
-        boxShadow: isActive ? `0 0 22px ${activeRing}` : "none",
-        animation: `${anim} ${dur}s ease-in-out ${delay}s infinite`,
-      }}
-    >
-      <SkillLogo name={skill.name} size={size > 75 ? 22 : 17} />
-      <span
-        className="mt-1 font-mono leading-tight text-center px-1 overflow-hidden"
-        style={{
-          fontSize: size > 80 ? "8px" : "7px",
-          color: isActive ? activeText : "rgba(216,236,224,0.65)",
-          maxWidth: "85%",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-          display: "block",
-        }}
-      >
-        {skill.name}
-      </span>
-    </button>
-  );
+/** Tiny deterministic hash → 0..1, used to jitter ring positions organically */
+function hash01(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return ((h >>> 0) % 1000) / 1000;
 }
 
-function BubbleCloud({
+/** Radial web layout: strongest skill in the middle, rings outward (in %). */
+function layoutGraph(skills: SkillItem[]): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  const sorted = [...skills].sort((a, b) => b.level - a.level);
+  const nodes: GraphNode[] = [];
+  const RINGS = [
+    { capacity: 1, radius: 0 },
+    { capacity: 7, radius: 21 },
+    { capacity: 13, radius: 36 },
+    { capacity: 24, radius: 46 },
+  ];
+  let placed = 0;
+  for (let r = 0; r < RINGS.length && placed < sorted.length; r++) {
+    const ring = RINGS[r]!;
+    const inRing = Math.min(ring.capacity, sorted.length - placed);
+    for (let i = 0; i < inRing; i++) {
+      const skill = sorted[placed + i]!;
+      const jitter = hash01(skill.name);
+      const angle = ((i + (r % 2 ? 0.5 : 0)) / inRing) * Math.PI * 2 - Math.PI / 2 + (jitter - 0.5) * 0.35;
+      const radius = ring.radius === 0 ? 0 : ring.radius + (jitter - 0.5) * 5;
+      nodes.push({
+        ...skill,
+        x: 50 + Math.cos(angle) * radius,
+        y: 50 + Math.sin(angle) * radius,
+        size: Math.max(54, Math.min(84, Math.round(skill.level * 0.5 + 30))),
+      });
+    }
+    placed += inRing;
+  }
+
+  const byName = new Map(nodes.map((n) => [n.name, n]));
+  const edges: GraphEdge[] = [];
+  const seen = new Set<string>();
+  const addEdge = (a: GraphNode, b: GraphNode) => {
+    const key = [a.name, b.name].sort().join("|");
+    if (seen.has(key)) return;
+    seen.add(key);
+    edges.push({ from: a.name, to: b.name, x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+  };
+  const center = nodes[0];
+  for (const n of nodes) {
+    let connected = false;
+    for (const rel of n.related) {
+      const other = byName.get(rel);
+      if (other && other !== n) { addEdge(n, other); connected = true; }
+    }
+    // Orphans hook into the hub so the web stays connected
+    if (!connected && center && n !== center) addEdge(n, center);
+  }
+  return { nodes, edges };
+}
+
+function SkillGraph({
   skills, group, activeSkill, onPick, label,
 }: {
   skills: SkillItem[]; group: "developer" | "cyber";
   activeSkill: string | null; onPick: (name: string) => void; label: string;
 }) {
+  const { nodes, edges } = useMemo(() => layoutGraph(skills), [skills]);
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  const groupColor = group === "cyber" ? "var(--cyber)" : "var(--eng)";
+  const groupRgb = group === "cyber" ? "var(--rgb-cyber)" : "var(--rgb-eng)";
+  const focus = hovered ?? activeSkill;
+
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
@@ -251,17 +279,79 @@ function BubbleCloud({
         <span className={`h-px flex-1 ${group === "cyber" ? "bg-cyber/15" : "bg-eng/15"}`} />
         <span className="font-mono text-[10px] text-highlight/60">{skills.length} skills</span>
       </div>
-      <div className="flex flex-wrap gap-3 items-center justify-start py-3">
-        {skills.map((skill, i) => (
-          <SkillBubble
-            key={skill.name}
-            skill={skill}
-            group={group}
-            index={i}
-            isActive={activeSkill === skill.name}
-            onClick={() => onPick(skill.name)}
-          />
-        ))}
+
+      <div className="relative w-full" style={{ height: "min(560px, 78vw)" }}>
+        {/* Edges */}
+        <svg
+          className="absolute inset-0 h-full w-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          {edges.map((e) => {
+            const lit = focus !== null && (e.from === focus || e.to === focus);
+            const dim = focus !== null && !lit;
+            return (
+              <line
+                key={`${e.from}|${e.to}`}
+                x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2}
+                stroke={lit ? `rgb(${groupRgb})` : "rgb(var(--rgb-highlight))"}
+                strokeOpacity={lit ? 0.55 : dim ? 0.05 : 0.14}
+                strokeWidth={lit ? 0.4 : 0.22}
+                vectorEffect="non-scaling-stroke"
+                style={{ transition: "stroke-opacity 200ms ease, stroke 200ms ease" }}
+              />
+            );
+          })}
+        </svg>
+
+        {/* Nodes */}
+        {nodes.map((n) => {
+          const isActive = activeSkill === n.name;
+          const isFocus = focus === n.name;
+          const isNeighbor =
+            focus !== null && !isFocus &&
+            edges.some((e) => (e.from === focus && e.to === n.name) || (e.to === focus && e.from === n.name));
+          const dimmed = focus !== null && !isFocus && !isNeighbor;
+          return (
+            <button
+              key={n.name}
+              type="button"
+              onClick={() => onPick(n.name)}
+              onMouseEnter={() => setHovered(n.name)}
+              onMouseLeave={() => setHovered(null)}
+              onFocus={() => setHovered(n.name)}
+              onBlur={() => setHovered(null)}
+              title={`${n.name} — ${n.level}%`}
+              className="absolute flex flex-col items-center justify-center rounded-full transition-[transform,opacity,box-shadow] duration-200 hover:scale-110 focus-visible:outline-none"
+              style={{
+                left: `${n.x}%`,
+                top: `${n.y}%`,
+                width: n.size,
+                height: n.size,
+                transform: "translate(-50%, -50%)",
+                background: isActive || isFocus
+                  ? `rgb(${groupRgb} / 0.14)`
+                  : "rgb(var(--rgb-surface) / 0.6)",
+                border: `1.5px solid ${isActive || isFocus ? `rgb(${groupRgb} / 0.7)` : "rgb(var(--rgb-highlight) / 0.18)"}`,
+                boxShadow: isActive || isFocus ? `0 0 20px rgb(${groupRgb} / 0.45)` : "none",
+                opacity: dimmed ? 0.35 : 1,
+                zIndex: isFocus ? 2 : 1,
+              }}
+            >
+              <SkillLogo name={n.name} size={n.size > 72 ? 22 : 17} />
+              <span
+                className="mt-1 block max-w-[85%] overflow-hidden text-ellipsis whitespace-nowrap px-1 text-center font-mono leading-tight"
+                style={{
+                  fontSize: n.size > 76 ? "8px" : "7px",
+                  color: isActive || isFocus ? groupColor : "rgb(var(--rgb-highlight) / 0.65)",
+                }}
+              >
+                {n.name}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -271,7 +361,7 @@ function BubbleCloud({
 export function SkillsSection() {
   const sectionRef = useSectionReveal(1);
   const { activeSkill, setActiveSkill } = useSkillFilter();
-  const [viewMode, setViewMode] = useState<"marquee" | "bubbles">("marquee");
+  const [viewMode, setViewMode] = useState<"marquee" | "graph">("marquee");
   const [modalSkill, setModalSkill] = useState<(SkillItem & { group: "developer" | "cyber" }) | null>(null);
 
   const developerSkills = useMemo(() => {
@@ -314,7 +404,7 @@ export function SkillsSection() {
               </div>
               {/* View mode toggle */}
               <div className="flex rounded-xl border border-highlight/10 bg-surface/10 p-1 gap-1">
-                {(["marquee", "bubbles"] as const).map(mode => (
+                {(["marquee", "graph"] as const).map(mode => (
                   <button
                     key={mode}
                     type="button"
@@ -325,7 +415,7 @@ export function SkillsSection() {
                         : "text-highlight/50 hover:text-highlight/75 border border-transparent"
                     }`}
                   >
-                    {mode === "marquee" ? "⟵ Scroll" : "◎ Bubbles"}
+                    {mode === "marquee" ? "⟵ Scroll" : "⬡ Graph"}
                   </button>
                 ))}
               </div>
@@ -369,8 +459,8 @@ export function SkillsSection() {
             </>
           ) : (
             <div className="mt-10 space-y-8" data-aos="fade-up">
-              <BubbleCloud skills={developerSkills} group="developer" activeSkill={activeSkill} onPick={(n) => handlePick(n, "developer")} label="Developer" />
-              <BubbleCloud skills={cyberSkills} group="cyber" activeSkill={activeSkill} onPick={(n) => handlePick(n, "cyber")} label="CyberSec" />
+              <SkillGraph skills={developerSkills} group="developer" activeSkill={activeSkill} onPick={(n) => handlePick(n, "developer")} label="Developer" />
+              <SkillGraph skills={cyberSkills} group="cyber" activeSkill={activeSkill} onPick={(n) => handlePick(n, "cyber")} label="CyberSec" />
             </div>
           )}
 

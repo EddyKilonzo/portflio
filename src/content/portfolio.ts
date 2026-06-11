@@ -198,7 +198,7 @@ export const profile = {
     hallOfFame: ["Acme Corp Q3 2025"],
   },
   homelab:
-    "I built a home lab to get real, hands-on experience — not just read about it. It is a small virtual network with a SIEM (Wazuh), an IDS (Suricata), and intentionally vulnerable machines I use as targets. I run simulated attacks, watch the alerts come in, and practice investigating them the same way a SOC analyst would on a real shift. It bridges the gap between studying for certifications and being ready to do the job.",
+    "Reading about security only gets you so far. I built a small home lab — a virtual network with Wazuh, Suricata, and a few machines I deliberately break — so I can actually watch attacks unfold and practice responding to them. It keeps the learning real.",
 };
 
 // ── Testimonials ─────────────────────────────────────────────────────────────

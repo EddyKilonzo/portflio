@@ -2,6 +2,7 @@
 
 import { FocusTrap } from "focus-trap-react";
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { playSurfaceEnter } from "@/lib/surface-choreography";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
@@ -47,9 +48,12 @@ export function AppModal({
   // behind the (mobile) bottom-sheet and wheel/touch stays inside the panel.
   useBodyScrollLock(open);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
-  return (
+  // Portal to <body>: modals are mounted inside sections whose AOS/hover
+  // transforms create stacking contexts — rendered inline, the overlay gets
+  // trapped below the nav (z-9997) and `fixed` mis-anchors to the ancestor.
+  return createPortal(
     <div
       ref={backdropRef}
       className="fixed inset-0 z-[10005] flex items-end justify-center bg-black/70 px-3 pt-3 backdrop-blur-sm sm:items-center sm:p-4"
@@ -110,6 +114,7 @@ export function AppModal({
           )}
         </div>
       </FocusTrap>
-    </div>
+    </div>,
+    document.body,
   );
 }

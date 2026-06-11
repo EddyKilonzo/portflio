@@ -14,8 +14,8 @@ const config: Config = {
         surfaceMid: "rgb(var(--rgb-surface-mid)/ <alpha-value>)",
         highlight:  "rgb(var(--rgb-highlight)  / <alpha-value>)",
         accent:     "rgb(var(--rgb-accent)     / <alpha-value>)",
-        cyber: "#FF4C4C",
-        eng:   "#4C9EFF",
+        cyber: "rgb(var(--rgb-cyber) / <alpha-value>)",
+        eng:   "rgb(var(--rgb-eng)   / <alpha-value>)",
       },
       fontFamily: {
         display: ["var(--font-syne)", "system-ui", "sans-serif"],

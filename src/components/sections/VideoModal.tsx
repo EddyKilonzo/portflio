@@ -4,6 +4,7 @@ import type { Project } from "@/content/portfolio";
 import { animate } from "animejs";
 import { FocusTrap } from "focus-trap-react";
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 function detectVideoKind(
@@ -202,9 +203,10 @@ export function VideoModal({ project, open, onClose }: Props) {
     }
   }, [open]);
 
-  if (!open || !project) return null;
+  if (!open || !project || typeof document === "undefined") return null;
 
-  return (
+  // Portal to <body> so transformed/AOS ancestors can't trap or clip the overlay
+  return createPortal(
     <div
       ref={backdropRef}
       className="fixed inset-0 z-[10002] flex items-center justify-center px-4"
@@ -291,6 +293,7 @@ export function VideoModal({ project, open, onClose }: Props) {
           </div>
         </div>
       </FocusTrap>
-    </div>
+    </div>,
+    document.body,
   );
 }
