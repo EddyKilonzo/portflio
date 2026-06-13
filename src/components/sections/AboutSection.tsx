@@ -31,24 +31,16 @@ export function AboutSection() {
         <div className="glass-card rounded-2xl p-5" data-aos="fade-up" data-aos-delay="60">
           <p className="font-mono text-[10px] uppercase tracking-widest text-accent mb-3">Background</p>
           <p className="font-sans text-sm leading-relaxed text-highlight/80">
-            I am a <strong className="text-highlight font-semibold">software engineer and web developer</strong> making a deliberate transition into cybersecurity.
-            I spent years building full-stack applications — React frontends, NestJS APIs, and cloud-deployed services — and now I am applying that same engineering mindset to blue team operations.
-            Understanding how systems are built gives me a real edge in understanding how they can be broken and defended.
+            I am a <strong className="text-highlight font-semibold">software engineer</strong> moving into cybersecurity.
+            Years of building full-stack products — APIs, frontends, cloud services — gave me a deep understanding of how systems work, which now helps me understand how they fail and how to defend them.
           </p>
         </div>
         <div className="glass-card rounded-2xl p-5" data-aos="fade-up" data-aos-delay="120">
-          <p className="font-mono text-[10px] uppercase tracking-widest text-accent mb-3">SOC / Blue Team</p>
-          <p className="font-sans text-sm leading-relaxed text-highlight/80">
-            I am a <strong className="text-highlight/90 font-medium">SOC Analyst focused on blue team operations</strong> — learning to monitor networks, investigate security alerts, and respond to incidents.
-            I have been building my skills through hands-on home lab work, CTF challenges on TryHackMe and HackTheBox, and self-directed study of tools used in real Security Operations Centres.
-          </p>
-        </div>
-        <div className="glass-card rounded-2xl p-5" data-aos="fade-up" data-aos-delay="180">
           <p className="font-mono text-[10px] uppercase tracking-widest text-accent mb-3">Home Lab</p>
           <p className="font-sans text-sm leading-relaxed text-highlight/80">{profile.homelab}</p>
         </div>
-        <div className="flex flex-wrap gap-2" data-aos="fade-up" data-aos-delay="240">
-          {["SOC / Blue Team", "Threat Detection", "Incident Response", "SIEM", "Full-Stack Dev", "MITRE ATT&CK"].map(kw => (
+        <div className="flex flex-wrap gap-2" data-aos="fade-up" data-aos-delay="180">
+          {["SOC / Blue Team", "Threat Detection", "Incident Response", "SIEM", "Software Engineer", "MITRE ATT&CK"].map(kw => (
             <span key={kw} className="rounded-full border border-cyber/25 bg-cyber/8 px-3 py-1 font-mono text-[11px] text-cyber/80">{kw}</span>
           ))}
         </div>
@@ -65,22 +57,17 @@ export function AboutSection() {
               About
             </h2>
             <p className="max-w-3xl font-sans text-lg text-highlight/80">
-              I am a <strong className="text-highlight font-semibold">software engineer and web developer</strong> making a deliberate transition into cybersecurity.
-              I spent years building full-stack applications — React frontends, NestJS APIs, and cloud-deployed services — and now I am applying that same engineering mindset to blue team operations.
-              Understanding how systems are built gives me a real edge in understanding how they can be broken and defended.
+              I am a <strong className="text-highlight font-semibold">software engineer</strong> moving into cybersecurity.
+              Years of building full-stack products — APIs, frontends, cloud services — gave me a deep understanding of how systems work, which now helps me understand how they fail and how to defend them.
             </p>
             <p className="mt-4 max-w-3xl font-sans text-sm leading-relaxed text-highlight/70">
-              I am a <strong className="text-highlight/80 font-medium">SOC Analyst focused on blue team operations</strong> — learning to monitor networks, investigate security alerts, and respond to incidents.
-              I have been building my skills through hands-on home lab work, CTF challenges on TryHackMe and HackTheBox, and self-directed study of tools used in real Security Operations Centres.
-            </p>
-            <p className="mt-3 max-w-3xl font-sans text-sm leading-relaxed text-highlight/70">
               {profile.homelab}
             </p>
             <div className="mt-6 flex flex-wrap gap-2 max-w-2xl">
               {[
                 "SOC / Blue Team", "Threat Detection", "Incident Response",
                 "SIEM (Wazuh / Splunk)", "Log Analysis", "Alert Triage",
-                "Full-Stack Dev", "React / Next.js", "NestJS / Node",
+                "Software Engineer", "React / Next.js", "NestJS / Node",
                 "MITRE ATT&CK",
               ].map(kw => (
                 <span key={kw} className="rounded-full border border-cyber/25 bg-cyber/8 px-3 py-1 font-mono text-[11px] text-cyber/80">

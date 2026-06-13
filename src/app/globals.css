@@ -746,6 +746,31 @@ html.light .theme-wipe-toggle {
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
+/* ── Light mode: make background elements visible ────────────────────────── */
+/* Hex grid — more opaque in light mode so the pattern shows on white */
+html.light .light-hex-grid {
+  opacity: 0.18 !important;
+}
+/* Gradient blobs — slightly stronger in light so they're not invisible */
+html.light .blob-accent { opacity: 0.10 !important; }
+html.light .blob-cyber  { opacity: 0.08 !important; }
+html.light .blob-eng    { opacity: 0.09 !important; }
+
+/* ── Broader smooth theme transition ─────────────────────────────────────── */
+/* Smooth color properties on every element when the theme class changes.
+   Intentionally excludes opacity (AOS/anime.js animate opacity — adding a
+   transition here would fight those animations) and transforms (performance). */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, outline-color;
+  transition-duration: 0.28s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Kill color transitions during the wipe — the overlay covers the screen so
+   there's no visible color change to smooth; transitions just add lag. */
+html.theme-wiping *, html.theme-wiping *::before, html.theme-wiping *::after {
+  transition: none !important;
+}
+
 /* Shiki syntax highlight output — reset background so the modal bg shows through */
 .shiki-wrap .shiki,
 .shiki-wrap pre.shiki {

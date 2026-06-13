@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
   const { name, email, message, projectType, budget, timeline } = body as Record<string, string>;
 
   const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.CONTACT_TO_EMAIL ?? "hello@eddymax.dev";
+  const toEmail = process.env.CONTACT_TO_EMAIL ?? "eddymax3715@gmail.com";
 
   if (!apiKey) {
     // Dev mode: log and return success without sending

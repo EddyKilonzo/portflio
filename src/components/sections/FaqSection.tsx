@@ -5,9 +5,11 @@ import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { faqs } from "@/content/portfolio";
+import { useState } from "react";
 
 export function FaqSection() {
   const sectionRef = useSectionReveal(15);
+  const [open, setOpen] = useState<string | null>(faqs[0]?.id ?? null);
 
   return (
     <section
@@ -30,45 +32,77 @@ export function FaqSection() {
           <p
             className="mt-2 max-w-3xl font-sans text-highlight/70"
             data-aos="fade-up"
-            data-aos-delay="100"
+            data-aos-delay="80"
           >
             Quick answers about availability, collaboration, and how security fits into delivery.
           </p>
         </ParallaxDrift>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_380px]">
-          <div className="glass-card rounded-2xl p-6">
-            <div className="space-y-3">
-              {faqs.map((f) => (
-                <details
+        <div className="mt-10 grid gap-6 lg:grid-cols-[1fr_300px]">
+          {/* Accordion */}
+          <div className="space-y-3">
+            {faqs.map((f, idx) => {
+              const isOpen = open === f.id;
+              return (
+                <div
                   key={f.id}
-                  className="group rounded-xl border border-highlight/10 bg-surface/10 px-4 py-3"
+                  className="glass-card overflow-hidden rounded-xl"
+                  data-aos="fade-up"
+                  data-aos-delay={80 + idx * 55}
                 >
-                  <summary className="cursor-pointer font-display text-lg text-highlight">
-                    {f.q}
-                  </summary>
-                  <p className="mt-2 font-sans text-sm leading-relaxed text-highlight/75">
-                    {f.a}
-                  </p>
-                </details>
-              ))}
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => setOpen(isOpen ? null : f.id)}
+                    aria-expanded={isOpen}
+                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                  >
+                    <span className="font-display text-base text-highlight">{f.q}</span>
+                    {/* Animated +/× toggle */}
+                    <span
+                      className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-highlight/20 font-mono text-sm font-light text-highlight/55 transition-transform duration-300"
+                      style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                      aria-hidden
+                    >
+                      +
+                    </span>
+                  </button>
+
+                  {/* Animated collapse */}
+                  <div
+                    className="overflow-hidden"
+                    style={{
+                      maxHeight: isOpen ? "240px" : "0px",
+                      transition: "max-height 0.32s cubic-bezier(0.4,0,0.2,1)",
+                    }}
+                  >
+                    <p className="border-t border-highlight/8 px-5 pb-4 pt-3 font-sans text-sm leading-relaxed text-highlight/70">
+                      {f.a}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
-          <aside className="glass-card rounded-2xl p-6">
-            <p className="font-mono text-xs uppercase tracking-wide text-highlight/50">
+          {/* Aside card */}
+          <aside
+            className="glass-card flex flex-col rounded-2xl p-6"
+            data-aos="fade-left"
+            data-aos-delay="150"
+          >
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-highlight/40">
               Still have questions?
             </p>
             <p className="mt-4 font-display text-2xl text-highlight">Let&apos;s talk.</p>
-            <p className="mt-2 font-sans text-sm text-highlight/70">
-              Send a message and include what you&apos;re building plus any deadlines. I&apos;ll respond with a
-              clear plan for the next steps.
+            <p className="mt-2 font-sans text-sm leading-relaxed text-highlight/65">
+              Send a message with what you&apos;re building and any deadlines. I&apos;ll come back with a clear plan
+              for next steps.
             </p>
             <a
               href="#contact"
-              className="mt-5 inline-block font-mono text-xs text-accent underline"
+              className="mt-auto pt-5 inline-flex items-center gap-1.5 font-mono text-sm text-accent transition-opacity hover:opacity-75"
             >
-              Jump to contact -&gt;
+              Jump to contact →
             </a>
           </aside>
         </div>
@@ -76,4 +110,3 @@ export function FaqSection() {
     </section>
   );
 }
-

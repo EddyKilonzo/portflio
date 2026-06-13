@@ -68,6 +68,10 @@ const EducationSection = dynamic(
   () => import("@/components/sections/EducationSection").then((m) => m.EducationSection),
   { ssr: false }
 );
+const LiveStatsSection = dynamic(
+  () => import("@/components/sections/LiveStatsSection").then((m) => m.LiveStatsSection),
+  { ssr: false }
+);
 const BadgesSection = dynamic(
   () => import("@/components/sections/BadgesSection").then((m) => m.BadgesSection),
   { ssr: false }
@@ -94,6 +98,10 @@ const ContactSection = dynamic(
 );
 const FaqSection = dynamic(
   () => import("@/components/sections/FaqSection").then((m) => m.FaqSection),
+  { ssr: false }
+);
+const TestimonialsSection = dynamic(
+  () => import("@/components/sections/TestimonialsSection").then((m) => m.TestimonialsSection),
   { ssr: false }
 );
 
@@ -447,7 +455,7 @@ export function PortfolioPage() {
           className="pointer-events-none fixed inset-0 -z-10 will-change-transform"
           aria-hidden
         >
-          <div className="absolute inset-0 bg-hex-grid opacity-[0.09]" />
+          <div className="absolute inset-0 bg-hex-grid opacity-[0.09] light-hex-grid" />
         </div>
         <div
           ref={layer3}
@@ -461,9 +469,9 @@ export function PortfolioPage() {
             Must stay STATIC: anything animating under the glass-cards' backdrop-filter
             forces every visible card to re-blur its backdrop each frame. */}
         {!lowEnd && (
-        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div aria-hidden className="bg-blobs pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <div
-            className="absolute rounded-full"
+            className="blob-accent absolute rounded-full"
             style={{
               top: "-12%", left: "3%",
               width: 680, height: 680,
@@ -472,7 +480,7 @@ export function PortfolioPage() {
             }}
           />
           <div
-            className="absolute rounded-full"
+            className="blob-cyber absolute rounded-full"
             style={{
               top: "38%", right: "-8%",
               width: 560, height: 560,
@@ -481,7 +489,7 @@ export function PortfolioPage() {
             }}
           />
           <div
-            className="absolute rounded-full"
+            className="blob-eng absolute rounded-full"
             style={{
               bottom: "8%", left: "28%",
               width: 500, height: 500,
@@ -537,8 +545,14 @@ export function PortfolioPage() {
             <ErrorBoundary label="Experience"><ExperienceSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider variant="wave" />
+          <ErrorBoundary label="LiveStats"><LiveStatsSection /></ErrorBoundary>
+          <SectionDivider variant="wave" />
           <LazySection skeletonCards={3} sectionId="badges">
             <ErrorBoundary label="Badges"><BadgesSection /></ErrorBoundary>
+          </LazySection>
+          <SectionDivider />
+          <LazySection skeletonCards={3} sectionId="testimonials">
+            <ErrorBoundary label="Testimonials"><TestimonialsSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
           <LazySection skeletonCards={3} sectionId="blog">

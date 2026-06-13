@@ -12,21 +12,15 @@ import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 gsap.registerPlugin(ScrollTrigger);
 
 const accentBorder: Record<string, string> = {
-  cyber: "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
+  cyber:       "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
   engineering: "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
-  web: "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
-};
-
-const accentDot: Record<string, string> = {
-  cyber: "bg-accent",
-  engineering: "bg-accent",
-  web: "bg-accent",
+  web:         "border-l-accent shadow-[inset_4px_0_0_0_rgba(var(--rgb-accent),0.8)]",
 };
 
 const accentLabel: Record<string, string> = {
-  cyber: "text-accent border-accent/30",
+  cyber:       "text-accent border-accent/30",
   engineering: "text-accent border-accent/30",
-  web: "text-accent border-accent/30",
+  web:         "text-accent border-accent/30",
 };
 
 const companyLogo: Record<string, string> = {
@@ -34,25 +28,104 @@ const companyLogo: Record<string, string> = {
   "trainee-eldohub":    "/logos/eldohub.jfif",
 };
 
-export function ExperienceSection() {
-  const sectionRef = useSectionReveal(7);
-  const lineFillRef = useRef<HTMLDivElement>(null);
+/* ── Animated timeline dot ───────────────────────────────────────────────── */
+function AnimatedDot({ isFirst }: { isFirst: boolean }) {
+  const dotRef  = useRef<HTMLSpanElement>(null);
+  const ringRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const sectionEl = (sectionRef as { current: HTMLElement | null }).current ?? null;
-    if (!sectionEl || !lineFillRef.current) return;
+    const dot  = dotRef.current;
+    const ring = ringRef.current;
+    if (!dot) return;
 
-    gsap.set(lineFillRef.current, { scaleY: 0, transformOrigin: "top center" });
-    const tween = gsap.to(lineFillRef.current, {
+    // Start hidden — will be revealed by IntersectionObserver
+    gsap.set(dot, { scale: 0, opacity: 0 });
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        io.disconnect();
+
+        // Spring pop-in with overshoot
+        gsap.to(dot, {
+          scale: 1,
+          opacity: 1,
+          duration: 0.55,
+          ease: "back.out(2.2)",
+          delay: 0.18,
+        });
+
+        // One-shot ripple ring expands and fades
+        if (ring) {
+          gsap.fromTo(
+            ring,
+            { scale: 0.8, opacity: 0.75 },
+            { scale: 3.2, opacity: 0, duration: 0.85, ease: "power2.out", delay: 0.22 },
+          );
+        }
+      },
+      { threshold: 0.4 },
+    );
+
+    io.observe(dot);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <span
+      className="absolute -left-[1.35rem] top-7 flex items-center justify-center md:-left-[2.15rem]"
+      aria-hidden
+    >
+      {/* One-shot ripple — plays once when dot reveals */}
+      <span
+        ref={ringRef}
+        className="absolute h-3.5 w-3.5 rounded-full bg-accent opacity-0"
+      />
+      {/* Persistent slow ping on the most-recent entry */}
+      {isFirst && (
+        <span className="absolute h-3.5 w-3.5 animate-ping rounded-full bg-accent/35" />
+      )}
+      {/* Dot */}
+      <span
+        ref={dotRef}
+        className="relative z-10 h-3.5 w-3.5 rounded-full border-2 border-bg bg-accent"
+        style={{
+          boxShadow: isFirst
+            ? "0 0 0 2px rgba(168,217,184,0.2), 0 0 12px rgba(13,138,61,0.65)"
+            : "0 0 0 2px rgba(168,217,184,0.15)",
+        }}
+      />
+    </span>
+  );
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+export function ExperienceSection() {
+  const sectionRef  = useSectionReveal(7);
+  const lineFillRef = useRef<HTMLDivElement>(null);
+  const lineGlowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const sectionEl = (sectionRef as { current: HTMLElement | null }).current;
+    const fill = lineFillRef.current;
+    const glow = lineGlowRef.current;
+    if (!sectionEl || !fill) return;
+
+    gsap.set(fill, { scaleY: 0, transformOrigin: "top center" });
+    if (glow) gsap.set(glow, { scaleY: 0, transformOrigin: "top center" });
+
+    const targets = [fill, glow].filter(Boolean) as HTMLElement[];
+    const tween = gsap.to(targets, {
       scaleY: 1,
       ease: "none",
       scrollTrigger: {
         trigger: sectionEl,
         start: "top 72%",
         end: "bottom 30%",
-        scrub: 0.7,
+        scrub: 0.8,
       },
     });
+
     return () => { tween.kill(); };
   }, [sectionRef]);
 
@@ -79,18 +152,31 @@ export function ExperienceSection() {
         </ParallaxDrift>
 
         <div className="relative pb-4 pl-6 md:pl-14">
-          {/* Timeline track */}
-          <div className="absolute bottom-0 left-2 top-0 w-px bg-gradient-to-b from-accent/60 via-highlight/20 to-transparent md:left-5" />
+          {/* Static background track */}
+          <div className="absolute bottom-0 left-2 top-0 w-px bg-gradient-to-b from-highlight/12 via-highlight/8 to-transparent md:left-5" />
+
           {/* Scroll-driven fill */}
           <div
             ref={lineFillRef}
-            className="absolute left-[5px] top-0 w-[3px] rounded-full bg-accent/80 md:left-[18px]"
+            className="absolute left-[5px] top-0 w-[3px] rounded-full bg-accent md:left-[18px]"
             style={{ height: "100%" }}
+          />
+
+          {/* Glow layer — slightly wider, blurred, sits behind the fill visually */}
+          <div
+            ref={lineGlowRef}
+            className="absolute left-[4px] top-0 w-[5px] rounded-full md:left-[17px]"
+            style={{
+              height: "100%",
+              background: "rgba(13,138,61,0.4)",
+              filter: "blur(5px)",
+              pointerEvents: "none",
+            }}
           />
 
           <div className="space-y-6">
             {experience.map((ex, idx) => (
-              <ExpCard key={ex.id} ex={ex} index={idx} />
+              <ExpCard key={ex.id} ex={ex} index={idx} isFirst={idx === 0} />
             ))}
           </div>
         </div>
@@ -99,33 +185,34 @@ export function ExperienceSection() {
   );
 }
 
+/* ── Card ────────────────────────────────────────────────────────────────── */
 const COLLAPSED_COUNT = 3;
 
 function ExpCard({
   ex,
   index,
+  isFirst,
 }: {
   ex: (typeof experience)[number];
   index: number;
+  isFirst: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const responsibilities = ex.responsibilities;
-  const visible = expanded ? responsibilities : responsibilities.slice(0, COLLAPSED_COUNT);
-  const hasMore = responsibilities.length > COLLAPSED_COUNT;
+  const visible  = expanded ? responsibilities : responsibilities.slice(0, COLLAPSED_COUNT);
+  const hasMore  = responsibilities.length > COLLAPSED_COUNT;
   const yearLabel = ex.duration.split("—")[0]?.trim() ?? ex.duration;
-  const roleTag = ex.accent === "cyber" ? "CyberSec" : "Developer";
+  const roleTag   = ex.accent === "cyber" ? "CyberSec" : "Developer";
 
   return (
     <article
       className="exp-card relative"
-      data-aos="fade-up"
-      data-aos-delay={Math.min(index * 60, 120)}
+      data-aos="fade-left"
+      data-aos-delay={Math.min(index * 70, 140)}
     >
-      {/* Timeline dot */}
-      <span
-        className={`absolute -left-[1.45rem] top-7 h-3.5 w-3.5 rounded-full border-2 border-bg shadow-[0_0_0_2px_rgba(168,217,184,0.15)] md:-left-[2.2rem] ${accentDot[ex.accent] ?? "bg-highlight"}`}
-      />
-      {/* Year label — desktop only */}
+      <AnimatedDot isFirst={isFirst} />
+
+      {/* Year label — desktop margin */}
       <span className="absolute -left-[5.5rem] top-5 hidden rounded border border-highlight/15 bg-surface/20 px-2 py-0.5 font-mono text-[10px] text-highlight/70 md:inline-block">
         {yearLabel}
       </span>
@@ -135,9 +222,9 @@ function ExpCard({
       >
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+            <div className="mb-0.5 flex flex-wrap items-center gap-2">
               <h3 className="font-display text-xl text-highlight">{ex.title}</h3>
-              {/* Year pill — visible on mobile (desktop shows it in the timeline margin) */}
+              {/* Year pill — mobile only */}
               <span className="inline-block rounded border border-highlight/15 bg-surface/20 px-2 py-0.5 font-mono text-[10px] text-highlight/70 md:hidden">
                 {yearLabel}
               </span>
@@ -147,7 +234,8 @@ function ExpCard({
               {ex.duration} · {ex.location}
             </p>
           </div>
-          <div className="flex flex-col shrink-0 items-end gap-2">
+
+          <div className="flex shrink-0 flex-col items-end gap-2">
             <span className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] ${accentLabel[ex.accent]}`}>
               {roleTag}
             </span>
@@ -156,7 +244,7 @@ function ExpCard({
               <img
                 src={companyLogo[ex.id]}
                 alt={`${ex.company} logo`}
-                className="h-24 w-24 shrink-0 rounded-xl object-contain bg-white/10 p-2"
+                className="h-24 w-24 shrink-0 rounded-xl bg-white/10 object-contain p-2"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
             )}
@@ -172,23 +260,23 @@ function ExpCard({
           ))}
         </ul>
 
-        {hasMore ? (
+        {hasMore && (
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="mt-3 font-mono text-[11px] text-accent/70 hover:text-accent transition-colors"
+            className="mt-3 font-mono text-[11px] text-accent/70 transition-colors hover:text-accent"
           >
             {expanded ? "Show less ↑" : `+${responsibilities.length - COLLAPSED_COUNT} more ↓`}
           </button>
-        ) : null}
+        )}
 
-        {ex.impact ? (
+        {ex.impact && (
           <p className="mt-4 rounded-lg border border-accent/20 bg-accent/[0.04] px-3 py-2 font-mono text-xs text-accent">
             ↘ {ex.impact}
           </p>
-        ) : null}
+        )}
 
-        {ex.tools.length > 0 ? (
+        {ex.tools.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">
             {ex.tools.map((t) => (
               <span
@@ -199,7 +287,7 @@ function ExpCard({
               </span>
             ))}
           </div>
-        ) : null}
+        )}
       </div>
     </article>
   );

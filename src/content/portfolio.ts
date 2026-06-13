@@ -162,11 +162,11 @@ export const profile = {
      ███████╗██║ ╚═╝ ██║██╔╝ ██╗
      ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝`,
   subtitle:
-    "Software engineer transitioning into cybersecurity — bringing a developer's understanding of how systems are built to the work of detecting threats, investigating alerts, and defending them.",
+    "Software engineer moving into cybersecurity — I use what I know about building systems to spot threats, investigate alerts, and keep things secure.",
   headlineScramble:
     "Software Engineer → Cybersecurity · Blue Team · Threat Detection · Incident Response",
   availability: "open" as Availability,
-  email: "hello@eddymax.dev",
+  email: "eddymax3715@gmail.com",
   social: {
     github: "https://github.com/EddyKilonzo",
     linkedin: "https://www.linkedin.com/in/eddy-kilonzo-",
@@ -178,18 +178,23 @@ export const profile = {
   },
   rssFeedUrl: "",
   learningTicker: [
-    "SOC alert triage and SIEM-driven investigation workflows",
-    "Building Sigma detection rules mapped to MITRE ATT&CK",
-    "Home lab: Wazuh SIEM + Suricata IDS on a segmented network",
-    "Threat hunting with Splunk SPL across Windows event logs",
-    "Incident response playbooks and blue team tooling",
+    "Reviewing and investigating security alerts using SIEM tools",
+    "Writing detection rules to catch real attack patterns",
+    "Home lab: running Wazuh and Suricata to practice real defences",
+    "Hunting for hidden threats in Windows logs using Splunk",
+    "Building response plans and hands-on security tooling",
   ],
   ctf: {
     htbRank: "Hacker",
-    thmRank: "Omni",
-    badges: 12,
-    solved: 84,
+    thmRank: "Mage",
+    thmLevel: "0x9",
+    thmGlobalRank: 108021,
+    thmTopPct: 5,
+    badges: 19,
+    solved: 91,
+    streak: 12,
     progressToNext: 0.62,
+    thmLastUpdated: "2026-06-13",
   },
   bugBounty: {
     platforms: ["HackerOne", "Bugcrowd"],
@@ -256,7 +261,7 @@ export const publications: Publication[] = [
     title: "Adaptive Detection Playbooks for Hybrid Environments",
     date: "2026-03",
     summary:
-      "A structured approach for tuning detections and connecting outputs to operator workflows across changing infrastructure.",
+      "How to tune security detections and connect them to real analyst workflows — even as your infrastructure changes.",
   },
   {
     id: "pub-2",
@@ -264,7 +269,7 @@ export const publications: Publication[] = [
     title: "From Detections to Decisions: Teaching Blue-Team Loops",
     date: "2026-02",
     summary:
-      "How to design labs that turn detection rules into repeatable investigative actions with measurable outcomes.",
+      "How to build training labs where detection rules lead to real investigative steps, with clear and measurable outcomes.",
   },
   {
     id: "pub-3",
@@ -272,7 +277,7 @@ export const publications: Publication[] = [
     title: "Scroll-linked UI patterns for WebGL portfolios",
     date: "2026-01",
     summary:
-      "Motion-safe techniques for coordinating narrative sections with performant rendering and readable UX.",
+      "How to build scroll-driven UI animations that stay smooth, accessible, and readable across devices.",
   },
   {
     id: "pub-4",
@@ -280,7 +285,7 @@ export const publications: Publication[] = [
     title: "Sigma-style rules: keeping them testable and composable",
     date: "2025-12",
     summary:
-      "Practical heuristics for writing detection rules that survive iteration and can be validated against realistic samples.",
+      "Tips for writing Sigma-style detection rules that stay useful as your environment changes — and can be tested against real data.",
   },
 ];
 
@@ -291,7 +296,7 @@ export const faqs: FaqItem[] = [
   {
     id: "f1",
     q: "What kind of projects are you best at?",
-    a: "Full-stack product engineering with a security-first mindset: APIs, integrations, UI systems, and practical threat-aware delivery.",
+    a: "Full-stack web and backend engineering — building APIs, integrations, and user-facing products with security built in from day one.",
   },
   {
     id: "f2",
@@ -301,7 +306,7 @@ export const faqs: FaqItem[] = [
   {
     id: "f3",
     q: "How do you approach security in delivery?",
-    a: "I incorporate security checks into engineering workflows: threat modeling early, safer defaults, observability, and lightweight validation gates.",
+    a: "I think about security from the start — identifying risks early, using safe defaults, and adding monitoring so problems are caught before they ship.",
   },
   {
     id: "f4",
@@ -437,7 +442,7 @@ export const projects: Project[] = [
         "Delivered an Angular frontend experience for discovery, trust scoring, moderation, and map-based browsing.",
       ],
       outcome:
-        "Delivered a full-stack trust platform capable of managing high-signal business credibility workflows.",
+        "Built a working trust platform that handles reviews, fraud reports, disputes, and business verification end-to-end.",
       metrics: ["Architecture: modular", "Roles: multi-tenant style", "Core domains: reviews, trust, fraud, disputes"],
       architectureNotes: [
         "Queue and cache integration allows background processing and optional async tasks.",
@@ -504,7 +509,7 @@ export const projects: Project[] = [
         "Implemented goals, budgets, onboarding, and admin workflows with role-based API access.",
       ],
       outcome:
-        "Delivered a learning-focused finance platform with intelligent categorization and robust CRUD foundations.",
+        "Built a personal finance platform with AI-assisted expense categorization, budget tracking, and goal setting — across three connected services.",
       metrics: ["Services: 3", "ML-assisted categorization: enabled", "Auth + RBAC: implemented"],
       architectureNotes: [
         "ML service remains optional so core backend workflows continue if predictions are unavailable.",
@@ -518,7 +523,7 @@ export const projects: Project[] = [
     id: "petmate",
     title: "Petmate",
     shortDescription:
-      "Full-stack pet services application built with Angular and NestJS, designed for practical service operations.",
+      "Pet services platform where users can book grooming, vet, and walking appointments — built with Angular and NestJS.",
     roleMode: "web",
     tech: ["Angular", "NestJS", "TypeScript"],
     category: "Service Marketplace",
@@ -637,7 +642,7 @@ export const projects: Project[] = [
         "Structured frontend features by user type for clearer user journeys and maintainability.",
       ],
       outcome:
-        "Delivered a complete LMS foundation with strong domain coverage and modular growth potential.",
+        "Delivered a working LMS covering student, instructor, and admin journeys — from course enrollment through progress tracking and analytics.",
       metrics: ["Roles supported: 3", "Learning workflows: end-to-end", "Analytics coverage: broad"],
       architectureNotes: [
         "Feature modules isolate auth, courses, enrollments, and analytics.",
@@ -651,7 +656,7 @@ export const projects: Project[] = [
     id: "inspira-haven",
     title: "Inspira Haven",
     shortDescription:
-      "Inspiration-focused web project designed for clean storytelling, discoverability, and modern interface flow.",
+      "Content discovery web app for browsing and exploring inspiration — clean layout, fast navigation, easy to use.",
     roleMode: "web",
     tech: ["TypeScript", "React", "Tailwind CSS"],
     category: "Content & Discovery Web App",
@@ -685,7 +690,7 @@ export const projects: Project[] = [
     id: "beyond-borders",
     title: "BeyondBorders",
     shortDescription:
-      "Cross-border themed product experience focused on discovery, storytelling, and intuitive user navigation.",
+      "Brand website built around storytelling and discovery — React-powered, with clear structure and smooth navigation.",
     roleMode: "web",
     tech: ["TypeScript", "React", "CSS"],
     category: "Brand & Storytelling Website",
@@ -1059,7 +1064,7 @@ export const certs: Cert[] = [
     id: "cti",
     title: "Cyber Threat Intelligence",
     issuer: "Certification Body",
-    description: "Foundations of cyber threat intelligence — tracking threat actors, analysing TTPs (Tactics, Techniques, and Procedures), and producing actionable intelligence reports.",
+    description: "Introduction to threat intelligence — learning how attackers operate, mapping their tactics and techniques (TTPs), and turning findings into clear, actionable reports.",
     why: "Wanted to understand how defenders think beyond individual alerts — tracking adversary behaviour, mapping TTPs, and turning raw indicators into intelligence a SOC can actually act on.",
     pdfUrl: "/certs/cti.pdf",
     category: "security",
@@ -1077,7 +1082,7 @@ export const certs: Cert[] = [
     id: "i2cs",
     title: "Introduction to Cybersecurity",
     issuer: "Cisco Networking Academy",
-    description: "Cisco's I2CS course — covers online safety, how cyber attacks work, protecting personal and organisational data, and the basics of network defence.",
+    description: "Cisco's introductory cybersecurity course — covering how attacks work, how to protect personal and organisational data, and the basics of defending a network.",
     why: "This was my first structured cybersecurity course. It gave me the vocabulary and mental model — CIA triad, attack lifecycle, defence-in-depth — that everything else builds on.",
     pdfUrl: "/certs/I2CSUpdate20260204-32-ry2hbk.pdf",
     date: "Feb 2026",
@@ -1087,7 +1092,7 @@ export const certs: Cert[] = [
     id: "ibm-cad",
     title: "Backend Application Developer (CAD220EN)",
     issuer: "IBM / edX",
-    description: "IBM-certified course on backend and cloud-native application development — microservices architecture, containerisation, REST APIs, and deploying server-side applications on IBM Cloud.",
+    description: "IBM-certified backend development course — microservices, containers (Docker), REST APIs, and deploying server-side applications to the cloud.",
     why: "Before you can secure cloud workloads, you need to understand how they're built and where the attack surface actually sits — misconfigurations look obvious once you know what correct looks like.",
     pdfUrl: "/certs/IBM CAD220EN Certificate _ edX.pdf",
     category: "development",
@@ -1096,7 +1101,7 @@ export const certs: Cert[] = [
     id: "os-basics",
     title: "Operating Systems Basics",
     issuer: "Cisco Networking Academy",
-    description: "Cisco NetAcad course covering OS fundamentals — file systems, process management, user and permission models, and basic Linux/Windows CLI administration.",
+    description: "Cisco course on operating system fundamentals — file systems, processes, user permissions, and basic Linux and Windows command-line skills.",
     why: "SOC work means reading Windows Event Logs and Linux syslog all day. Understanding OS internals — process trees, file permissions, service accounts — makes alerts make sense instead of just matching signatures.",
     pdfUrl: "/certs/OperatingSystemsBasicsUpdate20260204-31-bkrteh.pdf",
     date: "Feb 2026",
@@ -1226,12 +1231,12 @@ export const experience: ExperienceItem[] = [
     duration: "Nov 2024 — Sep 2025",
     location: "Remote",
     responsibilities: [
-      "Built and shipped responsive client websites with performance-first frontend patterns.",
-      "Implemented backend features and integrations for content and commerce workflows.",
-      "Collaborated with design and product stakeholders to deliver polished user journeys.",
+      "Built and launched responsive client websites with fast load times and polished user experience.",
+      "Implemented backend features and third-party integrations for content and e-commerce workflows.",
+      "Worked closely with designers and product owners to deliver clean, usable products.",
     ],
     tools: ["TypeScript", "Node.js", "WordPress", "Docker"],
-    impact: "Delivered production features across multiple client projects.",
+    impact: "Shipped production features across multiple client projects as a software engineer.",
     accent: "web",
   },
   {
@@ -1241,12 +1246,12 @@ export const experience: ExperienceItem[] = [
     duration: "May 2025 — Aug 2025",
     location: "Chuka, Kenya",
     responsibilities: [
-      "Contributed to software delivery tasks during a structured engineering attachment.",
-      "Worked on API and database tasks while improving code quality and testing discipline.",
-      "Supported team sprint execution and documentation for handover.",
+      "Joined a real software engineering team as an attaché, contributing to features shipped during the internship.",
+      "Built and tested API endpoints and database logic, improving code quality and test coverage.",
+      "Supported sprint execution and wrote handover documentation for the team.",
     ],
     tools: ["Node.js", "Express", "PostgreSQL", "Git"],
-    impact: "Improved implementation confidence through practical team delivery.",
+    impact: "Gained practical software engineering experience through hands-on team delivery.",
     accent: "engineering",
   },
   {
@@ -1271,12 +1276,12 @@ export const experience: ExperienceItem[] = [
     duration: "Feb 2022 — May 2022",
     location: "Eldoret, Kenya",
     responsibilities: [
-      "Completed practical full-stack training with focus on frontend and backend basics.",
-      "Built guided learning projects covering APIs, database CRUD, and UI implementation.",
-      "Strengthened engineering fundamentals and collaborative development practices.",
+      "Completed a hands-on full-stack software engineering programme covering both frontend and backend.",
+      "Built guided projects involving APIs, database operations (CRUD), and UI implementation.",
+      "Developed core engineering fundamentals and collaborative development habits.",
     ],
     tools: ["HTML5", "CSS3", "JavaScript", "Node.js"],
-    impact: "Built portfolio-ready projects and production-oriented coding habits.",
+    impact: "Built portfolio-ready projects and established a solid software engineering foundation.",
     accent: "web",
   },
 ];

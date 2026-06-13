@@ -25,15 +25,18 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://eddymax.dev"),
-  title: "Eddy Max Kilonzo — Portfolio",
+  title: "Eddy Max Kilonzo — Software Engineer & Cybersecurity",
   description:
-    "Cybersecurity engineer and full-stack developer portfolio with secure systems, polished UX, and production-focused projects.",
+    "Software engineer transitioning into cybersecurity — blue team, SOC, threat detection, and full-stack engineering portfolio.",
   keywords: [
-    "cybersecurity portfolio",
-    "full-stack developer",
-    "secure web engineering",
-    "Next.js portfolio",
     "software engineer",
+    "cybersecurity portfolio",
+    "SOC analyst",
+    "blue team",
+    "threat detection",
+    "incident response",
+    "full-stack engineer",
+    "Next.js portfolio",
   ],
   authors: [{ name: "Eddy Max Kilonzo", url: "https://eddymax.dev" }],
   creator: "Eddy Max Kilonzo",
@@ -44,9 +47,13 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
   manifest: "/manifest.webmanifest",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0d1f1a" },
+    { media: "(prefers-color-scheme: light)", color: "#f0f7f3" },
+  ],
   openGraph: {
-    title: "Eddy Max Kilonzo — Portfolio",
-    description: "Security-first full-stack portfolio: cyber operations, web engineering, and polished product delivery.",
+    title: "Eddy Max Kilonzo — Software Engineer & Cybersecurity",
+    description: "Software engineer transitioning into cybersecurity — blue team, SOC, threat detection, and full-stack engineering portfolio.",
     url: "https://eddymax.dev",
     siteName: "EMK Portfolio",
     type: "website",
@@ -61,8 +68,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Eddy Max Kilonzo — Portfolio",
-    description: "Security-first full-stack portfolio with cybersecurity and modern web engineering projects.",
+    title: "Eddy Max Kilonzo — Software Engineer & Cybersecurity",
+    description: "Software engineer transitioning into cybersecurity — blue team, SOC, threat detection, and engineering projects.",
     images: ["/og-image.svg"],
   },
 };
@@ -74,6 +81,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Preconnect to external APIs used by live stats widgets */}
+        <link rel="preconnect" href="https://api.github.com" />
+        <link rel="dns-prefetch" href="https://api.github.com" />
+        <link rel="dns-prefetch" href="https://tryhackme.com" />
+        {/* Shield badge images in About section */}
+        <link rel="dns-prefetch" href="https://img.shields.io" />
+      </head>
       <body
         className={`${syne.variable} ${space.variable} ${jetbrains.variable} antialiased`}
       >

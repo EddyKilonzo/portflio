@@ -7,6 +7,7 @@ import {
   type RoleMode,
 } from "@/content/portfolio";
 import { useRole } from "@/context/RoleContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { animate } from "animejs";
 import gsap from "gsap";
@@ -26,8 +27,8 @@ const RoleParticles = dynamic(
 );
 
 const modes: { id: RoleMode; label: string; icon: string; tagline: string }[] = [
-  { id: "engineering", label: "Developer", icon: "⚙", tagline: "Build it" },
-  { id: "cyber",       label: "CyberSec",  icon: "🛡", tagline: "Defend it" },
+  { id: "engineering", label: "Developer", icon: "</> ", tagline: "Build it" },
+  { id: "cyber",       label: "CyberSec",  icon: "[*] ", tagline: "Defend it" },
 ];
 
 const roleTheme: Record<RoleMode, {
@@ -231,6 +232,7 @@ function CountUpStat({ label, value, accent, border }: { label: string; value: s
 export function RoleSwitcherSection() {
   const sectionRef = useSectionReveal(0);
   const { mode, setMode } = useRole();
+  const { light } = useTheme();
   const panelRef = useRef<HTMLDivElement>(null);
   const [displayMode, setDisplayMode] = useState<"cyber" | "engineering">(
     mode === "cyber" ? "cyber" : "engineering",
@@ -306,7 +308,7 @@ export function RoleSwitcherSection() {
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <ParallaxDrift speed={0.1}>
           <div data-aos="fade-up">
-            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.3em]" style={{ color: theme.accent, transition: "color 0.5s ease" }}>
+            <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.3em] text-accent/80">
               {"// dual discipline"}
             </p>
             <SplittingHeading
@@ -407,7 +409,7 @@ export function RoleSwitcherSection() {
                 <div
                   className="glass-card mi-interactive relative min-h-[340px] overflow-hidden rounded-2xl p-6"
                   style={{
-                    borderColor: theme.border,
+                    borderColor: light ? theme.border : undefined,
                     boxShadow:
                       "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset",
                     transition: "border-color 0.5s ease",
@@ -436,7 +438,7 @@ export function RoleSwitcherSection() {
                     {/* Identity header */}
                     <div>
                       <div className="flex items-center justify-between">
-                        <p className="mono-label text-xs" style={{ color: theme.accent, opacity: 0.95 }}>
+                        <p className="mono-label text-xs text-highlight/60">
                           {"// identity"}
                         </p>
                         <span
@@ -534,7 +536,7 @@ export function RoleSwitcherSection() {
                                   className="mono-label rounded-full px-2 py-0.5 text-[9px] transition-colors duration-200"
                                   style={{
                                     background: active ? `${theme.accent}20` : "transparent",
-                                    color: active ? theme.accent : "rgba(216,236,224,0.45)",
+                                    color: active ? theme.tagText : "rgba(216,236,224,0.6)",
                                   }}
                                 >
                                   {pillar.metric}
@@ -554,7 +556,7 @@ export function RoleSwitcherSection() {
                 <div data-aos="fade-left" data-aos-delay="200">
                   <div
                     className="glass-card mi-interactive rounded-2xl p-6"
-                    style={{ borderColor: `${theme.border}60` }}
+                    style={{ borderColor: light ? `${theme.border}60` : undefined }}
                   >
                     <p className="mono-label mb-3 text-[11px] uppercase text-highlight/70">
                       Skill proficiency
@@ -575,7 +577,7 @@ export function RoleSwitcherSection() {
                 <div data-aos="fade-left" data-aos-delay="280">
                   <div
                     className="glass-card mi-interactive rounded-2xl p-5"
-                    style={{ borderColor: `${theme.border}60` }}
+                    style={{ borderColor: light ? `${theme.border}60` : undefined }}
                   >
                     <p className="mono-label mb-2 text-[11px] uppercase text-highlight/70">Impact</p>
                     <p className="font-sans text-sm leading-relaxed text-highlight/90">{insight.impact}</p>
@@ -583,31 +585,25 @@ export function RoleSwitcherSection() {
                     {/* Active module — crossfades when the selected pillar changes */}
                     <div
                       key={`${displayMode}-${activePillar.title}`}
-                      className="mt-4 rounded-xl p-3"
+                      className="mt-4 rounded-xl border border-highlight/10 p-3"
                       style={{
-                        border: `1px solid ${theme.border}`,
-                        background: theme.tag,
+                        background: light ? theme.tag : "rgba(30,74,58,0.2)",
                         animation: "role-module-in 0.32s ease both",
                       }}
                     >
-                      <p className="mono-label text-[11px] uppercase text-highlight/70">Active module</p>
+                      <p className="mono-label text-[11px] uppercase text-highlight/60">Active module</p>
                       <p className="mt-1 font-display text-lg text-highlight">{activePillar.title}</p>
-                      <p className="mt-1 font-sans text-sm leading-relaxed text-highlight/85">
+                      <p className="mt-1 font-sans text-sm leading-relaxed text-highlight/80">
                         {activePillar.detail}
                       </p>
                       <div className="mt-3 flex items-center justify-between">
-                        <span className="mono-label text-[11px]" style={{ color: theme.accent }}>
+                        <span className="mono-label text-[11px] text-highlight/75">
                           → {activePillar.metric}
                         </span>
                         <button
                           type="button"
                           onClick={() => jumpTo(activePillar.jumpTo)}
-                          className="mono-label rounded-lg px-3 py-1 text-[10px] transition-all hover:scale-105"
-                          style={{
-                            border: `1px solid ${theme.border}`,
-                            color: theme.tagText,
-                            background: `${theme.accent}10`,
-                          }}
+                          className="mono-label rounded-lg border border-highlight/15 bg-highlight/5 px-3 py-1 text-[10px] text-highlight/70 transition-all hover:scale-105 hover:border-highlight/25 hover:text-highlight"
                         >
                           Explore →
                         </button>
@@ -624,7 +620,7 @@ export function RoleSwitcherSection() {
         <div data-aos="fade-up" data-aos-delay="380">
           <div
             className="mt-6 glass-card rounded-2xl p-5"
-            style={{ borderColor: `${theme.border}60` }}
+            style={{ borderColor: light ? `${theme.border}60` : undefined }}
           >
             <p className="mono-label mb-3 text-[11px] uppercase text-highlight/70">Featured work</p>
             <div className="grid gap-3 md:grid-cols-2">

@@ -14,11 +14,11 @@ const LINES = [
 ];
 /* Type several chars per tick: one React render per character (~200 renders)
    starved the main thread while the app hydrated behind the overlay. */
-const CHARS_PER_TICK = 3;
-const TYPE_DELAY_MS = 16;
-const LINE_PAUSE_MS = 30;
-const POST_COMPLETE_PAUSE_MS = 150;
-const EXIT_DURATION_MS = 400;
+const CHARS_PER_TICK = 6;
+const TYPE_DELAY_MS = 12;
+const LINE_PAUSE_MS = 15;
+const POST_COMPLETE_PAUSE_MS = 80;
+const EXIT_DURATION_MS = 280;
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -56,11 +56,11 @@ export function BootSequence({ reducedMotion, onDone }: Props) {
     }
 
     let cancelled = false;
-    // Absolute safety net — boot never takes longer than 5 s
+    // Absolute safety net — boot never takes longer than 2.5 s
     const safetyTimer = window.setTimeout(() => {
       cancelled = true;
       complete();
-    }, 5000);
+    }, 2500);
 
     (async () => {
       const totalSteps = LINES.length;
