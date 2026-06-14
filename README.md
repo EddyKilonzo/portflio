@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Eddy Max Kilonzo — Portfolio
 
-## Getting Started
+Personal portfolio for Eddy Max Kilonzo, software engineer moving into cybersecurity. Built with Next.js 14, Tailwind CSS, and Sanity CMS.
 
-First, run the development server:
+Live: [eddy-max.vercel.app](https://eddy-max.vercel.app)
+CMS: [eddy-max-portfolio.sanity.studio](https://eddy-max-portfolio.sanity.studio)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Tech stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Styling | Tailwind CSS |
+| Animations | GSAP, Anime.js, Framer Motion, AOS, Lenis |
+| 3D | Three.js |
+| CMS | Sanity (project `i8fwa4mk`, dataset `production`) |
+| Booking | Cal.com embed (`@calcom/embed-react`) |
+| Deployment | Vercel |
+
+---
+
+## Project structure
+
+```
+portfolio/                  Next.js app
+├── src/
+│   ├── app/                Routes and layout
+│   ├── components/
+│   │   ├── sections/       One component per portfolio section
+│   │   ├── layout/         Nav, footer, scroll rail, etc.
+│   │   ├── motion/         Animation wrappers
+│   │   └── ui/             Shared UI primitives
+│   ├── content/
+│   │   ├── portfolio.ts    Static content (base data, types)
+│   │   └── sections.ts     Nav and section config
+│   ├── context/            Theme and role context
+│   ├── hooks/              Custom hooks
+│   └── lib/
+│       ├── sanity.ts       Sanity client
+│       └── sanityQueries.ts  GROQ queries with static fallback merge
+
+studio-portfolio/           Sanity Studio (sibling folder)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Getting started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Install dependencies
+npm install
 
-## Learn More
+# Run dev server
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Environment variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create `.env.local` in the `portfolio/` folder:
 
-## Deploy on Vercel
+```env
+NEXT_PUBLIC_SANITY_PROJECT_ID=i8fwa4mk
+NEXT_PUBLIC_SANITY_DATASET=production
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Same vars are required in Vercel (Settings → Environment Variables).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Content management
+
+Content lives in two places:
+
+- **`src/content/portfolio.ts`** — base static data. Always present, loads instantly.
+- **Sanity Studio** — new items added here are merged on top of the static data at runtime. Nothing in the static file is replaced; Sanity only adds.
+
+### Running the Studio locally
+
+```bash
+cd ../studio-portfolio
+pnpm dev
+```
+
+Open [http://localhost:3333](http://localhost:3333).
+
+### Deploying the Studio
+
+```bash
+cd ../studio-portfolio
+pnpm deploy
+```
+
+### What you can manage in Sanity
+
+| Studio section | Portfolio section |
+|---|---|
+| Projects | Projects grid |
+| Skills | Skills graph (by role) |
+| Certifications | Credentials / badges |
+| Experience | Experience timeline |
+| Education | Education section |
+| Blog Posts | Blog |
+| Testimonials | Testimonials carousel |
+| FAQ | FAQ accordion |
+| Now / Changelog | Now page |
+
+---
+
+## Deployment
+
+Pushes to `main` deploy automatically via Vercel. No manual steps needed.
+
+---
+
+## Contact
+
+Eddy Max Kilonzo — [eddymax3715@gmail.com](mailto:eddymax3715@gmail.com)
