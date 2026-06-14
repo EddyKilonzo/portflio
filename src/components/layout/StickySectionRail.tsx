@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { sectionLinks } from "@/content/sections";
 import { smoothScrollTo } from "@/lib/smooth-scroll";
 
-const NAV_SECTIONS = sectionLinks.filter((s) => s.showInTopNav);
+const NAV_SECTIONS = sectionLinks.filter((s) => s.id !== "hero");
 const N = NAV_SECTIONS.length;
 
 // ── Geometry ────────────────────────────────────────────────────────────────
