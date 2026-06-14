@@ -333,12 +333,11 @@ export function RoleSwitcherSection() {
                 key={m.id}
                 type="button"
                 onClick={() => onSelect(m.id)}
-                className="relative rounded-full px-5 py-2 font-mono text-xs font-semibold tracking-wide transition-all duration-300"
+                className={`relative rounded-full px-5 py-2 font-mono text-xs font-semibold tracking-wide transition-all duration-300 ${active ? "" : "text-highlight/75"}`}
                 style={{
-                  border: `1px solid ${active ? t.border : "rgba(168,217,184,0.25)"}`,
-                  background: active ? t.tag : "rgba(30,74,58,0.25)",
-                  color: active ? t.tagText : "rgba(216,236,224,0.75)",
-                  boxShadow: active ? `0 0 14px ${t.glow}` : "none",
+                  border: `1px solid ${active ? t.border : "rgba(128,160,140,0.35)"}`,
+                  background: active ? t.tag : "transparent",
+                  ...(active ? { color: t.tagText, boxShadow: `0 0 14px ${t.glow}` } : {}),
                 }}
               >
                 <span className="mr-1.5">{m.icon}</span>
@@ -372,8 +371,8 @@ export function RoleSwitcherSection() {
                     onClick={() => onSelect(m.id)}
                     className="group relative w-full overflow-hidden rounded-xl px-3.5 py-3 text-left transition-all duration-300"
                     style={{
-                      border: `1px solid ${active ? t.border : "rgba(168,217,184,0.12)"}`,
-                      background: active ? t.tag : "rgba(30,74,58,0.2)",
+                      border: `1px solid ${active ? t.border : "rgba(128,160,140,0.30)"}`,
+                      background: active ? t.tag : "transparent",
                       boxShadow: active ? `0 0 16px ${t.glow}` : "none",
                     }}
                   >
@@ -386,13 +385,16 @@ export function RoleSwitcherSection() {
                         transform: active ? "scaleY(1)" : "scaleY(0.3)",
                       }}
                     />
-                    <span className="flex items-center gap-2 font-mono text-xs font-semibold" style={{ color: active ? t.tagText : "rgba(216,236,224,0.8)" }}>
+                    <span
+                      className={`flex items-center gap-2 font-mono text-xs font-semibold ${active ? "" : "text-highlight/80"}`}
+                      style={active ? { color: t.tagText } : undefined}
+                    >
                       <span>{m.icon}</span>
                       {m.label}
                     </span>
                     <span
-                      className="mt-0.5 block pl-6 font-mono text-[9px] uppercase tracking-widest transition-colors duration-300"
-                      style={{ color: active ? t.accent : "rgba(216,236,224,0.4)" }}
+                      className={`mt-0.5 block pl-6 font-mono text-[9px] uppercase tracking-widest transition-colors duration-300 ${active ? "" : "text-highlight/45"}`}
+                      style={active ? { color: t.accent } : undefined}
                     >
                       {m.tagline}
                     </span>

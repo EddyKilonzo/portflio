@@ -65,6 +65,8 @@ export function SettingsPanel({ open, onClose }: Props) {
     setLargeText,
     ambientFx,
     setAmbientFx,
+    cursorAccent,
+    setCursorAccent,
   } = useTheme();
 
   useBodyScrollLock(open);
@@ -121,14 +123,11 @@ export function SettingsPanel({ open, onClose }: Props) {
             <div>
               <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-accent/70">Theme</p>
               <div className="grid grid-cols-2 gap-2">
-                {[
-                  { id: "dark",  label: "Dark"  },
-                  { id: "light", label: "Light" },
-                ].map((m) => (
+                {([ { id: "light", label: "Light" }, { id: "dark", label: "Dark" } ] as const).map((m) => (
                   <button
                     key={m.id}
                     type="button"
-                    onClick={() => { setThemeMode(m.id as "light" | "dark"); save(); }}
+                    onClick={() => { setThemeMode(m.id); save(); }}
                     className={`rounded-xl border py-2.5 font-mono text-xs transition-colors ${
                       themeMode === m.id
                         ? "border-accent bg-accent/10 text-accent"
@@ -171,19 +170,19 @@ export function SettingsPanel({ open, onClose }: Props) {
               <div className="space-y-2">
                 <Toggle
                   label="Reduce motion"
-                  description="Disables animations and transitions"
+                  description="Cuts all animations and transitions"
                   value={reducedMotionAssist}
                   onChange={(v) => { setReducedMotionAssist(v); save(); }}
                 />
                 <Toggle
                   label="High contrast"
-                  description="Increases text and border contrast"
+                  description="Boosts text and border contrast"
                   value={highContrast}
                   onChange={(v) => { setHighContrast(v); save(); }}
                 />
                 <Toggle
                   label="Large text"
-                  description="Scales up base font size"
+                  description="Increases base font size to 17 px"
                   value={largeText}
                   onChange={(v) => { setLargeText(v); save(); }}
                 />
@@ -192,13 +191,21 @@ export function SettingsPanel({ open, onClose }: Props) {
 
             {/* ── Effects ── */}
             <div>
-              <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-accent/70">Effects</p>
-              <Toggle
-                label="Background effects"
-                description="Animated wave and ambient layer"
-                value={ambientFx}
-                onChange={(v) => { setAmbientFx(v); save(); }}
-              />
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-accent/70">Visual effects</p>
+              <div className="space-y-2">
+                <Toggle
+                  label="Background animation"
+                  description="Animated wave and idle ambient glow"
+                  value={ambientFx}
+                  onChange={(v) => { setAmbientFx(v); save(); }}
+                />
+                <Toggle
+                  label="Custom cursor"
+                  description="Accent-coloured cursor trail on desktop"
+                  value={cursorAccent}
+                  onChange={(v) => { setCursorAccent(v); save(); }}
+                />
+              </div>
             </div>
 
             {/* ── Reset ── */}
@@ -211,7 +218,8 @@ export function SettingsPanel({ open, onClose }: Props) {
                 setReducedMotionAssist(false);
                 setLargeText(false);
                 setAmbientFx(true);
-                emitToast("Reset to defaults", "success");
+                setCursorAccent(true);
+                emitToast("Preferences reset to defaults", "success");
               }}
               className="w-full rounded-xl border border-highlight/15 py-2.5 font-mono text-xs text-highlight/50 transition-colors hover:border-highlight/30 hover:text-highlight/80"
             >

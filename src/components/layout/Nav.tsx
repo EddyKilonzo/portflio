@@ -19,6 +19,7 @@ export function Nav() {
   const [sheetReady, setSheetReady] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const { light, toggleLight, themeMode, setThemeMode } = useTheme();
   const activeSection = useActiveSection(
     sectionLinks.filter((s) => s.showInTopNav).map((s) => s.id),
@@ -188,79 +189,112 @@ export function Nav() {
               Crafted Securely
             </span>
           </a>
-          <div className="hidden flex-wrap items-center justify-end gap-1 md:flex">
+          <div className="hidden items-center gap-1 md:flex">
+            {/* Primary nav links */}
             {sectionLinks
               .filter((s) => s.showInTopNav)
               .map((l) => (
-              <a
-                key={l.id}
-                href={`#${l.id}`}
-                aria-current={activeSection === l.id ? "page" : undefined}
-                className={`mi-interactive relative rounded px-2 py-1 font-mono text-[11px] transition-colors hover:text-highlight ${
-                  activeSection === l.id ? "text-accent" : "text-highlight/70"
-                }`}
-              >
-                {l.label}
-                <span
-                  className={`absolute -bottom-0.5 inset-x-1 h-[2px] rounded-full bg-accent transition-all duration-300 ${
-                    activeSection === l.id ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+                <a
+                  key={l.id}
+                  href={`#${l.id}`}
+                  aria-current={activeSection === l.id ? "page" : undefined}
+                  className={`mi-interactive relative rounded-lg px-3 py-1.5 font-mono text-[11px] font-medium transition-colors hover:text-highlight ${
+                    activeSection === l.id ? "text-accent" : "text-highlight/65"
                   }`}
-                  aria-hidden
-                />
-              </a>
-            ))}
-            <div className="relative ml-2 hidden lg:block">
-              <input
-                value={quickQuery}
-                onFocus={() => setQuickOpen(true)}
-                onChange={(e) => {
-                  setQuickQuery(e.target.value);
-                  setQuickOpen(true);
-                }}
-                placeholder="Jump..."
-                aria-label="Quick jump"
-                className="w-28 rounded-md border border-highlight/20 bg-surface/20 px-2 py-1 font-mono text-[11px] text-highlight outline-none"
-              />
-              {quickOpen ? (
-                <div role="listbox" aria-label="Quick jump results" className="absolute right-0 top-8 z-[10002] w-56 max-w-[min(90vw,14rem)] rounded-xl border border-highlight/20 bg-bg/95 p-2 shadow-glass">
-                  {quickResults.map((r) => (
-                    <button
-                      key={`${r.type}-${r.id}`}
-                      type="button"
-                      onClick={() => navigateQuick(r)}
-                    className="mi-interactive block w-full rounded px-2 py-1 text-left font-mono text-[11px] text-highlight/85 hover:bg-surface/30"
-                    >
-                      {r.label}
-                      <span className="ml-2 text-[10px] text-highlight/50">{r.type}</span>
-                    </button>
-                  ))}
+                >
+                  {l.label}
+                  <span
+                    className={`absolute bottom-0 inset-x-2 h-[2px] rounded-full bg-accent transition-all duration-300 ${
+                      activeSection === l.id ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0"
+                    }`}
+                    aria-hidden
+                  />
+                </a>
+              ))}
+
+            {/* More dropdown */}
+            <div className="relative" onMouseLeave={() => setMoreOpen(false)}>
+              <button
+                type="button"
+                onMouseEnter={() => setMoreOpen(true)}
+                onClick={() => setMoreOpen((v) => !v)}
+                className={`mi-interactive flex items-center gap-1 rounded-lg px-3 py-1.5 font-mono text-[11px] font-medium transition-colors hover:text-highlight ${
+                  moreOpen ? "text-highlight" : "text-highlight/65"
+                }`}
+                aria-expanded={moreOpen}
+                aria-haspopup="true"
+              >
+                More
+                <svg className={`h-3 w-3 transition-transform duration-200 ${moreOpen ? "rotate-180" : ""}`} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                  <path d="M2 4l4 4 4-4" />
+                </svg>
+              </button>
+              {moreOpen && (
+                <div
+                  className="absolute left-0 top-full z-[10002] mt-1.5 w-44 rounded-xl border border-highlight/15 bg-bg/97 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.25)] backdrop-blur-md"
+                  onMouseEnter={() => setMoreOpen(true)}
+                >
+                  {sectionLinks
+                    .filter((s) => !s.showInTopNav && s.id !== "hero")
+                    .map((l) => (
+                      <a
+                        key={l.id}
+                        href={`#${l.id}`}
+                        onClick={() => setMoreOpen(false)}
+                        className={`flex items-center rounded-lg px-3 py-1.5 font-mono text-[11px] transition-colors hover:bg-surface/25 hover:text-highlight ${
+                          activeSection === l.id ? "text-accent" : "text-highlight/70"
+                        }`}
+                      >
+                        {l.label}
+                      </a>
+                    ))}
                 </div>
-              ) : null}
+              )}
             </div>
+
+            {/* Divider */}
+            <div className="mx-1.5 h-4 w-px bg-highlight/15" aria-hidden />
+
+            {/* Controls */}
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
-              className="mi-interactive rounded border border-highlight/20 px-2 py-1 font-mono text-[10px] text-highlight/70"
-              aria-label="Open command palette"
-              title="Open command palette"
+              className="mi-interactive flex h-7 items-center gap-1.5 rounded-lg border border-highlight/20 px-2 font-mono text-[10px] text-highlight/55 transition-colors hover:border-highlight/35 hover:text-highlight/80"
+              aria-label="Open command palette (Ctrl+K)"
+              title="Command palette — Ctrl+K"
             >
-              Cmd/Ctrl + K
+              <svg className="h-3 w-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+                <circle cx="6.5" cy="6.5" r="4.5" /><path d="m10 10 3.5 3.5" />
+              </svg>
+              <span className="hidden lg:inline">Search</span>
             </button>
             <button
               type="button"
               onClick={() => setThemeMode(light ? "dark" : "light")}
-              className="mi-interactive ml-2 rounded border border-highlight/15 px-2.5 py-1 font-mono text-[11px] text-accent/80 transition-colors hover:border-highlight/30 hover:text-accent"
-              aria-label="Toggle theme"
-              title={`Theme: ${light ? "Light" : "Dark"} — click to toggle`}
+              className="mi-interactive flex h-7 w-7 items-center justify-center rounded-lg border border-highlight/20 text-highlight/60 transition-colors hover:border-highlight/35 hover:text-highlight/85"
+              aria-label={`Switch to ${light ? "dark" : "light"} mode`}
+              title={`Currently ${light ? "light" : "dark"} mode`}
             >
-              {light ? "☀ Light" : "☾ Dark"}
+              {light ? (
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                </svg>
+              ) : (
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )}
             </button>
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
-              className="mi-interactive ml-2 rounded px-2 py-1 font-mono text-[11px] text-accent"
+              className="mi-interactive flex h-7 w-7 items-center justify-center rounded-lg border border-highlight/20 text-highlight/60 transition-colors hover:border-highlight/35 hover:text-highlight/85"
+              aria-label="Open settings"
+              title="Settings"
             >
-              Settings
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
             </button>
           </div>
           <button

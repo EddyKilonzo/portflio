@@ -41,7 +41,7 @@ export function AboutSection() {
         </div>
         <div className="flex flex-wrap gap-2" data-aos="fade-up" data-aos-delay="180">
           {["SOC / Blue Team", "Threat Detection", "Incident Response", "SIEM", "Software Engineer", "MITRE ATT&CK"].map(kw => (
-            <span key={kw} className="rounded-full border border-cyber/25 bg-cyber/8 px-3 py-1 font-mono text-[11px] text-cyber/80">{kw}</span>
+            <span key={kw} className="rounded-full border border-accent/25 bg-accent/8 px-3 py-1 font-mono text-[11px] text-accent/80">{kw}</span>
           ))}
         </div>
       </div>
@@ -70,7 +70,7 @@ export function AboutSection() {
                 "Software Engineer", "React / Next.js", "NestJS / Node",
                 "MITRE ATT&CK",
               ].map(kw => (
-                <span key={kw} className="rounded-full border border-cyber/25 bg-cyber/8 px-3 py-1 font-mono text-[11px] text-cyber/80">
+                <span key={kw} className="rounded-full border border-accent/25 bg-accent/8 px-3 py-1 font-mono text-[11px] text-accent/80">
                   {kw}
                 </span>
               ))}

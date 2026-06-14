@@ -4,23 +4,13 @@ import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
-
-export type BlogPost = {
-  id: string;
-  title: string;
-  summary: string;
-  date: string;
-  tags: string[];
-  readingTime?: string;
-  url?: string;
-};
-
-export const blogPosts: BlogPost[] = [
-  // Add blog posts here
-];
+import { useSanityFetch } from "@/hooks/useSanityFetch";
+import { getBlogPosts } from "@/lib/sanityQueries";
+import { publications as staticPublications } from "@/content/portfolio";
 
 export function BlogSection() {
   const sectionRef = useSectionReveal(9);
+  const blogPosts = useSanityFetch(getBlogPosts, staticPublications);
 
   return (
     <section
@@ -99,8 +89,8 @@ export function BlogSection() {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-mono text-[10px] text-highlight/60">{post.date}</span>
-                  {post.readingTime && (
-                    <span className="font-mono text-[10px] text-highlight/55">{post.readingTime} read</span>
+                  {'readingTime' in post && (post as {readingTime?: string}).readingTime && (
+                    <span className="font-mono text-[10px] text-highlight/55">{(post as {readingTime: string}).readingTime} read</span>
                   )}
                 </div>
                 <h3 className="font-display text-lg text-highlight leading-snug">{post.title}</h3>
@@ -108,7 +98,7 @@ export function BlogSection() {
                   {post.summary}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {post.tags.map((tag) => (
+                  {('tags' in post ? (post as {tags: string[]}).tags : []).map((tag) => (
                     <span
                       key={tag}
                       className="rounded-full border border-highlight/15 px-2 py-0.5 font-mono text-[10px] text-highlight/65"

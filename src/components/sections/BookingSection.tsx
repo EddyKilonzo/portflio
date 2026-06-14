@@ -4,7 +4,11 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { useEffect, useState } from "react";
+import { getCalApi } from "@calcom/embed-react";
+import { useEffect, useRef, useState } from "react";
+import { emitToast } from "@/lib/toast";
+
+const CAL_LINK = "eddy-max-kilonzo-9lgv2r";
 
 function IconRocket({ className }: { className?: string }) {
   return (
@@ -51,6 +55,58 @@ const packages = [
     Icon: IconZap,
     detail: "Mobile-first optimization, accessibility fixes, and motion tuning.",
   },
+];
+
+function IconUser({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+function IconMail({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+function IconPhone({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.2c1.1.4 2.3.6 3.6.6a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C9.6 21 3 14.4 3 6a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.3.2 2.5.6 3.6a1 1 0 0 1-.2 1L6.6 10.8z" />
+    </svg>
+  );
+}
+function IconChat({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
+function IconNote({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="8" y1="13" x2="16" y2="13" /><line x1="8" y1="17" x2="12" y2="17" />
+    </svg>
+  );
+}
+function IconUsers({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+const bookingFields = [
+  { label: "Your name",                   badge: "Required", Icon: IconUser  },
+  { label: "Email address",               badge: "Required", Icon: IconMail  },
+  { label: "Phone number",                badge: "Optional", Icon: IconPhone },
+  { label: "What is this meeting about?", badge: "Optional", Icon: IconChat  },
+  { label: "Additional notes",            badge: "Optional", Icon: IconNote  },
+  { label: "Add guests",                  badge: "Optional", Icon: IconUsers },
 ];
 
 const MONTH_NAMES = [
@@ -173,8 +229,58 @@ function LiveCalendar() {
   );
 }
 
+function useCalEmbed() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const cal = await getCalApi({ namespace: CAL_LINK });
+      cal("ui", {
+        theme: "light",
+        cssVarsPerTheme: {
+          dark: {
+            "cal-brand":           "#0d8a3d",
+            "cal-bg":              "#1a3028",
+            "cal-bg-muted":        "#243d30",
+            "cal-text":            "#d8ece0",
+            "cal-text-muted":      "#a0c4b0",
+            "cal-border":          "#2e5040",
+            "cal-border-emphasis": "#3d6e55",
+          },
+          light: {
+            "cal-brand":           "#0a3d1f",
+            "cal-bg":              "#ffffff",
+            "cal-bg-muted":        "#f4f4f5",
+            "cal-text":            "#0a3d1f",
+            "cal-text-muted":      "#2e7a5a",
+            "cal-border":          "#e4e4e7",
+            "cal-border-emphasis": "#2e7a5a",
+          },
+        },
+        hideEventTypeDetails: false,
+        layout: "month_view",
+      });
+      setReady(true);
+    })();
+  }, []);
+
+  return ready;
+}
+
 export function BookingSection() {
   const sectionRef = useSectionReveal(17);
+  const calReady = useCalEmbed();
+  const [opening, setOpening] = useState(false);
+  const openingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleSchedule = () => {
+    if (!calReady) return;
+    setOpening(true);
+    emitToast("Opening Google Meet booking calendar…", "info");
+    openingTimer.current = setTimeout(() => setOpening(false), 2000);
+  };
+
+  useEffect(() => () => { if (openingTimer.current) clearTimeout(openingTimer.current); }, []);
 
   return (
     <section
@@ -192,14 +298,14 @@ export function BookingSection() {
             className="glitch-hover font-display text-4xl text-highlight md:text-5xl"
             data-aos="fade-right"
           >
-            Availability + Booking
+            Availability & Engagements
           </h2>
           <p
             className="mt-2 max-w-3xl font-sans text-highlight/70"
             data-aos="fade-up"
             data-aos-delay="60"
           >
-            Structured collaboration packages with a clear booking path.
+            Select an engagement that fits your goals and schedule a no-obligation consultation.
           </p>
         </ParallaxDrift>
 
@@ -221,31 +327,78 @@ export function BookingSection() {
               ))}
             </div>
 
+            {/* Booking requirements */}
+            <div
+              className="glass-card rounded-2xl p-5"
+              data-aos="fade-up"
+              data-aos-delay="140"
+            >
+              <p className="font-mono text-[11px] uppercase tracking-widest text-highlight/45 mb-3">
+                What you'll need to provide
+              </p>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {bookingFields.map((f) => (
+                  <li key={f.label} className="flex items-center gap-3">
+                    <f.Icon className="h-4 w-4 shrink-0 text-highlight/40" />
+                    <span className="flex-1 font-sans text-sm text-highlight/80">{f.label}</span>
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] ${
+                      f.badge === "Required"
+                        ? "bg-accent/12 text-accent"
+                        : "bg-surface/30 text-highlight/40"
+                    }`}>
+                      {f.badge}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
             <div
               className="glass-card rounded-2xl p-5"
               data-aos="fade-up"
               data-aos-delay="200"
             >
               <p className="font-mono text-[11px] uppercase tracking-widest text-highlight/45 mb-2">
-                Schedule a call
+                Schedule a consultation
               </p>
               <p className="text-sm leading-relaxed text-highlight/70 mb-4">
-                Pick a slot for a discovery call and share your goals before we start.
+                Book a Google Meet session — 30 minutes to walk through your project, requirements, and how I can help. No commitment required.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="https://cal.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-accent/35 bg-accent/8 px-4 py-2.5 font-mono text-xs text-accent transition-colors hover:bg-accent/15"
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  data-cal-namespace={CAL_LINK}
+                  data-cal-link={CAL_LINK}
+                  data-cal-config='{"layout":"month_view"}'
+                  onClick={handleSchedule}
+                  disabled={!calReady}
+                  className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 font-mono text-xs transition-all duration-200 ${
+                    !calReady
+                      ? "border-highlight/10 bg-surface/10 text-highlight/30 cursor-wait"
+                      : opening
+                        ? "border-accent/60 bg-accent/20 text-accent scale-[0.97]"
+                        : "border-accent/35 bg-accent/8 text-accent hover:bg-accent/15 active:scale-[0.97]"
+                  }`}
                 >
-                  Open Calendar →
-                </a>
+                  {!calReady ? (
+                    <>
+                      <span className="inline-block h-3 w-3 animate-spin rounded-full border border-highlight/20 border-t-highlight/60" />
+                      Loading calendar…
+                    </>
+                  ) : opening ? (
+                    <>
+                      <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+                      Opening…
+                    </>
+                  ) : (
+                    "Book a Google Meet →"
+                  )}
+                </button>
                 <a
                   href="#contact"
-                  className="inline-flex items-center gap-1 font-mono text-xs text-highlight/55 underline transition-colors hover:text-highlight/80"
+                  className="inline-flex items-center gap-1 font-mono text-xs text-highlight/50 underline-offset-2 hover:underline transition-colors hover:text-highlight/75"
                 >
-                  Prefer a form? Contact section
+                  Prefer to message instead?
                 </a>
               </div>
             </div>

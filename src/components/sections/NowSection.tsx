@@ -5,8 +5,12 @@ import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { nowItems, changelog } from "@/content/portfolio";
+import { useSanityFetch } from "@/hooks/useSanityFetch";
+import { getNowItems, getChangelog } from "@/lib/sanityQueries";
 
 export function NowSection() {
+  const nowData = useSanityFetch(getNowItems, nowItems);
+  const changelogData = useSanityFetch(getChangelog, changelog);
   const sectionRef = useSectionReveal(16);
 
   return (
@@ -30,7 +34,7 @@ export function NowSection() {
         </ParallaxDrift>
 
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {nowItems.map((item, idx) => (
+          {nowData.map((item, idx) => (
             <article
               key={item.title}
               className="glass-card rounded-2xl p-8 min-h-[220px] flex flex-col"
@@ -54,7 +58,7 @@ export function NowSection() {
         <div className="mt-8 glass-card rounded-2xl p-6" data-aos="fade-up" data-aos-delay="200">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">Changelog</p>
           <ul className="mt-3 space-y-2 text-sm text-highlight/80">
-            {changelog.map((entry) => (
+            {changelogData.map((entry) => (
               <li key={entry.item}>
                 <span className="mr-2 font-mono text-[11px] text-highlight/55">{entry.date}</span>
                 {entry.item}

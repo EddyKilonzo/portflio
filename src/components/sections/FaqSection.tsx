@@ -4,12 +4,15 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { faqs } from "@/content/portfolio";
+import { faqs as staticFaqs } from "@/content/portfolio";
 import { useState } from "react";
+import { useSanityFetch } from "@/hooks/useSanityFetch";
+import { getFaqs } from "@/lib/sanityQueries";
 
 export function FaqSection() {
   const sectionRef = useSectionReveal(15);
-  const [open, setOpen] = useState<string | null>(faqs[0]?.id ?? null);
+  const faqs = useSanityFetch(getFaqs, staticFaqs);
+  const [open, setOpen] = useState<string | null>(staticFaqs[0]?.id ?? null);
 
   return (
     <section

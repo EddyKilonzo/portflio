@@ -1,6 +1,8 @@
 "use client";
 
-import { profile, certs, type Cert } from "@/content/portfolio";
+import { profile, certs as staticCerts, type Cert } from "@/content/portfolio";
+import { useSanityFetch } from "@/hooks/useSanityFetch";
+import { getCerts } from "@/lib/sanityQueries";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
@@ -120,6 +122,7 @@ function CertCard({ cert, index = 0 }: { cert: Cert; index?: number }) {
 
 export function BadgesSection() {
   const sectionRef = useSectionReveal(8);
+  const certs = useSanityFetch(getCerts, staticCerts);
   const [tab, setTab] = useState<"certs" | "badges">("certs");
 
   const tabBtn = (id: "certs" | "badges", label: string) => (

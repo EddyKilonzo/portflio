@@ -94,7 +94,7 @@ export default function RootLayout({
       >
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var mode=localStorage.getItem("portfolio-theme-mode-v1");var legacy=localStorage.getItem("portfolio-theme-v1");var isLight=mode==="light"||(mode!=="dark"&&mode!=="system"?(legacy==="light"):mode==="system"&&window.matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.classList.toggle("light",!!isLight);document.documentElement.classList.toggle("theme-system",mode==="system");}catch(e){}})();`,
+            __html: `(function(){try{var m=localStorage.getItem("portfolio-theme-mode-v1");var l=localStorage.getItem("portfolio-theme-v1");var isLight=m==="light"?true:m==="dark"?false:m==="system"?window.matchMedia("(prefers-color-scheme: light)").matches:l==="dark"?false:true;document.documentElement.classList.toggle("light",isLight);document.documentElement.classList.toggle("theme-system",m==="system");}catch(e){}})();`,
           }}
         />
         <script

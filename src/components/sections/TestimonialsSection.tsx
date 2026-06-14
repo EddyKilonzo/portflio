@@ -4,7 +4,9 @@ import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { SectionNumber } from "@/components/layout/SectionNumber";
 import { useSectionReveal } from "@/hooks/useSectionReveal";
-import { testimonials } from "@/content/portfolio";
+import { testimonials as staticTestimonials } from "@/content/portfolio";
+import { useSanityFetch } from "@/hooks/useSanityFetch";
+import { getTestimonials } from "@/lib/sanityQueries";
 
 function StarRow() {
   return (
@@ -20,6 +22,7 @@ function StarRow() {
 
 export function TestimonialsSection() {
   const sectionRef = useSectionReveal(14);
+  const testimonials = useSanityFetch(getTestimonials, staticTestimonials);
 
   return (
     <section
