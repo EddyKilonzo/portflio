@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { SettingsPanel } from "@/components/settings/SettingsPanel";
 import { useTheme } from "@/context/ThemeContext";
+import { EmblemLogo } from "@/components/ui/EmblemLogo";
 import { sectionLinks } from "@/content/sections";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { certifications, projects } from "@/content/portfolio";
@@ -180,12 +181,9 @@ export function Nav() {
        
       >
         <nav aria-label="Primary" className={`mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 transition-all ${scrolled ? "py-2" : "py-3"}`}>
-          <a
-            href="#hero"
-            className="inline-flex items-baseline gap-2 font-display tracking-tight text-highlight"
-          >
-            <span className="text-lg font-semibold">EMK</span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent/80">
+          <a href="#hero" className="inline-flex items-center gap-2.5">
+            <EmblemLogo size="sm" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-highlight/70 hidden sm:block">
               Crafted Securely
             </span>
           </a>

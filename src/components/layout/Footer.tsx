@@ -1,6 +1,7 @@
 "use client";
 
 import { profile } from "@/content/portfolio";
+import { EmblemLogo } from "@/components/ui/EmblemLogo";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -73,10 +74,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8">
           <div className="flex flex-col gap-5">
             <div>
-              <p className="font-mono text-[var(--highlight)] text-lg font-semibold tracking-tight">
-                {profile.name}
-              </p>
-              <p className="text-[var(--highlight)]/60 text-sm mt-1 leading-relaxed max-w-xs">
+              <div className="flex items-center gap-3 mb-3">
+                <EmblemLogo size="md" />
+                <p className="font-mono text-highlight text-lg font-semibold tracking-tight">
+                  {profile.name}
+                </p>
+              </div>
+              <p className="text-highlight/60 text-sm leading-relaxed max-w-xs">
                 {profile.subtitle}
               </p>
             </div>

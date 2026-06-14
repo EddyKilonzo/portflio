@@ -1,6 +1,7 @@
 "use client";
 
 import { profile } from "@/content/portfolio";
+import { EmblemLogo } from "@/components/ui/EmblemLogo";
 import { scrambleText } from "@/lib/scramble";
 import { useTheme } from "@/context/ThemeContext";
 import { animate, stagger } from "animejs";
@@ -466,15 +467,7 @@ export function HeroSection({
               <div>
                 {/* Identity badge */}
                 <div className={`mb-7 mt-1 flex items-center gap-3 ${headText}`}>
-                  <span
-                    className={`grid h-9 w-9 place-items-center rounded-full border font-mono text-[11px] font-semibold tracking-wide ${
-                      light
-                        ? "border-[#2e7a5a]/40 bg-[#2e7a5a]/10 text-[#1f6b4d]"
-                        : "border-highlight/25 bg-surface/30 text-highlight"
-                    }`}
-                  >
-                    EMK
-                  </span>
+                  <EmblemLogo size="md" />
                   <div>
                     <p className="font-display text-3xl font-semibold leading-none">Cybersecurity Analyst</p>
                     <p className={`font-sans text-lg ${mutedText}`}>
