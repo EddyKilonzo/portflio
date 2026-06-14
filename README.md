@@ -46,53 +46,7 @@ studio-portfolio/           Sanity Studio (sibling folder)
 
 ---
 
-## Getting started
 
-```bash
-# Install dependencies
-npm install
-
-# Run dev server
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-### Environment variables
-
-Create `.env.local` in the `portfolio/` folder:
-
-```env
-NEXT_PUBLIC_SANITY_PROJECT_ID=i8fwa4mk
-NEXT_PUBLIC_SANITY_DATASET=production
-```
-
-Same vars are required in Vercel (Settings → Environment Variables).
-
----
-
-## Content management
-
-Content lives in two places:
-
-- **`src/content/portfolio.ts`** — base static data. Always present, loads instantly.
-- **Sanity Studio** — new items added here are merged on top of the static data at runtime. Nothing in the static file is replaced; Sanity only adds.
-
-### Running the Studio locally
-
-```bash
-cd ../studio-portfolio
-pnpm dev
-```
-
-Open [http://localhost:3333](http://localhost:3333).
-
-### Deploying the Studio
-
-```bash
-cd ../studio-portfolio
-pnpm deploy
-```
 
 ### What you can manage in Sanity
 
