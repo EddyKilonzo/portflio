@@ -37,7 +37,8 @@ export async function getNowItems(): Promise<NowItem[]> {
 export async function getChangelog(): Promise<ChangelogEntry[]> {
   const sanityEntries: ChangelogEntry[] = await sanityClient
     .fetch(`*[_type == "changelogEntry"] | order(date desc) { date, item }`)
-    .catch(() => [])
+    .catch((err) => { console.error('[Sanity] changelog fetch failed:', err); return [] })
+  console.log('[Sanity] changelog entries:', sanityEntries)
   const merged = merge(staticChangelog, sanityEntries, 'item')
   return merged.sort((a, b) => b.date.localeCompare(a.date))
 }
