@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#0d1f18"/>
-  <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke="#2e7a5a" stroke-width="0.75" opacity="0.6"/>
+  <rect width="32" height="32" rx="7" fill="white"/>
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke="#2e7a5a" stroke-width="1" opacity="0.8"/>
   <text
     x="16"
     y="14"
     font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
     font-size="7.5"
     font-weight="700"
-    fill="#4db87a"
+    fill="#2e7a5a"
     text-anchor="middle"
     letter-spacing="1"
   >EMK</text>

@@ -21,12 +21,12 @@ export function EmblemLogo({ size = "md", className = "" }: Props) {
       className={className}
       aria-label="EMK logo"
     >
-      <rect width="32" height="32" rx={7} fill="#0d1f18" />
+      <rect width="32" height="32" rx={7} fill="white" />
       <rect
         x="1" y="1" width="30" height="30" rx={6}
         stroke="var(--accent)"
-        strokeWidth="0.75"
-        strokeOpacity="0.5"
+        strokeWidth="1"
+        strokeOpacity="0.8"
       />
       <text
         x="16" y="14"
