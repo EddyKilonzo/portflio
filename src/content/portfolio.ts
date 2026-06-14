@@ -2328,6 +2328,45 @@ Enter your choice (1-4): 4`,
     ],
     tags: ["pdf-forensics", "static-analysis", "malware-triage", "hash-analysis", "dfir"],
   },
+  {
+    id: "crack-pdf",
+    title: "PDF Password Brute-Forcer",
+    category: "analysis",
+    shortDescription: "Recovers 6-digit numeric passwords from encrypted PDFs by exhaustively trying all 1,000,000 combinations and saving the unlocked copy on success.",
+    purpose: "Recover the password of a PIN-protected PDF by brute-forcing all six-digit numeric combinations (000000–999999), then automatically save the decrypted file.",
+    why: "Numeric PIN-protected PDFs are a common target in CTF challenges and real-world forensics engagements where a document is found without its password. Understanding brute-force mechanics — and where they break down — is foundational security knowledge.",
+    how: "Iterates through every integer from 0 to 999,999, zero-pads it to six digits, and attempts to open the PDF with that value as the password using pikepdf. On success it saves an unlocked copy next to the original. Progress is printed every 10,000 attempts so the operator knows the tool is running.",
+    tech: ["Python", "pikepdf", "itertools", "brute-force"],
+    language: "python",
+    difficulty: "beginner",
+    filename: "crack_pdf.py",
+    code: "",
+    setupSteps: [
+      "Install the dependency: pip install pikepdf",
+      "Place the encrypted PDF in the same directory as the script.",
+      "Edit the pdf_file variable in the script to match your filename.",
+      "Run: python crack_pdf.py",
+    ],
+    usageExample: `python crack_pdf.py
+# [*] Starting 6-digit numeric brute-force on: crack.pdf
+# [*] Total combinations: 1,000,000
+#     Tried 10,000 / 1,000,000 (1.0%)
+# [+] Password found: 042381
+# [+] Unlocked PDF saved to: crack_unlocked.pdf`,
+    replicationSteps: [
+      "Create a test PDF locked with a known 6-digit PIN: use any PDF editor or LibreOffice Export → Encrypt with password (e.g. 001337).",
+      "Run the script against it and confirm it finds the correct PIN.",
+      "Try a non-numeric password to observe graceful failure — the script will exhaust all 1,000,000 combinations and print 'Password not found.'",
+      "Compare runtime against a known-bad PIN near 999999 to understand worst-case brute-force time.",
+    ],
+    lessonsLearned: [
+      "Six-digit numeric PINs offer only 10^6 combinations — trivially brute-forceable in minutes on any modern CPU.",
+      "pikepdf wraps libqpdf and handles decryption natively; the Python overhead makes this slower than a C implementation but still practical for short keyspaces.",
+      "Progress logging every 10,000 attempts is critical for long-running scripts — silent tools are hard to debug when something stalls.",
+      "Real-world PDF encryption often uses AES-256 with alphanumeric passwords — this approach does not scale beyond short numeric keyspaces.",
+    ],
+    tags: ["pdf", "brute-force", "password-cracking", "encryption", "ctf", "forensics", "pikepdf"],
+  },
 ];
 export const cvVariants = {
   cyber: "",
