@@ -42,7 +42,13 @@ export function ProjectCard({
   const [peekOpen, setPeekOpen] = useState(false);
   const [peekMaxHeight, setPeekMaxHeight] = useState(96);
   const [peekClampClass, setPeekClampClass] = useState("line-clamp-2");
+  const [previewLoaded, setPreviewLoaded] = useState(false);
+  const [previewError, setPreviewError] = useState(false);
   const cred = projectCredibility[project.id];
+
+  const previewSrc = project.liveUrl
+    ? `https://api.microlink.io/?url=${encodeURIComponent(project.liveUrl)}&screenshot=true&meta=false&embed=screenshot.url`
+    : null;
 
   useEffect(() => {
     const p = getDeviceProfile();
@@ -106,7 +112,7 @@ export function ProjectCard({
   return (
     <div
       ref={cardRef}
-      className="project-card mi-interactive glass-card group relative w-full rounded-2xl p-6 transition-shadow duration-300 will-change-transform"
+      className="project-card mi-interactive glass-card group relative w-full overflow-hidden rounded-2xl p-6 transition-shadow duration-300 will-change-transform"
       style={{
         boxShadow:
           "0 12px 40px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.35), 0 1px 0 rgba(168,217,184,0.1)",
@@ -116,8 +122,60 @@ export function ProjectCard({
       onPointerLeave={onLeave}
       onTouchStart={() => setPeekOpen((v) => !v)}
     >
+      {/* Live site preview strip */}
+      {previewSrc && !previewError && (
+        <div className="-mx-6 -mt-6 mb-4 relative" style={{ height: 168 }}>
+          {/* Skeleton shimmer while image loads */}
+          {!previewLoaded && (
+            <div
+              className="absolute inset-0 animate-pulse"
+              style={{ background: "rgba(var(--rgb-surface),0.30)" }}
+              aria-hidden
+            />
+          )}
+          {/* Fake browser chrome */}
+          <div
+            aria-hidden
+            className="absolute inset-x-0 top-0 z-10 flex items-center gap-1.5 px-3 py-2"
+            style={{
+              background: "rgba(var(--rgb-bg),0.80)",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+            }}
+          >
+            <span className="h-2 w-2 shrink-0 rounded-full bg-cyber/50" />
+            <span className="h-2 w-2 shrink-0 rounded-full bg-accent/50" />
+            <span className="h-2 w-2 shrink-0 rounded-full bg-eng/50" />
+            <span
+              className="ml-2 flex-1 truncate rounded px-2 py-0.5 font-mono text-[9px] text-highlight/35"
+              style={{ background: "rgba(var(--rgb-surface),0.22)" }}
+            >
+              {project.liveUrl!.replace(/^https?:\/\//, "")}
+            </span>
+          </div>
+          {/* Screenshot */}
+          <img
+            src={previewSrc}
+            alt={`${project.title} preview`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover object-top transition-opacity duration-500"
+            style={{ opacity: previewLoaded ? 1 : 0 }}
+            onLoad={() => setPreviewLoaded(true)}
+            onError={() => setPreviewError(true)}
+          />
+          {/* Fade into card body */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-12"
+            style={{ background: "linear-gradient(to top, var(--bg), transparent)" }}
+          />
+        </div>
+      )}
+
       <span
-        className={`absolute right-5 top-5 rounded-full border px-2 py-0.5 font-mono text-[10px] ${roleBadge[project.roleMode]}`}
+        className={`absolute right-5 top-5 z-20 rounded-full border px-2 py-0.5 font-mono text-[10px] ${roleBadge[project.roleMode]}`}
+        style={previewSrc && !previewError ? { backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)" } : undefined}
       >
         {roleDisplayLabel[project.roleMode] ?? project.roleMode}
       </span>
