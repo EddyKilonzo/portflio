@@ -5,7 +5,7 @@ import { sectionLinks } from "@/content/sections";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { smoothScrollTo } from "@/lib/smooth-scroll";
 
-const DIAL_SECTIONS = sectionLinks.filter((s) => s.showInTopNav);
+const DIAL_SECTIONS = sectionLinks.filter((s) => s.id !== "hero");
 const HINT_KEY = "island-hint-seen";
 
 export function MobileQuickActions() {
