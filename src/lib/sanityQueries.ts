@@ -8,7 +8,6 @@ import {
   education as staticEducation,
   testimonials as staticTestimonials,
   faqs as staticFaqs,
-  publications as staticPublications,
   type NowItem,
   type ChangelogEntry,
   type Project,
@@ -149,5 +148,5 @@ export async function getBlogPosts(): Promise<Publication[]> {
       }`,
     )
     .catch(() => [])
-  return merge(staticPublications, sanityPosts, 'id')
+  return sanityPosts
 }

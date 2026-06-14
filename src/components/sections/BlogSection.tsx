@@ -6,11 +6,11 @@ import { SectionNumber } from "@/components/layout/SectionNumber";
 import { ParallaxDrift } from "@/components/motion/ParallaxDrift";
 import { useSanityFetch } from "@/hooks/useSanityFetch";
 import { getBlogPosts } from "@/lib/sanityQueries";
-import { publications as staticPublications } from "@/content/portfolio";
+import type { Publication } from "@/content/portfolio";
 
 export function BlogSection() {
   const sectionRef = useSectionReveal(9);
-  const blogPosts = useSanityFetch(getBlogPosts, staticPublications);
+  const blogPosts = useSanityFetch(getBlogPosts, [] as Publication[]);
 
   return (
     <section
