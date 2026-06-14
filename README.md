@@ -1,9 +1,9 @@
 # Eddy Max Kilonzo — Portfolio
 
-Personal portfolio for Eddy Max Kilonzo, software engineer moving into cybersecurity. Built with Next.js 14, Tailwind CSS, and Sanity CMS.
+Personal portfolio for Eddy Max Kilonzo, Built with Next.js 14, Tailwind CSS, and Sanity CMS.
 
 Live: [eddy-max.vercel.app](https://eddy-max.vercel.app)
-CMS: [eddy-max-portfolio.sanity.studio](https://eddy-max-portfolio.sanity.studio)
+
 
 ---
 
