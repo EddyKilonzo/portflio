@@ -24,8 +24,12 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://eddymax.dev"),
+  metadataBase: new URL("https://eddy-max.vercel.app"),
   title: "Eddy Max Kilonzo — Software Engineer & Cybersecurity",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
+  },
   description:
     "Software engineer transitioning into cybersecurity — blue team, SOC, threat detection, and full-stack engineering portfolio.",
   keywords: [
