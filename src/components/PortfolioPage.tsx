@@ -555,7 +555,7 @@ export function PortfolioPage() {
             <ErrorBoundary label="Testimonials"><TestimonialsSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
-          <LazySection skeletonCards={3} sectionId="blog">
+          <LazySection skeletonCards={1} sectionId="blog">
             <ErrorBoundary label="Blog"><BlogSection /></ErrorBoundary>
           </LazySection>
           <SectionDivider />
