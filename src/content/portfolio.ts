@@ -563,6 +563,7 @@ export const projects: Project[] = [
     category: "Business Website",
     difficulty: "intermediate",
     videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://anitah-hair-studio-6nd6.vercel.app/",
     codeUrl: "https://github.com/EddyKilonzo/AnitahHairStudio",
     demoType: "web",
     skills: ["Next.js", "TypeScript", "Tailwind CSS"],
