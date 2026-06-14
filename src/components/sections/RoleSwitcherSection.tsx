@@ -518,8 +518,8 @@ export function RoleSwitcherSection() {
                               onClick={() => setActivePillarIdx(idx)}
                               className="relative w-full overflow-hidden rounded-xl px-3 py-2 text-left transition-all duration-250"
                               style={{
-                                border: `1px solid ${active ? theme.border : "rgba(168,217,184,0.1)"}`,
-                                background: active ? theme.tag : "rgba(30,74,58,0.18)",
+                                border: `1px solid ${active ? theme.border : "rgba(128,160,140,0.20)"}`,
+                                background: active ? theme.tag : "transparent",
                                 transform: active ? "translateX(3px)" : "translateX(0)",
                               }}
                             >
@@ -529,17 +529,14 @@ export function RoleSwitcherSection() {
                               />
                               <div className="flex items-center justify-between pl-1.5">
                                 <span
-                                  className="mono-label text-xs transition-colors duration-200"
-                                  style={{ color: active ? theme.tagText : "rgba(216,236,224,0.7)" }}
+                                  className={`mono-label text-xs transition-colors duration-200 ${active ? "" : "text-highlight/70"}`}
+                                  style={active ? { color: theme.tagText } : undefined}
                                 >
                                   {pillar.title}
                                 </span>
                                 <span
-                                  className="mono-label rounded-full px-2 py-0.5 text-[9px] transition-colors duration-200"
-                                  style={{
-                                    background: active ? `${theme.accent}20` : "transparent",
-                                    color: active ? theme.tagText : "rgba(216,236,224,0.6)",
-                                  }}
+                                  className={`mono-label rounded-full px-2 py-0.5 text-[9px] transition-colors duration-200 ${active ? "" : "text-highlight/55"}`}
+                                  style={active ? { background: `${theme.accent}20`, color: theme.tagText } : undefined}
                                 >
                                   {pillar.metric}
                                 </span>
@@ -633,8 +630,8 @@ export function RoleSwitcherSection() {
                     key={p.id}
                     className="rounded-xl px-3 py-3 transition-all duration-200 hover:scale-[1.01]"
                     style={{
-                      border: `1px solid ${hovered ? theme.border : "rgba(168,217,184,0.08)"}`,
-                      background: hovered ? theme.tag : "rgba(30,74,58,0.15)",
+                      border: `1px solid ${hovered ? theme.border : "rgba(128,160,140,0.15)"}`,
+                      background: hovered ? theme.tag : "transparent",
                     }}
                     onMouseEnter={() => setHoveredProjectId(p.id)}
                     onMouseLeave={() => setHoveredProjectId(null)}
