@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { scripts } from "@/content/portfolio";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { BackButton } from "@/components/ui/BackButton";
+import { AosInit } from "@/components/ui/AosInit";
 import { decodeProjectId, encodeProjectId } from "@/lib/projectId";
 import fs from "fs";
 import path from "path";
@@ -60,10 +61,11 @@ export default async function ScriptDetailPage({ params }: Props) {
 
   return (
     <main className="section-bg min-h-screen px-4 py-20 md:px-6">
+      <AosInit />
       <article className="mx-auto max-w-4xl space-y-8">
 
         {/* Back nav */}
-        <nav className="flex flex-wrap items-center gap-3">
+        <nav className="flex flex-wrap items-center gap-3" data-aos="fade-down">
           <BackButton label="← Back to Scripts" href="/?module=cybersec&cybertab=scripts#projects" />
           {prev && (
             <a href={`/scripts/${prev.id}`} className="glass-pill text-highlight/60 hover:text-highlight">
@@ -78,7 +80,7 @@ export default async function ScriptDetailPage({ params }: Props) {
         </nav>
 
         {/* Header */}
-        <header className="glass-card rounded-2xl p-6 md:p-8">
+        <header className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
@@ -140,7 +142,7 @@ export default async function ScriptDetailPage({ params }: Props) {
         </Section>
 
         {/* Full code */}
-        <section className="space-y-3">
+        <section className="space-y-3" data-aos="fade-up">
           <h2 className="flex items-center gap-2 font-display text-xl text-highlight">
             <span className="text-accent">⌨</span>
             Source Code
@@ -183,7 +185,7 @@ export default async function ScriptDetailPage({ params }: Props) {
         </Section>
 
         {/* Footer nav */}
-        <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6">
+        <footer className="flex flex-wrap gap-3 border-t border-highlight/10 pt-6" data-aos="fade-up">
           <BackButton label="← All Scripts" href="/?module=cybersec&cybertab=scripts#projects" />
           {prev && (
             <a href={`/scripts/${prev.id}`} className="glass-pill text-highlight/60 hover:text-highlight">
@@ -203,7 +205,7 @@ export default async function ScriptDetailPage({ params }: Props) {
 
 function Section({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="glass-card rounded-2xl p-6 md:p-8">
+    <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up">
       <h2 className="mb-4 flex items-center gap-2 font-display text-xl text-highlight">
         <span className="text-accent">{icon}</span>
         {title}
