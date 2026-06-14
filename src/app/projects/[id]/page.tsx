@@ -96,12 +96,12 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
         </header>
 
         {/* Problem */}
-        <Section icon="⊘" title="Problem" delay={100}>
+        <Section icon="⊘" title="Problem">
           <p className="leading-relaxed text-highlight/80">{project.caseStudy.problem}</p>
         </Section>
 
         {/* Approach */}
-        <Section icon="⟡" title="Approach" delay={150}>
+        <Section icon="⟡" title="Approach">
           <ol className="space-y-4">
             {project.caseStudy.approach.map((step, i) => (
               <li key={step} className="flex gap-4">
@@ -114,7 +114,7 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
 
         {/* Code samples */}
         {codeSamples.length > 0 && (
-          <Section icon="⌨" title="Code" delay={200}>
+          <Section icon="⌨" title="Code">
             <div className="space-y-4">
               {codeSamples.map((file) => (
                 <div key={file.path}>
@@ -126,7 +126,7 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
         )}
 
         {/* Results */}
-        <Section icon="◈" title="Results & Outcome" delay={200}>
+        <Section icon="◈" title="Results & Outcome">
           <p className="leading-relaxed text-highlight/80">{project.caseStudy.outcome}</p>
           {project.caseStudy.metrics?.length ? (
             <ul className="mt-5 grid gap-2 sm:grid-cols-2">
@@ -142,7 +142,7 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
 
         {/* Architecture */}
         {project.caseStudy.architectureNotes?.length ? (
-          <Section icon="⬡" title="Architecture Notes" delay={200}>
+          <Section icon="⬡" title="Architecture Notes">
             <ul className="space-y-3">
               {project.caseStudy.architectureNotes.map((n) => (
                 <li key={n} className="flex items-start gap-3 border-l-2 border-highlight/15 pl-4">
@@ -155,7 +155,7 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
 
         {/* Lessons learned */}
         {project.caseStudy.lessonsLearned?.length ? (
-          <Section icon="◉" title="Lessons Learned" delay={200}>
+          <Section icon="◉" title="Lessons Learned">
             <ul className="space-y-4">
               {project.caseStudy.lessonsLearned.map((l, i) => (
                 <li key={l} className="flex gap-4 rounded-xl border border-highlight/10 bg-surface/10 p-4">
@@ -169,7 +169,7 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
 
         {/* Quality metrics (web projects) */}
         {cred ? (
-          <Section icon="◑" title="Quality Metrics" delay={200}>
+          <Section icon="◑" title="Quality Metrics">
             <div className="grid gap-3 sm:grid-cols-4">
               {[
                 { label: "Performance", value: cred.performanceScore },
@@ -203,9 +203,9 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
   );
 }
 
-function Section({ icon, title, children, delay = 0 }: { icon: string; title: string; children: React.ReactNode; delay?: number }) {
+function Section({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up" data-aos-delay={delay}>
+    <section className="glass-card rounded-2xl p-6 md:p-8" data-aos="fade-up">
       <h2 className="mb-4 flex items-center gap-2 font-display text-xl text-highlight">
         <span className="text-accent">{icon}</span>
         {title}

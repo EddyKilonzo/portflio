@@ -12,6 +12,7 @@ import { useSectionReveal } from "@/hooks/useSectionReveal";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DecorNetwork } from "@/components/layout/DecorNetwork";
 import { SectionNumber } from "@/components/layout/SectionNumber";
+import { StaggerReveal } from "@/components/motion/StaggerReveal";
 import { CodePanel } from "@/components/sections/CodePanel";
 import { DemoHost } from "@/components/demos/DemoHost";
 import { AppModal } from "@/components/ui/AppModal";
@@ -239,21 +240,20 @@ export function ProjectsSection() {
                   <p className="font-mono text-xs text-highlight/55">
                     Hands-on security labs, offensive simulations, and blue team tooling — each with a full case study and replication guide.
                   </p>
-                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {cyberProjects.map((p, i) => (
-                      <div key={p.id} data-aos="fade-up" data-aos-delay={Math.min(i * 60, 160)}>
-                        <ProjectCard
-                          project={p}
-                          onCaseStudy={() => setCaseProjectId(p.id)}
-                          onWatch={() => setVideoProjectId(p.id)}
-                          onLive={() => p.liveUrl ? window.open(p.liveUrl,"_blank","noopener") : setDemoProjectId(p.id)}
-                          onCode={() => setCodeProjectId(p.id)}
-                          onToggleCompare={() => toggleCompare(p.id)}
-                          isCompared={compareIds.includes(p.id)}
-                        />
-                      </div>
+                  <StaggerReveal key="cyber-projects" className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {cyberProjects.map((p) => (
+                      <ProjectCard
+                        key={p.id}
+                        project={p}
+                        onCaseStudy={() => setCaseProjectId(p.id)}
+                        onWatch={() => setVideoProjectId(p.id)}
+                        onLive={() => p.liveUrl ? window.open(p.liveUrl,"_blank","noopener") : setDemoProjectId(p.id)}
+                        onCode={() => setCodeProjectId(p.id)}
+                        onToggleCompare={() => toggleCompare(p.id)}
+                        isCompared={compareIds.includes(p.id)}
+                      />
                     ))}
-                  </div>
+                  </StaggerReveal>
                 </div>
               )}
 
@@ -288,11 +288,11 @@ export function ProjectsSection() {
                       );
                     })}
                   </div>
-                  <div className="grid gap-6 md:grid-cols-2">
+                  <StaggerReveal key={`reports-${reportTypeFilter}`} className="grid gap-6 md:grid-cols-2">
                     {securityReports
                       .filter(r => reportTypeFilter === "all" || r.type === reportTypeFilter)
-                      .map((r, i) => <ReportCard key={r.id} report={r} idx={i} />)}
-                  </div>
+                      .map((r) => <ReportCard key={r.id} report={r} />)}
+                  </StaggerReveal>
                 </div>
               )}
 
@@ -322,11 +322,11 @@ export function ProjectsSection() {
                       );
                     })}
                   </div>
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  <StaggerReveal key={`scripts-${scriptCatFilter}`} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {scripts
                       .filter(s => scriptCatFilter === "all" || s.category === scriptCatFilter)
-                      .map((s, i) => <ScriptCard key={s.id} script={s} idx={i} />)}
-                  </div>
+                      .map((s) => <ScriptCard key={s.id} script={s} />)}
+                  </StaggerReveal>
                 </div>
               )}
             </div>
@@ -384,21 +384,20 @@ export function ProjectsSection() {
               </div>
 
               {devFiltered.length ? (
-                <div className="grid gap-6 md:grid-cols-2">
-                  {devFiltered.map((p, i) => (
-                    <div key={p.id} data-aos="fade-up" data-aos-delay={Math.min(i * 50, 150)}>
-                      <ProjectCard
-                        project={p}
-                        onCaseStudy={() => { setCaseProjectId(p.id); trackEvent("project_case_study_open",{projectId:p.id}); }}
-                        onWatch={() => setVideoProjectId(p.id)}
-                        onLive={() => p.liveUrl ? window.open(p.liveUrl,"_blank","noopener") : setDemoProjectId(p.id)}
-                        onCode={() => setCodeProjectId(p.id)}
-                        onToggleCompare={() => toggleCompare(p.id)}
-                        isCompared={compareIds.includes(p.id)}
-                      />
-                    </div>
+                <StaggerReveal key={`dev-${devSubTab}`} className="grid gap-6 md:grid-cols-2">
+                  {devFiltered.map((p) => (
+                    <ProjectCard
+                      key={p.id}
+                      project={p}
+                      onCaseStudy={() => { setCaseProjectId(p.id); trackEvent("project_case_study_open",{projectId:p.id}); }}
+                      onWatch={() => setVideoProjectId(p.id)}
+                      onLive={() => p.liveUrl ? window.open(p.liveUrl,"_blank","noopener") : setDemoProjectId(p.id)}
+                      onCode={() => setCodeProjectId(p.id)}
+                      onToggleCompare={() => toggleCompare(p.id)}
+                      isCompared={compareIds.includes(p.id)}
+                    />
                   ))}
-                </div>
+                </StaggerReveal>
               ) : (
                 <div className="glass-card rounded-2xl p-8 text-center font-mono text-sm text-highlight/50">
                   No projects match your filters.
@@ -534,7 +533,7 @@ const reportCardAccent: Record<string, string> = {
   vuln:    "border-t-eng/60",
 };
 
-function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
+function ReportCard({ report }: { report: SecurityReport }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const totalFindings = report.findings.length;
   const criticals = report.findings.filter(f=>f.severity==="critical").length;
@@ -546,7 +545,6 @@ function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
   return (
     <>
       <article
-        data-aos="fade-up" data-aos-delay={Math.min(idx * 40, 120)}
         className={`relative glass-card flex flex-col gap-3 rounded-2xl border border-t-2 border-highlight/10 p-5 sm:p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] ${reportCardAccent[report.type] ?? "border-t-accent/60"}`}
       >
         {/* Team badge — top right */}
@@ -680,7 +678,7 @@ function ReportCard({ report, idx }: { report: SecurityReport; idx: number }) {
 }
 
 /* ── Script Card ─────────────────────────────────────────────────────────── */
-function ScriptCard({ script, idx }: { script: SecurityScript; idx: number }) {
+function ScriptCard({ script }: { script: SecurityScript }) {
   const [viewerOpen, setViewerOpen] = useState(false);
   const langLabel: Record<string,string> = { python:"Python", go:"Go", bash:"Bash" };
   const langDot:   Record<string,string> = { python:"bg-accent/80", go:"bg-accent/60", bash:"bg-accent" };
@@ -688,7 +686,6 @@ function ScriptCard({ script, idx }: { script: SecurityScript; idx: number }) {
   return (
     <>
       <article
-        data-aos="fade-up" data-aos-delay={Math.min(idx * 70, 140)}
         className="glass-card flex flex-col gap-3 rounded-2xl border border-highlight/10 p-5 sm:p-7 transition-all duration-300 hover:border-accent/25 hover:-translate-y-0.5"
       >
         {/* Header */}
