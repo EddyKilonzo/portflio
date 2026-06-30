@@ -214,8 +214,9 @@ export function ProjectsSection() {
               {/* Sub-tabs — scrollable on mobile */}
               <div className="flex gap-2 overflow-x-auto scrollbar-none rounded-2xl border border-highlight/10 bg-surface/10 p-1.5 w-full sm:w-fit">
                 {([
-                  { id: "reports",  label: "Security Reports",count: securityReports.length },
-                  { id: "scripts",  label: "Scripts & Tools", count: scripts.length },
+                  { id: "projects", label: "Projects",         count: cyberProjects.length },
+                  { id: "reports",  label: "Security Reports", count: securityReports.length },
+                  { id: "scripts",  label: "Scripts & Tools",  count: scripts.length },
                 ] as const).map(t => (
                   <button
                     key={t.id}
@@ -244,7 +245,8 @@ export function ProjectsSection() {
                       <div key={p.id} data-aos="fade-up" data-aos-delay={Math.min(i * 60, 160)}>
                         <ProjectCard
                           project={p}
-                          onCaseStudy={() => setCaseProjectId(p.id)}
+                          onCaseStudy={() => { window.location.href = `/projects/${p.id}`; }}
+                          caseStudyLabel="View Details →"
                           onWatch={() => setVideoProjectId(p.id)}
                           onLive={() => p.liveUrl ? window.open(p.liveUrl,"_blank","noopener") : setDemoProjectId(p.id)}
                           onCode={() => setCodeProjectId(p.id)}

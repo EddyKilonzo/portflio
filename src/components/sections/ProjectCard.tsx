@@ -23,6 +23,7 @@ type Props = {
   onLive: () => void;
   onCode: () => void;
   onCaseStudy?: () => void;
+  caseStudyLabel?: string;
   onToggleCompare?: () => void;
   isCompared?: boolean;
 };
@@ -33,6 +34,7 @@ export function ProjectCard({
   onLive,
   onCode,
   onCaseStudy,
+  caseStudyLabel = "Case Study",
   onToggleCompare,
   isCompared = false,
 }: Props) {
@@ -231,7 +233,7 @@ export function ProjectCard({
         ) : null}
         {onCaseStudy ? (
           <MagneticButton className="btn-ghost hotspot-magnetic flex-1 text-xs" onClick={onCaseStudy}>
-            Case Study
+            {caseStudyLabel}
           </MagneticButton>
         ) : null}
         <MagneticButton className="btn-ghost flex-1 text-xs" onClick={onLive}>

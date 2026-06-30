@@ -3,6 +3,12 @@ import type { Metadata } from "next";
 import { projects, projectCredibility, projectCodeSamples } from "@/content/portfolio";
 import { CodeBlock } from "@/components/ui/CodeBlock";
 import { AosInit } from "@/components/ui/AosInit";
+import dynamic from "next/dynamic";
+
+const PacketCapture = dynamic(
+  () => import("@/components/demos/PacketCapture").then((m) => m.PacketCapture),
+  { ssr: false, loading: () => <div className="h-[460px] animate-pulse rounded-xl bg-surface/20" /> },
+);
 
 type Props = { params: { id: string } };
 
@@ -111,6 +117,33 @@ export default async function ProjectCaseStudyPage({ params }: Props) {
             ))}
           </ol>
         </Section>
+
+        {/* Live demo — packet capture simulation (network-sniffer only) */}
+        {project.id === "network-sniffer" && (
+          <Section icon="⏺" title="Live Demo — Packet Capture">
+            <p className="mb-4 text-sm text-highlight/60">
+              Simulated packet capture showing the sniffer&apos;s real terminal output — TCP/UDP/ICMP with HTTP extraction and DNS decoding. Use the filter buttons to switch BPF expressions.
+            </p>
+            <PacketCapture />
+          </Section>
+        )}
+
+        {/* Live link (PhishShield and any project with liveUrl) */}
+        {project.liveUrl && project.id !== "network-sniffer" && (
+          <Section icon="⎋" title="Live Demo">
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/10 px-5 py-3 font-mono text-sm text-accent hover:bg-accent/20 transition-colors"
+            >
+              Open {project.title} ↗
+            </a>
+            <p className="mt-3 text-sm text-highlight/55">
+              Deployed live — opens in a new tab.
+            </p>
+          </Section>
+        )}
 
         {/* Code samples */}
         {codeSamples.length > 0 && (

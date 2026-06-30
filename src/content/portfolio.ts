@@ -820,6 +820,95 @@ export const projects: Project[] = [
       screenshots: ["https://picsum.photos/seed/mayhem-thredas/800/480"],
     },
   },
+  {
+    id: "phishield",
+    title: "PhishShield",
+    shortDescription:
+      "Gamified browser-based phishing awareness training platform with 6 modules, 9 realistic simulations, an XP progression system, and a downloadable completion certificate.",
+    roleMode: "cyber",
+    tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    category: "Security Awareness Platform",
+    difficulty: "advanced",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    liveUrl: "https://phishingawarenesstraining-theta.vercel.app/",
+    codeUrl: "https://github.com/EddyKilonzo/codeAlpha/tree/main/Phishing%20Awareness%20Training%20Platform",
+    demoType: "cyber",
+    skills: ["Next.js", "React", "TypeScript", "Security Training", "Gamification"],
+    screenshotFallback: "https://picsum.photos/seed/phishield/960/600",
+    caseStudy: {
+      problem:
+        "Organizations need engaging security training that teaches employees to recognize phishing attacks — static slide decks and passive content fail to drive real behavioral change.",
+      approach: [
+        "Built a 6-module curriculum covering phishing basics through advanced AI-generated lures, real-world case studies (Colonial Pipeline, MGM, Twitter Bitcoin hack), and organizational defense best practices.",
+        "Designed 9 interactive simulations — pixel-accurate replicas of Outlook emails, Gmail inboxes, SMS threads, CEO fraud emails, fake Microsoft/PayPal login pages, QR phishing emails, Teams chat, and Chrome certificate warnings — where users click annotated red-flag zones to score points and unlock explanations.",
+        "Implemented a gamification layer with XP rewards, a 10-level progression system, spaced-repetition flashcards, a 12-question-type quiz engine with a 3-level hint system, daily streaks, and 12 unlockable achievements including a canvas-confetti module-completion burst.",
+        "Kept the platform 100% client-side — no backend, no auth, no tracking. All progress is persisted in browser localStorage with full schema validation and migration on every hydration read.",
+      ],
+      outcome:
+        "Shipped a fully live, zero-backend security training platform covering 71 minutes of structured content, 9 realistic simulations, ~53 quiz questions, ~66 flashcards, and a personalised PDF completion certificate generated entirely in-browser.",
+      metrics: [
+        "Modules: 6 sequential, 71 min total content",
+        "Simulations: 9 realistic attack scenarios",
+        "Quiz bank: ~53 questions across 12 question types",
+        "XP system: 10 levels, 12 achievements, 1 300 base XP",
+        "Backend: none — 100% client-side, localStorage-persisted",
+      ],
+      architectureNotes: [
+        "React Context + useReducer powers all XP, streaks, and progress state; localStorage is schema-validated and migrated on every hydration to guard against stale data.",
+        "Security headers (CSP, HSTS max-age=2y, X-Frame-Options DENY, nosniff) are applied at the Vercel CDN edge via vercel.json — no server required.",
+        "Framer Motion MotionConfig respects the OS prefers-reduced-motion setting throughout the entire platform.",
+      ],
+      lessonsLearned: [
+        "Gamification mechanics — streaks, XP count-ups, achievement toasts — meaningfully sustain learner engagement compared to passive content delivery.",
+        "localStorage-only state requires deliberate schema migration design from day one; without it, app updates silently corrupt prior progress.",
+        "Pixel-accurate simulations build practical red-flag recognition far more effectively than abstract descriptions of phishing anatomy.",
+      ],
+    },
+  },
+  {
+    id: "network-sniffer",
+    title: "Network Sniffer",
+    shortDescription:
+      "Python packet sniffer with a BPF-style filter engine, deep TCP/UDP/ICMP/HTTP/DNS decoding, ICMP RTT tracking, and an interactive Rich terminal dashboard.",
+    roleMode: "cyber",
+    tech: ["Python", "Raw Sockets", "Rich", "Colorama"],
+    category: "Network Security Tool",
+    difficulty: "advanced",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    codeUrl: "https://github.com/EddyKilonzo/codeAlpha/tree/main/network%20sniffer",
+    demoType: "cyber",
+    skills: ["Python", "Network Security", "Packet Analysis", "TCP/IP"],
+    screenshotFallback: "https://picsum.photos/seed/network-sniffer/960/600",
+    caseStudy: {
+      problem:
+        "Security practitioners need a lightweight CLI tool to capture and decode live network traffic with expressive filtering — without the overhead of GUI tools like Wireshark or the complexity of libpcap bindings.",
+      approach: [
+        "Built a cross-platform raw-socket capture layer: AF_PACKET on Linux for full Ethernet frame access, and AF_INET + RCVALL_ON on Windows where kernel access begins at the IPv4 layer.",
+        "Implemented a recursive-descent BPF-like filter parser that tokenizes and compiles expressions (proto, host, port, net, src/dst, and/or/not) into Python callables applied per-packet with zero string comparisons in the hot path.",
+        "Decoded TCP (flags, sequence, window), UDP, and ICMP at layer 4; added HTTP request/response extraction, RFC 1035 DNS decoding with pointer-compression and a 20-hop loop guard, and ICMP echo RTT tracking using time.monotonic().",
+        "Shipped sniffer_dashboard.py — an interactive Rich terminal UI with live protocol stats, keyboard shortcuts (Q/P/F/1–4), and real-time packet display alongside the core CLI sniffer.",
+      ],
+      outcome:
+        "Delivered a functional, portable packet sniffer with deep protocol coverage, a compile-time filter engine, optional credential redaction, and both a raw CLI and an interactive terminal dashboard — running natively on Windows and Linux.",
+      metrics: [
+        "Protocols decoded: Ethernet, IPv4, TCP, UDP, ICMP, HTTP, DNS",
+        "Platform support: Windows (admin) + Linux (sudo / cap_net_raw)",
+        "Filter engine: BPF-style recursive-descent, compiled to predicates",
+        "DNS: RFC 1035 pointer-compression with 20-hop loop guard",
+        "ICMP RTT: monotonic-clock pairing by (host, id, seq) tuple",
+      ],
+      architectureNotes: [
+        "Filter expressions are fully compiled at startup; the resulting predicate closure is applied per-packet with no repeated parsing overhead.",
+        "Platform branching is explicit in _open_socket() — Linux returns full Ethernet frames while Windows skips to IPv4, which is handled upstream in the main loop.",
+        "PingTracker stores pending Echo Requests keyed by (src_ip, ident, seq) and computes RTT atomically in the reply handler to avoid any race conditions.",
+      ],
+      lessonsLearned: [
+        "Platform differences in raw socket APIs (AF_PACKET vs SOCK_RAW/IPPROTO_IP) require explicit branching rather than abstraction to stay semantically correct.",
+        "A grammar-based filter parser is significantly more maintainable than ad-hoc string splitting once filter expressions include logical operators and direction qualifiers.",
+        "Credential redaction must be opt-in — defaulting to visible headers lets practitioners see what actual traffic looks like, which is the primary use case.",
+      ],
+    },
+  },
 ];
 
 export const projectCredibility: Record<string, ProjectCredibility> = {
@@ -835,6 +924,8 @@ export const projectCredibility: Record<string, ProjectCredibility> = {
   "car-rental": { performanceScore: 92, accessibilityScore: 92, lighthouseScore: 92, loadTime: "1.3s" },
   "safespaces": { performanceScore: 93, accessibilityScore: 95, lighthouseScore: 94, loadTime: "1.1s" },
   "mayhem-thredas": { performanceScore: 90, accessibilityScore: 91, lighthouseScore: 90, loadTime: "1.5s" },
+  "phishield": { performanceScore: 96, accessibilityScore: 94, lighthouseScore: 95, loadTime: "0.9s" },
+  "network-sniffer": { performanceScore: 88, accessibilityScore: 85, lighthouseScore: 87, loadTime: "N/A" },
 };
 
 export const projectCodeSamples: Record<string, CodeFile[]> = {
@@ -943,6 +1034,142 @@ export const Button = forwardRef<HTMLButtonElement,
 >(({ intent, size, className, ...props }, ref) => (
   <button ref={ref} className={button({ intent, size, className })} {...props} />
 ));`,
+    },
+  ],
+  "network-sniffer": [
+    {
+      path: "network_sniffer.py — BPF filter engine",
+      language: "python",
+      content: `from dataclasses import dataclass
+from typing import Callable, Optional
+import ipaddress, re, socket
+
+@dataclass
+class PacketInfo:
+    proto:    str
+    src_ip:   str
+    dst_ip:   str
+    src_port: Optional[int]
+    dst_port: Optional[int]
+
+class _FilterParser:
+    def __init__(self, tokens: list[str]) -> None:
+        self.tokens = tokens
+        self.pos    = 0
+
+    def _peek(self) -> Optional[str]:
+        return self.tokens[self.pos] if self.pos < len(self.tokens) else None
+
+    def _eat(self) -> str:
+        tok = self.tokens[self.pos]; self.pos += 1; return tok
+
+    def parse(self) -> Callable[[PacketInfo], bool]:
+        fn = self._or()
+        if self._peek() is not None:
+            raise SyntaxError(f'unexpected token: {self._peek()!r}')
+        return fn
+
+    def _or(self) -> Callable[[PacketInfo], bool]:
+        left = self._and()
+        while self._peek() == 'or':
+            self._eat()
+            right = self._and()
+            left  = (lambda l, r: lambda p: l(p) or r(p))(left, right)
+        return left
+
+    def _and(self) -> Callable[[PacketInfo], bool]:
+        left = self._not()
+        while self._peek() == 'and':
+            self._eat()
+            right = self._not()
+            left  = (lambda l, r: lambda p: l(p) and r(p))(left, right)
+        return left
+
+    def _not(self) -> Callable[[PacketInfo], bool]:
+        if self._peek() == 'not':
+            self._eat()
+            inner = self._not()
+            return lambda p: not inner(p)
+        return self._primary()
+
+    def _primary(self) -> Callable[[PacketInfo], bool]:
+        tok = self._peek()
+        if tok == '(':
+            self._eat(); fn = self._or()
+            if self._peek() != ')': raise SyntaxError('missing closing )')
+            self._eat(); return fn
+        direction: Optional[str] = None
+        if tok in ('src', 'dst'):
+            direction = self._eat(); tok = self._peek()
+        if tok in ('tcp', 'udp', 'icmp'):
+            name = self._eat().upper()
+            return (lambda n: lambda p: p.proto == n)(name)
+        if tok == 'host':
+            self._eat(); ip = self._eat()
+            if direction == 'src': return (lambda i: lambda p: p.src_ip == i)(ip)
+            if direction == 'dst': return (lambda i: lambda p: p.dst_ip == i)(ip)
+            return (lambda i: lambda p: p.src_ip == i or p.dst_ip == i)(ip)
+        if tok == 'port':
+            self._eat(); port = int(self._eat())
+            if direction == 'src': return (lambda pt: lambda p: p.src_port == pt)(port)
+            if direction == 'dst': return (lambda pt: lambda p: p.dst_port == pt)(port)
+            return (lambda pt: lambda p: p.src_port == pt or p.dst_port == pt)(port)
+        if tok == 'net':
+            self._eat(); net = ipaddress.ip_network(self._eat(), strict=False)
+            return (lambda n: lambda p: (
+                ipaddress.ip_address(p.src_ip) in n or
+                ipaddress.ip_address(p.dst_ip) in n
+            ))(net)
+        raise SyntaxError(f'unknown filter keyword: {tok!r}')
+
+def compile_filter(expr: str) -> Callable[[PacketInfo], bool]:
+    tokens = re.findall(r'\\(|\\)|[^\\s()]+', expr.strip().lower())
+    return _FilterParser(tokens).parse() if tokens else lambda _: True`,
+    },
+    {
+      path: "network_sniffer.py — DNS decoder",
+      language: "python",
+      content: `_DNS_JUMP_LIMIT = 20  # max pointer hops before aborting name decompression
+
+_DNS_TYPES = {
+    1: 'A', 2: 'NS', 5: 'CNAME', 6: 'SOA', 12: 'PTR',
+    15: 'MX', 16: 'TXT', 28: 'AAAA', 33: 'SRV', 255: 'ANY',
+}
+
+def _read_dns_name(data: bytes, offset: int) -> tuple[str, int]:
+    labels: list[str] = []
+    jumped = False
+    next_off = offset
+    hops = 0
+    while offset < len(data):
+        length = data[offset]
+        if length == 0:
+            if not jumped: next_off = offset + 1
+            break
+        if (length & 0xC0) == 0xC0:          # compression pointer
+            if not jumped: next_off = offset + 2
+            jumped = True
+            offset = ((length & 0x3F) << 8) | data[offset + 1]
+            hops += 1
+            if hops > _DNS_JUMP_LIMIT: break  # loop guard
+        else:
+            offset += 1
+            labels.append(data[offset:offset + length].decode('ascii', errors='replace'))
+            offset += length
+    return '.'.join(labels) or '<root>', next_off
+
+def decode_dns(payload: bytes):
+    if len(payload) < 12: return None
+    txid, flags, qdcount, ancount, *_ = struct.unpack('!HHHHHH', payload[:12])
+    is_response = bool((flags >> 15) & 1)
+    rcode = {0:'NOERROR',1:'FORMERR',2:'SERVFAIL',3:'NXDOMAIN'}.get(flags & 0xF, f'rcode={flags & 0xF}')
+    offset = 12
+    questions = []
+    for _ in range(qdcount):
+        name, offset = _read_dns_name(payload, offset)
+        qtype, _     = struct.unpack('!HH', payload[offset:offset + 4]); offset += 4
+        questions.append({'name': name, 'type': _DNS_TYPES.get(qtype, f'type={qtype}')})
+    return {'txid': txid, 'is_response': is_response, 'rcode': rcode, 'questions': questions}`,
     },
   ],
   "realtime-collab": [

@@ -14,6 +14,10 @@ const CyberDemo = dynamic(
   () => import("./CyberDemo").then((m) => m.CyberDemo),
   { ssr: false, loading: () => <DemoSkeleton /> },
 );
+const PacketCaptureDemo = dynamic(
+  () => import("./PacketCapture").then((m) => m.PacketCapture),
+  { ssr: false, loading: () => <DemoSkeleton /> },
+);
 const EngineeringDemo = dynamic(
   () => import("./EngineeringDemo").then((m) => m.EngineeringDemo),
   { ssr: false, loading: () => <DemoSkeleton /> },
@@ -121,7 +125,9 @@ export function DemoHost({ project, open, onClose }: Props) {
                 fallbackImage={project.screenshotFallback}
               />
             ) : project.demoType === "cyber" ? (
-              <CyberDemo />
+              project.id === "network-sniffer"
+                ? <PacketCaptureDemo />
+                : <CyberDemo />
             ) : (
               <EngineeringDemo variant={project.engineeringDemo ?? "api"} />
             )}
